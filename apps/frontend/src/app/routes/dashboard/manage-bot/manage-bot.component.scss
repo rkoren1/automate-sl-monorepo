@@ -1,0 +1,50 @@
+.bot-conf-gear {
+  font-size: 120px;
+  margin-bottom: 5px;
+}
+.bot-conf-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 200px;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+.tiles-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.startup-icon {
+  font-size: 75px;
+}
+.mat-card {
+  display: flex;
+  justify-content: center;
+  height: 180px;
+  cursor: pointer;
+}
+.mat-card:hover {
+  filter: invert(75%);
+}
+.mat-card-wrapper {
+  margin-top: 10px;
+  width: 25%;
+  box-sizing: border-box;
+  padding: 15px;
+  min-width: 325px;
+}
+.startup-icon-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.card-content {
+  display: flex;
+}

@@ -14,7 +14,18 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "main/@core": ["apps/frontend/src/app/core"],
+      "main/@core/*": ["apps/frontend/src/app/core/*"],
+      "main/@shared": ["apps/frontend/src/app/shared"],
+      "main/@shared/*": ["apps/frontend/src/app/shared/*"],
+      "main/@theme": ["apps/frontend/src/app/theme"],
+      "main/@theme/*": ["apps/frontend/src/app/theme/*"],
+      "main/@testing": ["apps/frontend/src/testing"],
+      "main/@testing/*": ["apps/frontend/src/testing/*"],
+      "main/@env": ["apps/frontend/src/environments"],
+      "main/@env/*": ["apps/frontend/src/environments/*"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

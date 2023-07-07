@@ -1,0 +1,80 @@
+<breadcrumb></breadcrumb>
+<div class="bot-conf-wrapper">
+  <img
+    height="70%"
+    [src]="'https://picture-service.secondlife.com/' + botData.imageId + '/256x192.jpg'"
+  />
+  <!-- <div class="fa-solid fa-user-gear bot-conf-gear"></div> -->
+  <div>
+    Currently customizing <b>{{ botData.loginFirstName }}</b>
+  </div>
+  <div>
+    Package: <b>{{ botData.subscriptions[0].package.packageName }}</b>
+  </div>
+  <div>
+    Subscription is valid until:
+    <b>{{ botData.subscriptions[0].subscriptionEnd | date : 'MMM d, y, H:mm' }}</b>
+  </div>
+</div>
+<hr />
+<div class="tiles-wrapper">
+  <div class="mat-card-wrapper">
+    <mat-card class="mat-card" (click)="startupPopup(botData.id)">
+      <mat-card-content class="card-content">
+        <div class="startup-icon-wrapper"><div class="fa-solid fa-rocket startup-icon"></div></div>
+        <div class="content-wrapper">
+          <mat-card-title>Start Location</mat-card-title>
+          <span>what your bot does on startup, such as spawn location, etc.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- <div class="mat-card-wrapper">
+    <mat-card class="mat-card" (click)="botAccessCodePopup(botData.id)">
+      <mat-card-content class="card-content">
+        <div class="startup-icon-wrapper"><div class="fa-solid fa-lock startup-icon"></div></div>
+        <div class="content-wrapper">
+          <mat-card-title>Bot Access Code</mat-card-title
+          ><span>Bot access code is used to control/script your bot using our APIs.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div> -->
+  <div class="mat-card-wrapper">
+    <mat-card class="mat-card" (click)="botSubscriptionPopup(botData.id)">
+      <mat-card-content class="card-content">
+        <div class="startup-icon-wrapper">
+          <div class="fa-solid fa-handshake startup-icon"></div>
+        </div>
+        <div class="content-wrapper">
+          <mat-card-title>Manage Plan</mat-card-title>
+          <span>Add, change or extend the plan.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="mat-card-wrapper">
+    <mat-card class="mat-card" (click)="discordSettingsPopup(botData.id)">
+      <mat-card-content class="card-content">
+        <div class="startup-icon-wrapper">
+          <div class="fa-brands fa-discord startup-icon"></div>
+        </div>
+        <div class="content-wrapper">
+          <mat-card-title>Discord Settings</mat-card-title>
+          <span>Change discord settings.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!--  <div class="mat-card-wrapper">
+    <mat-card class="mat-card" (click)="botSettingsPopup(botData.id)">
+      <mat-card-content class="card-content">
+        <div class="startup-icon-wrapper"><div class="fa-solid fa-robot startup-icon"></div></div>
+        <div class="content-wrapper">
+          <mat-card-title>Bot Settings</mat-card-title>
+          <span>Change settings like auto accept group invites or inventory item.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div> -->
+</div>

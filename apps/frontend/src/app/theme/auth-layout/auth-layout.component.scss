@@ -23,3 +23,14 @@
     );
   background-size: 60px 60px;
 }
+
+.howto {
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  font-size: 20px;
+}
+
+.howto-text::before {
+  color: white;
+}

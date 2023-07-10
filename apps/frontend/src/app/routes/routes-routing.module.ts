@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { environment } from 'main/@env/environment';
-
 import { AuthGuard } from 'main/@core';
+import { environment } from 'main/@env/environment';
 import { AdminLayoutComponent } from '../theme/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from '../theme/auth-layout/auth-layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -27,6 +26,11 @@ const routes: Routes = [
       { path: '404', component: Error404Component },
       { path: '500', component: Error500Component },
     ],
+  },
+  {
+    path: 'howto',
+    loadChildren: () =>
+      import('./how-to/how-to.module').then((m) => m.HowToModule),
   },
   {
     path: 'auth',

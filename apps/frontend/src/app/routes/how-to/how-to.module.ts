@@ -3,13 +3,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from 'main/@shared';
 import { ThemeModule } from 'main/@theme/theme.module';
-import { DiscordBotSetupComponent } from './discord-bot-setup/discord-bot-setup.component';
+import { DiscordBotSetupComponent } from './how-to-layout/discord-bot-setup/discord-bot-setup.component';
 import { HowToLayoutComponent } from './how-to-layout/how-to-layout.component';
-import { HowToPackagesComponent } from './how-to-packages/how-to-packages.component';
-import { HowToRegisterComponent } from './how-to-register/how-to-register.component';
+import { HowToPackagesComponent } from './how-to-layout/how-to-packages/how-to-packages.component';
+import { HowToRegisterComponent } from './how-to-layout/how-to-register/how-to-register.component';
+import { MyBotsComponent } from './how-to-layout/my-bots/my-bots.component';
+import { SharedBotsComponent } from './how-to-layout/shared-bots/shared-bots.component';
 import { HowToComponent } from './how-to.component';
-import { MyBotsComponent } from './my-bots/my-bots.component';
-import { SharedBotsComponent } from './shared-bots/shared-bots.component';
 import { SidebarItemsComponent } from './sidebar-items/sidebar-items.component';
 
 const routes: Routes = [

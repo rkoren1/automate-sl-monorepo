@@ -7,35 +7,41 @@ import { of } from 'rxjs';
 export class SidebarItemsService {
   menu$ = of([
     {
-      route: '/',
-      name: 'menu.dashboard',
+      route: '/howto/register',
+      name: 'Register',
       type: 'link',
-      icon: 'dashboard',
+      icon: 'fa-solid fa-user-plus',
     },
     {
-      route: 'dashboard/',
-      name: 'menu.my-bots',
+      route: '/',
+      name: 'Add Bot',
       type: 'sub',
-      icon: 'person',
+      icon: 'fa-solid fa-users-line',
       children: [
         {
-          route: 'powergiga1-Resident',
-          name: 'powergiga1',
+          route: '/howto/my-bots',
+          name: 'Add your own bot',
+          icon: 'fa-solid fa-user-tie',
           type: 'link',
         },
         {
-          route: 'KaneFox-Resident',
-          name: 'KaneFox',
+          route: '/howto/shared-bots',
+          name: 'Add shared bot',
           type: 'link',
         },
       ],
     },
     {
-      route: 'dashboard/',
-      name: 'menu.shared-bots',
-      type: 'sub',
-      icon: 'people',
-      children: [],
+      route: '/howto/packages',
+      name: 'Packages',
+      type: 'link',
+      icon: 'fa-solid fa-cubes',
+    },
+    {
+      route: '/howto/discord-chat-relay',
+      name: 'Discord chat relay',
+      type: 'link',
+      icon: 'fa-brands fa-discord',
     },
   ]);
   constructor() {}

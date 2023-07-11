@@ -5,7 +5,11 @@ import { SharedModule } from 'main/@shared';
 import { ThemeModule } from 'main/@theme/theme.module';
 import { DiscordBotSetupComponent } from './discord-bot-setup/discord-bot-setup.component';
 import { HowToLayoutComponent } from './how-to-layout/how-to-layout.component';
+import { HowToPackagesComponent } from './how-to-packages/how-to-packages.component';
+import { HowToRegisterComponent } from './how-to-register/how-to-register.component';
 import { HowToComponent } from './how-to.component';
+import { MyBotsComponent } from './my-bots/my-bots.component';
+import { SharedBotsComponent } from './shared-bots/shared-bots.component';
 import { SidebarItemsComponent } from './sidebar-items/sidebar-items.component';
 
 const routes: Routes = [
@@ -14,8 +18,24 @@ const routes: Routes = [
     component: HowToComponent,
     children: [
       {
-        path: 'discord-setup',
+        path: 'discord-chat-relay',
         component: DiscordBotSetupComponent,
+      },
+      {
+        path: 'packages',
+        component: HowToPackagesComponent,
+      },
+      {
+        path: 'register',
+        component: HowToRegisterComponent,
+      },
+      {
+        path: 'my-bots',
+        component: MyBotsComponent,
+      },
+      {
+        path: 'shared-bots',
+        component: SharedBotsComponent,
       },
     ],
   },
@@ -37,6 +57,10 @@ const routes: Routes = [
     HowToLayoutComponent,
     DiscordBotSetupComponent,
     SidebarItemsComponent,
+    HowToRegisterComponent,
+    HowToPackagesComponent,
+    MyBotsComponent,
+    SharedBotsComponent,
   ],
 })
 export class HowToModule {}

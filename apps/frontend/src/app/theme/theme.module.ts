@@ -44,6 +44,13 @@ import { UserComponent } from './widgets/user/user.component';
     UserComponent,
   ],
   imports: [SharedModule],
-  exports: [SidebarComponent, FooterComponent, HeaderComponent],
+  exports: [
+    SidebarComponent,
+    FooterComponent,
+    HeaderComponent,
+    NavAccordionDirective,
+    NavAccordionItemDirective,
+    NavAccordionToggleDirective,
+  ],
 })
 export class ThemeModule {}

@@ -6,6 +6,7 @@ import { ThemeModule } from 'main/@theme/theme.module';
 import { DiscordBotSetupComponent } from './discord-bot-setup/discord-bot-setup.component';
 import { HowToLayoutComponent } from './how-to-layout/how-to-layout.component';
 import { HowToComponent } from './how-to.component';
+import { SidebarItemsComponent } from './sidebar-items/sidebar-items.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,7 @@ const routes: Routes = [
     HowToComponent,
     HowToLayoutComponent,
     DiscordBotSetupComponent,
+    SidebarItemsComponent,
   ],
 })
 export class HowToModule {}

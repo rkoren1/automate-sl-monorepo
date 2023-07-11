@@ -1,0 +1,13 @@
+.center-text {
+  text-align: center;
+}
+.images {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.image {
+}
+:host {
+  width: 100%;
+}

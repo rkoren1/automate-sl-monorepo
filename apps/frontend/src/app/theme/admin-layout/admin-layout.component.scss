@@ -7,12 +7,13 @@
 .matero-container {
   height: 100%;
 }
-
-.matero-content {
+/* .matero-content {
   position: relative;
   padding: variables.$gutter;
   width: 100%;
-}
+  display: flex;
+  flex-direction: column;
+} */
 
 .matero-sidenav {
   position: absolute;
@@ -164,6 +165,10 @@
   background: #212121;
   height: 5rem;
   width: 100%;
-  position: absolute;
+  position: sticky;
   bottom: 0;
+}
+
+.spacer {
+  flex: 1;
 }

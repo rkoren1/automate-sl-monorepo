@@ -6,7 +6,10 @@
       <mat-card class="bot">
         <mat-card-header class="icons">
           <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
-          <div class="fa-solid fa-arrows-rotate refresh-icon" (click)="refreshBot(bot.id)"></div>
+          <div
+            class="fa-solid fa-arrows-rotate refresh-icon"
+            (click)="refreshBot(bot.id)"
+          ></div>
           <div
             class="fa-solid fa-gear gear-icon"
             (click)="manageBot(bot.loginName, bot.loginLastName)"
@@ -16,12 +19,20 @@
           <div class="img-wrapper">
             <img
               class="avatar-image"
-              [src]="'https://picture-service.secondlife.com/' + bot.imageId + '/256x192.jpg'"
+              [src]="
+                'https://picture-service.secondlife.com/' +
+                bot.imageId +
+                '/256x192.jpg'
+              "
             />
           </div>
           <div class="bot-name">{{ bot.loginName }}</div>
           <button
-            [class]="bot.running ? 'fa-solid fa-pause start-icon' : 'fa-solid fa-play start-icon'"
+            [class]="
+              bot.running
+                ? 'fa-solid fa-pause start-icon'
+                : 'fa-solid fa-play start-icon'
+            "
             [disabled]="!bot.validSubscription"
             (click)="startStopBot(bot.id, bot.running)"
           ></button>
@@ -36,7 +47,10 @@
       <mat-card class="bot">
         <div class="icons">
           <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
-          <div class="fa-solid fa-arrows-rotate refresh-icon" (click)="refreshBot(bot.id)"></div>
+          <div
+            class="fa-solid fa-arrows-rotate refresh-icon"
+            (click)="refreshBot(bot.id)"
+          ></div>
           <div
             class="fa-solid fa-gear gear-icon"
             (click)="manageBot(bot.loginName, bot.loginLastName)"
@@ -45,7 +59,11 @@
         <div class="img-wrapper">
           <img
             class="avatar-image"
-            [src]="'https://picture-service.secondlife.com/' + bot.imageId + '/256x192.jpg'"
+            [src]="
+              'https://picture-service.secondlife.com/' +
+              bot.imageId +
+              '/256x192.jpg'
+            "
           />
         </div>
         <div class="bot-name">{{ bot.loginName }}</div>

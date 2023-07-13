@@ -90,6 +90,8 @@
 }
 .matero-content-wrap {
   display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 // Layout control
@@ -173,8 +175,11 @@
 
 .footer {
   background: #212121;
-  height: 5rem;
-  width: 100%;
-  position: absolute;
+  position: sticky;
   bottom: 0;
+  left: 0;
+}
+
+.spacer {
+  flex: 1;
 }

@@ -26,7 +26,11 @@
       <app-sidebar-notice></app-sidebar-notice>
     </mat-sidenav>
 
-    <mat-sidenav-content #content class="matero-content-wrap">
+    <mat-sidenav-content
+      #content
+      class="matero-content-wrap"
+      style="display: flex; flex-direction: column"
+    >
       <app-header
         [showToggle]="!options.sidenavCollapsed"
         (toggleSidenav)="sidenav.toggle()"
@@ -34,9 +38,8 @@
       >
       </app-header>
 
-      <div class="matero-content">
-        <router-outlet></router-outlet>
-      </div>
+      <router-outlet></router-outlet>
+      <div class="spacer"></div>
       <app-footer class="footer"></app-footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

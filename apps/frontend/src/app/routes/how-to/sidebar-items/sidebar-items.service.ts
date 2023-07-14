@@ -20,13 +20,13 @@ export class SidebarItemsService {
       children: [
         {
           route: '/howto/my-bots',
-          name: 'Add your own bot',
+          name: 'Add Your Own Bot',
           icon: 'fa-solid fa-user-tie',
           type: 'link',
         },
         {
           route: '/howto/shared-bots',
-          name: 'Add shared bot',
+          name: 'Add Shared Bot',
           type: 'link',
         },
       ],
@@ -39,7 +39,7 @@ export class SidebarItemsService {
     },
     {
       route: '/howto/discord-chat-relay',
-      name: 'Discord chat relay',
+      name: 'Discord Chat Relay',
       type: 'link',
       icon: 'fa-brands fa-discord',
     },

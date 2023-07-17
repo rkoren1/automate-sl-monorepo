@@ -22,7 +22,7 @@ export class SubscriptionPopupComponent implements OnInit {
       package: string;
       botId: number;
     },
-    private dialogRef: MatDialogRef<SubscriptionPopupComponent>
+    private dialogRef: MatDialogRef<SubscriptionPopupComponent>,
   ) {
     this.initForm();
   }
@@ -31,7 +31,7 @@ export class SubscriptionPopupComponent implements OnInit {
     this.subscriptionPopupService.getPackages().subscribe((packages) => {
       this.packages = packages;
       this.packages = this.packages.filter(
-        (ele) => ele.packageName !== 'Free Trial'
+        (ele) => ele.packageName !== 'Free Trial',
       );
     });
   }
@@ -50,7 +50,7 @@ export class SubscriptionPopupComponent implements OnInit {
     if (this.currentPackage.packageId > 1) {
       this.subscriptionForm.controls.packageName.disable();
       this.subscriptionForm.controls.packageName.setValue(
-        this.currentPackage.packageId
+        this.currentPackage.packageId,
       );
     }
   }
@@ -58,7 +58,7 @@ export class SubscriptionPopupComponent implements OnInit {
     const formData = this.subscriptionForm.value;
     this.subscriptionPopupService
       .payForPackage({
-        packageId: formData.packageName!,
+        packageId: formData.packageName || this.currentPackage.packageId,
         dateUnit: formData.dateUnit!,
         amountOfDateUnits: formData.quantityOfDateUnits!,
         botId: this.currentPackage.botId,
@@ -79,11 +79,10 @@ export class SubscriptionPopupComponent implements OnInit {
   getPackagePrice() {
     const selectedPackage = this.subscriptionForm.get('packageName')?.value;
     const dateUnit = this.subscriptionForm.get('dateUnit')?.value;
-    const numberOfDateUnits = this.subscriptionForm.get(
-      'quantityOfDateUnits'
-    )?.value;
+    const numberOfDateUnits = this.subscriptionForm.get('quantityOfDateUnits')
+      ?.value;
     const packageInformation: Package[] = this.packages.filter(
-      (pack) => pack.id == selectedPackage
+      (pack) => pack.id == selectedPackage,
     );
     if (packageInformation[0] && dateUnit === 'Week') {
       return (numberOfDateUnits || 0) * packageInformation[0].pricePerWeek;

@@ -17,6 +17,7 @@ import { SharedBotModule } from './modules/shared-bot/shared-bot.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { UserModule } from './modules/user/user.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UserModule } from './modules/user/user.module';
     DiscordSettingsModule,
     BotLogModule,
     AuthModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService, InitService],

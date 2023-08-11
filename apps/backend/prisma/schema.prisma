@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @default(autoincrement()) @id
+  email String  @unique
+  password  String
+  refreshToken String?
+  lDolBalance Int
+  uuid String @unique
+  avatarName String
+  bots Bot[]
+}
+
+model Bot {
+  id        Int      @default(autoincrement()) @id
+  loginFirstName     String
+  loginLastName String
+  loginPassword String
+  loginSpawnLocation String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  running Boolean @default(false)
+  loginRegion String?
+  packageId Int
+  uuid String
+  imageId String?
+  actionId Int
+}

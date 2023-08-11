@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 
 @Injectable()
 export class UserService {

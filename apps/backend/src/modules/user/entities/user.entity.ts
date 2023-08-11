@@ -1,45 +1,41 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BotDb } from '../../bot/entities/bot.entity';
 import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
-@Table({ underscored: true, tableName: 'user' })
-export class User extends Model<User> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity({ name: 'user' })
+export class User {
+  @PrimaryGeneratedColumn()
   id: number;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    nullable: false,
   })
   email: string;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    nullable: false,
   })
   password: string;
   @Column({
-    type: DataType.STRING,
+    name: 'refresh_token',
   })
   refreshToken: string;
   @Column({
-    type: DataType.INTEGER,
+    name: 'l$_balance',
   })
   l$Balance: number;
   @Column({
-    type: DataType.STRING,
-    unique: 'uuid',
+    unique: true,
   })
   uuid: string;
   @Column({
-    type: DataType.STRING,
+    name: 'avatar_name',
   })
   avatarName: string;
 
-  @HasMany(() => BotDb, 'userId')
-  bot: BotDb[];
+  @OneToMany(() => BotDb, (bot) => bot.userId)
+  bots: BotDb[];
 
-  @HasMany(() => SharedBotUserSubscription, 'userId')
+  @OneToMany(
+    () => SharedBotUserSubscription,
+    (sharedBotUserSubscription) => sharedBotUserSubscription.userId,
+  )
   sharedBotUserSubscriptions: SharedBotUserSubscription[];
 }

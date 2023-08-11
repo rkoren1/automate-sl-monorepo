@@ -1,93 +1,88 @@
 import * as crypto from 'crypto';
 import {
-  BelongsTo,
+  AfterLoad,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Subscription } from '../../subscription/entities/subscription.entity';
 import { User } from '../../user/entities/user.entity';
 
-@Table({ underscored: true, tableName: 'bot' })
-export class BotDb extends Model<BotDb> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity({ name: 'bot' })
+export class BotDb {
+  @PrimaryGeneratedColumn()
   id: number;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    nullable: false,
+    name: 'login_first_name',
   })
   loginFirstName: string;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    nullable: false,
+    name: 'login_last_name',
   })
   loginLastName: string;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    get() {
-      const rawValue = this.getDataValue('loginPassword');
-      if (rawValue) return decrypt(rawValue);
-    },
-    set(value) {
-      this.setDataValue('loginPassword', encrypt(value));
-    },
+    nullable: false,
+    name: 'login_password',
   })
   loginPassword: string;
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    nullable: false,
+    name: 'login_spawn_location',
   })
   loginSpawnLocation: string;
   @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+    nullable: false,
+    name: 'user_id',
   })
   userId: number;
   @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
+    nullable: false,
   })
   running: boolean;
   @Column({
-    type: DataType.BOOLEAN,
-    allowNull: true,
-  })
-  shouldRun: boolean;
-  @Column({
-    type: DataType.STRING,
+    name: 'login_region',
   })
   loginRegion: string;
   @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
+    nullable: true,
+    name: 'package_id',
   })
   packageId: number;
   @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+    nullable: false,
   })
   uuid: string;
   @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+    nullable: false,
+    name: 'image_id',
   })
   imageId: string;
   @Column({
-    type: DataType.INTEGER,
+    name: 'action_id',
   })
   actionId: number;
 
-  @BelongsTo(() => User, 'userId')
+  @BeforeInsert()
+  @BeforeUpdate()
+  beforeBotupsert() {
+    this.loginPassword = encrypt(this.loginPassword);
+  }
+
+  @AfterLoad()
+  afterGetBot() {
+    this.loginPassword = decrypt(this.loginPassword);
+  }
+
+  @ManyToOne(() => User, (user) => user.id)
   user: User;
 
-  @HasMany(() => Subscription, 'botId')
+  @OneToMany(() => Subscription, (subscription) => subscription.botId)
   subscriptions: Subscription[];
 }
 
@@ -96,7 +91,7 @@ function encrypt(text) {
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -109,7 +104,7 @@ function decrypt(encryptedData: string) {
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
 
   let decrypted = decipher.update(encryptedText);

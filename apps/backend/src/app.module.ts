@@ -1,5 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import dotenv from 'dotenv';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +20,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { UserModule } from './modules/user/user.module';
 
+dotenv.config();
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -36,6 +39,16 @@ import { UserModule } from './modules/user/user.module';
     DiscordSettingsModule,
     BotLogModule,
     AuthModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      synchronize: false,
+      autoLoadEntities: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, InitService],

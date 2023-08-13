@@ -20,8 +20,10 @@ import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { BotDb } from './entities/bot.entity';
+import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class BotService {
+  constructor(private prisma: PrismaService) {}
   botInstances = new Array<SmartBot | BasicDiscBot>();
   slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();

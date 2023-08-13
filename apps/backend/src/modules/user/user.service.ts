@@ -3,12 +3,12 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
+  constructor(private prisma: PrismaService) {}
+  /*  create(createUserDto: CreateUserDto) {
     return User.create({
       email: createUserDto.email,
       password: createUserDto.password,
@@ -31,52 +31,41 @@ export class UserService {
           };
         }
       });
-  }
-  authenticate(
+  } */
+  async authenticate(
     authenticateUserDto: AuthenticateUserDto,
   ): Promise<AuthenticateUserRes> {
-    return new Promise((resolve, reject) => {
-      User.findOne({
-        attributes: ['id', 'email', 'password'],
-        where: { email: authenticateUserDto.email },
-      })
-        .then((user) => {
-          if (!user) return reject({ message: 'invalid credentials' });
-          bcrypt
-            .compare(authenticateUserDto.password, user.password)
-            .then((result) => {
-              if (result === true) {
-                const accessToken = jwt.sign(
-                  { id: user.id, email: user.email },
-                  process.env.ACCESS_TOKEN_SECRET,
-                  { expiresIn: '300s' }, //usually 5min
-                );
-                const refreshToken = jwt.sign(
-                  { id: user.id, email: user.email },
-                  process.env.REFRESH_TOKEN_SECRET,
-                  { expiresIn: '1d' },
-                );
-                //save refreshToken in db
-                User.update(
-                  { refreshToken: refreshToken },
-                  { where: { email: authenticateUserDto.email } },
-                )
-                  .then((updateResult) =>
-                    resolve({
-                      email: user.email,
-                      authenticated: true,
-                      access_token: accessToken,
-                      refresh_token: refreshToken,
-                    }),
-                  )
-                  .catch((err) => reject(err));
-              } else {
-                return reject({ authenticated: false });
-              }
-            })
-            .catch((err) => reject(err));
-        })
-        .catch((err) => reject(err));
+    const user = await this.prisma.user.findFirstOrThrow({
+      where: { email: authenticateUserDto.email },
     });
+    const result = await bcrypt.compare(
+      authenticateUserDto.password,
+      user.password,
+    );
+    if (result) {
+      const accessToken = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: '300s' }, //usually 5min
+      );
+      const refreshToken = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: '1d' },
+      );
+      //save refreshToken in db
+      await this.prisma.user.update({
+        data: { refreshToken },
+        where: { email: authenticateUserDto.email },
+      });
+      return {
+        email: user.email,
+        authenticated: true,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      };
+    } else {
+      return { authenticated: false };
+    }
   }
 }

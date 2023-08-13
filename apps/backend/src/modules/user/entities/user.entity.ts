@@ -1,45 +1,44 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { BotDb } from '../../bot/entities/bot.entity';
 import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
-@Table({ underscored: true, tableName: 'user' })
-export class User extends Model<User> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+@Entity()
+export class User {
+  @PrimaryKey({
+    type: 'int',
+    autoincrement: true,
   })
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   email: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   password: string;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   refreshToken: string;
-  @Column({
-    type: DataType.INTEGER,
+  @Property({
+    type: 'int',
   })
   l$Balance: number;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
     unique: 'uuid',
   })
   uuid: string;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   avatarName: string;
-
-  @HasMany(() => BotDb, 'userId')
-  bot: BotDb[];
-
-  @HasMany(() => SharedBotUserSubscription, 'userId')
-  sharedBotUserSubscriptions: SharedBotUserSubscription[];
 }

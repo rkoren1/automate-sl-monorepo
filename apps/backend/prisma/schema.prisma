@@ -11,19 +11,19 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
+  id Int @default(autoincrement()) @id
   email String  @unique
   password  String
   refreshToken String?
-  lDolBalance Int
-  uuid String @unique
-  avatarName String
-  bots Bot[]
+  lDolBalance Int?
+  uuid String? @unique
+  avatarName String?
+  bots BotDb[]
 }
 
-model Bot {
-  id        Int      @default(autoincrement()) @id
-  loginFirstName     String
+model BotDb {
+  id Int @default(autoincrement()) @id
+  loginFirstName String
   loginLastName String
   loginPassword String
   loginSpawnLocation String

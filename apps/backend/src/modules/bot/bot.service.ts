@@ -20,8 +20,10 @@ import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { BotDb } from './entities/bot.entity';
+import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class BotService {
+  constructor(private prisma: PrismaService) {}
   botInstances = new Array<SmartBot | BasicDiscBot>();
   slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
@@ -44,7 +46,7 @@ export class BotService {
       this.slAccountExists(
         createBotDto.loginFirstName,
         createBotDto.loginLastName,
-        createBotDto.loginPassword
+        createBotDto.loginPassword,
       ).then((uuid) => {
         if (!uuid) return reject({ exists: false });
 
@@ -86,7 +88,7 @@ export class BotService {
                 console.error(err);
                 return reject(err);
               });
-          }
+          },
         );
       });
     });
@@ -236,7 +238,7 @@ export class BotService {
                       options,
                       user,
                       bot,
-                      discordSettings[0]
+                      discordSettings[0],
                     );
                     return workerBot
                       .login()
@@ -246,7 +248,7 @@ export class BotService {
                         this.botInstances[botId] = workerBot;
                         return BotDb.update(
                           { running: true },
-                          { where: { id: botId, userId: userId } }
+                          { where: { id: botId, userId: userId } },
                         )
                           .then((result) => resolve(result))
                           .catch((err) => reject(err));
@@ -261,7 +263,7 @@ export class BotService {
                       loginParameters,
                       options,
                       user,
-                      bot
+                      bot,
                     );
                     return workerBot
                       .login()
@@ -270,7 +272,7 @@ export class BotService {
                         this.botInstances[botId] = workerBot;
                         return BotDb.update(
                           { running: true },
-                          { where: { id: botId, userId: userId } }
+                          { where: { id: botId, userId: userId } },
                         )
                           .then((result) => resolve(result))
                           .catch((err) => {
@@ -283,7 +285,7 @@ export class BotService {
                         return reject(err);
                       });
                   }
-                }
+                },
               );
             })
             .catch((err) => {
@@ -305,7 +307,7 @@ export class BotService {
           this.botInstances[botId].isConnected = false;
           return BotDb.update(
             { running: false },
-            { where: { id: botId, userId: userId } }
+            { where: { id: botId, userId: userId } },
           )
             .then((result) => resolve(result))
             .catch((err) => reject(err));
@@ -379,7 +381,7 @@ export class BotService {
           loginRegion: data.loginRegion,
           loginSpawnLocation: data.loginSpawnLocation,
         },
-        { where: { id: data.botId } }
+        { where: { id: data.botId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
@@ -392,14 +394,14 @@ export class BotService {
         if (!this.botInstances[botId] && bot.running) {
           return BotDb.update(
             { running: false },
-            { where: { id: botId } }
+            { where: { id: botId } },
           ).then(() => resolve(true));
         }
         //else check if bot is offline and set running to false
         if (this.botInstances[botId]?.isConnected) {
           return BotDb.update(
             { running: false },
-            { where: { id: botId } }
+            { where: { id: botId } },
           ).then(() => resolve(true));
         }
         return resolve(true);

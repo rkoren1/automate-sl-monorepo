@@ -17,9 +17,11 @@ import { SharedBotModule } from './modules/shared-bot/shared-bot.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { UserModule } from './modules/user/user.module';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 @Module({
   imports: [
+    MikroOrmModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, './automatesl.client'),
     }),

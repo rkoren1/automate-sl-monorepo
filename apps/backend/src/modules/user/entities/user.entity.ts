@@ -1,12 +1,4 @@
-import { BotDb } from '../../bot/entities/bot.entity';
-import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
-import {
-  Collection,
-  Entity,
-  OneToMany,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 @Entity()
 export class User {
   @PrimaryKey({
@@ -41,4 +33,20 @@ export class User {
     type: 'string',
   })
   avatarName: string;
+
+  constructor(
+    email: string,
+    password: string,
+    refreshToken?: string,
+    l$Balance?: number,
+    uuid?: string,
+    avatarName?: string,
+  ) {
+    this.email = email;
+    this.password = password;
+    this.refreshToken = refreshToken;
+    this.l$Balance = l$Balance;
+    this.uuid = uuid;
+    this.avatarName = avatarName;
+  }
 }

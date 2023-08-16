@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import {
   AfterLoad,
+  BaseEntity,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -13,7 +14,7 @@ import { Subscription } from '../../subscription/entities/subscription.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'bot' })
-export class BotDb {
+export class BotDb extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({

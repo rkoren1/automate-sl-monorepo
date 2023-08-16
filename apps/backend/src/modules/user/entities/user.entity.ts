@@ -1,8 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BotDb } from '../../bot/entities/bot.entity';
 import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 @Entity({ name: 'user' })
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({

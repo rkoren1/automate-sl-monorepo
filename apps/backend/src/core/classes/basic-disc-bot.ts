@@ -13,7 +13,7 @@ export class BasicDiscBot extends BaseBot {
     options: BotOptionFlags,
     user: User,
     bot: BotDb,
-    discParams: DiscordSettings
+    discParams: DiscordSettings,
   ) {
     super(login, options, user, bot);
     this.relayGroupChatToDisc(discParams.webHookUrl, discParams.slGroupUuid);
@@ -25,7 +25,7 @@ export class BasicDiscBot extends BaseBot {
       if (message.channelId === channelId && !message.author.bot) {
         this.clientCommands.comms.sendGroupMessage(
           slGroupId,
-          '[Discord] ' + message.author.username + ': ' + message.content
+          '[Discord] ' + message.author.username + ': ' + message.content,
         );
       }
     });
@@ -34,12 +34,12 @@ export class BasicDiscBot extends BaseBot {
     this.clientEvents.onGroupChat.subscribe((groupChat) => {
       if (
         groupChat.message.startsWith('[Discord]') ||
-        groupChat.groupID.toString() !== groupUuid
+        groupChat.groupID?.toString() !== groupUuid
       ) {
         return;
       }
       urlMetadata(
-        'https://world.secondlife.com/resident/' + groupChat.from.toString()
+        'https://world.secondlife.com/resident/' + groupChat.from?.toString(),
       ).then((metadata: any) => {
         const body = {
           content: groupChat.message,

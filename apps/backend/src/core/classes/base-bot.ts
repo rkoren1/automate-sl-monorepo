@@ -20,7 +20,7 @@ export class BaseBot extends Bot {
     login: LoginParameters,
     options: BotOptionFlags,
     user: User,
-    bot: BotDb
+    bot: BotDb,
   ) {
     super(login, options);
     this.botData = bot;
@@ -45,12 +45,12 @@ export class BaseBot extends Bot {
     // Catches uncaught exceptions
     process.on(
       'uncaughtException',
-      this.exitHandler.bind(this, { exit: true })
+      this.exitHandler.bind(this, { exit: true }),
     );
   }
   async exitHandler(
     options: { exit?: boolean },
-    err: Error | number | Signals
+    err: Error | number | Signals,
   ) {
     if (err && err instanceof Error) {
       console.log(err.stack);
@@ -87,7 +87,7 @@ export class BaseBot extends Bot {
           .then(() => {
             BotDb.update(
               { running: true, shouldRun: false },
-              { where: { id: this.botData.id } }
+              { where: { id: this.botData.id } },
             );
           });
       }
@@ -104,7 +104,7 @@ export class BaseBot extends Bot {
       if (res.requested === false) {
         BotDb.update(
           { running: false, shouldRun: true },
-          { where: { id: this.botData.id } }
+          { where: { id: this.botData.id } },
         );
         //after 5min log bot back in, make log and set running true and should_run false
         setTimeout(() => {
@@ -113,7 +113,7 @@ export class BaseBot extends Bot {
             .then(() => {
               BotDb.update(
                 { running: true, shouldRun: false },
-                { where: { id: this.botData.id } }
+                { where: { id: this.botData.id } },
               );
               BotLog.create({
                 name: login.firstName + ' ' + login.lastName,
@@ -129,7 +129,7 @@ export class BaseBot extends Bot {
 
   private acceptOwnerTeleport() {
     this.clientEvents.onLure.subscribe((teleport) => {
-      if (teleport.from.toString() === this.ownerUUID) {
+      if (teleport.from?.toString() === this.ownerUUID) {
         this.clientCommands.teleport.acceptTeleport(teleport);
       }
     });
@@ -144,8 +144,8 @@ export class BaseBot extends Bot {
       (messageEvent: InstantMessageEvent) => {
         if (messageEvent.message === '') return;
         if (
-          messageEvent.from.toString() !== this.ownerUUID &&
-          messageEvent.owner.toString() !== this.ownerUUID
+          messageEvent.from?.toString() !== this.ownerUUID &&
+          messageEvent.owner?.toString() !== this.ownerUUID
         ) {
           if (
             messageEvent.source === 1 &&
@@ -153,7 +153,7 @@ export class BaseBot extends Bot {
           ) {
             this.clientCommands.comms.sendInstantMessage(
               messageEvent.from,
-              "I'm sorry, but the Bot's commands are restricted to certain users with higher permissions. At this time, you do not have those permissions."
+              "I'm sorry, but the Bot's commands are restricted to certain users with higher permissions. At this time, you do not have those permissions.",
             );
           }
           return;
@@ -167,14 +167,14 @@ export class BaseBot extends Bot {
             if (commandParams.length !== 2) {
               this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
-                'Invalid Command!'
+                'Invalid Command!',
               );
               break;
             }
             if (!isUuidValid(commandParams[0])) {
               this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
-                'Invalid UUID!'
+                'Invalid UUID!',
               );
               break;
             }
@@ -184,7 +184,7 @@ export class BaseBot extends Bot {
                 ); */
             this.clientCommands.comms.sendInstantMessage(
               commandParams[0],
-              commandParams[1]
+              commandParams[1],
             );
             break;
           }
@@ -200,7 +200,7 @@ export class BaseBot extends Bot {
                 +commandParams[2],
                 +commandParams[3],
               ]),
-              Vector3.getZero()
+              Vector3.getZero(),
             );
             break;
           }
@@ -211,7 +211,7 @@ export class BaseBot extends Bot {
           case 'group_im': {
             this.clientCommands.comms.sendGroupMessage(
               commandParams[0],
-              commandParams[1]
+              commandParams[1],
             );
             break;
           }
@@ -219,14 +219,14 @@ export class BaseBot extends Bot {
             if (commandParams.length !== 3) {
               this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
-                'Invalid Command!'
+                'Invalid Command!',
               );
               break;
             }
             this.clientCommands.group.sendGroupNotice(
               commandParams[0],
               commandParams[1],
-              commandParams[2]
+              commandParams[2],
             );
             break;
           }
@@ -234,26 +234,26 @@ export class BaseBot extends Bot {
             if (commandParams.length !== 3) {
               this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
-                'Invalid Command!'
+                'Invalid Command!',
               );
               break;
             }
             this.clientCommands.group.sendGroupInvite(
               commandParams[0],
               commandParams[1],
-              commandParams[2]
+              commandParams[2],
             );
             break;
           }
           default: {
             this.clientCommands.comms.sendInstantMessage(
               messageEvent.from,
-              'Invalid Command!'
+              'Invalid Command!',
             );
             break;
           }
         }
-      }
+      },
     );
   }
   private acceptGroupInvites() {

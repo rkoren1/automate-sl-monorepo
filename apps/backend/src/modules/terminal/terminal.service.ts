@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
@@ -13,6 +14,7 @@ import { TerminalOwner } from './entities/terminal-owner.entity';
 
 @Injectable()
 export class TerminalService {
+  constructor(private em: EntityManager) {}
   getAllBotsFromUserUuid(uuid: string) {
     return new Promise((resolve, reject) => {
       return BotDb.findAll({
@@ -42,7 +44,7 @@ export class TerminalService {
         botId: data.botId,
         packageId: data.packageId,
       })
-        .then((result) => resolve(endDate))
+        .then(() => resolve(endDate))
         .catch((err) => reject(err));
     });
   }
@@ -52,28 +54,22 @@ export class TerminalService {
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < length; i++) {
       password += characters.charAt(
-        Math.floor(Math.random() * characters.length)
+        Math.floor(Math.random() * characters.length),
       );
     }
     return password;
   }
-  terminalRegister(data) {
-    return new Promise((resolve, reject) => {
-      bcrypt.hash(data.password, 10).then((hashedPass) => {
-        return User.create({
-          email: data.email,
-          uuid: data.uuid,
-          avatarName: data.avatarName,
-          password: hashedPass,
-          l$Balance: 0,
-        })
-          .then((result) => resolve(data.password))
-          .catch((err) => {
-            console.error(err);
-            return reject(err);
-          });
-      });
+  async terminalRegister(data) {
+    const hashedPass = await bcrypt.hash(data.password, 10);
+    const newUser = this.em.create(User, {
+      email: data.email,
+      uuid: data.uuid,
+      avatarName: data.avatarName,
+      password: hashedPass,
+      l$Balance: 0,
     });
+    await this.em.persistAndFlush(newUser);
+    return data.password;
   }
   addTerminal(data) {
     return new Promise((resolve, reject) => {
@@ -88,21 +84,14 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
-  isRegistered(uuid: string) {
-    return new Promise((resolve, reject) => {
-      return User.findOne({ attributes: ['id'], where: { uuid: uuid } })
-        .then((user) => {
-          if (user) return resolve(user);
-          return resolve(null);
-        })
-        .catch((err) => reject(err));
-    });
+  async isRegistered(uuid: string) {
+    return await this.em.findOneOrFail(User, { uuid: uuid });
   }
   updateTerminalActivity = (data) => {
     return new Promise((resolve, reject) => {
       return TerminalOwner.update(
         { lastActive: data.lastActive },
-        { where: { id: data.terminalId } }
+        { where: { id: data.terminalId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
@@ -119,55 +108,40 @@ export class TerminalService {
           slUrl: data.slUrl,
           lastActive: today,
         },
-        { where: { id: data.terminalId } }
+        { where: { id: data.terminalId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }
-  setUserPassword(userUUID: string, password: string) {
-    return new Promise((resolve, reject) => {
-      bcrypt.hash(password, 10).then((hashedPass) => {
-        User.update({ password: hashedPass }, { where: { uuid: userUUID } })
-          .then((res) => {
-            User.findOne({ where: { uuid: userUUID } })
-              .then((user) => {
-                return resolve(user);
-              })
-              .catch((err) => reject(err));
-          })
-          .catch((err) => reject(err));
-      });
-    });
+  async setUserPassword(userUUID: string, password: string) {
+    const hashedPass = await bcrypt.hash(password, 10);
+    const user = await this.em.findOneOrFail(User, { uuid: userUUID });
+    user.password = hashedPass;
+    await this.em.persistAndFlush(user);
+    return user;
   }
-  addBalance = (data: AddBalanceBodyDto) => {
-    return new Promise((resolve, reject) => {
-      PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
-      User.findOne({ where: { uuid: data.UUID } }).then((user) => {
-        const newBalance = user.l$Balance + data.lDollarAmount;
-        User.update({ l$Balance: newBalance }, { where: { uuid: data.UUID } })
-          .then((res) => resolve(newBalance))
-          .catch((err) => reject(err));
-      });
-    });
+  addBalance = async (data: AddBalanceBodyDto) => {
+    PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
+    const user = await this.em.findOneOrFail(User, { uuid: data.UUID });
+    user.l$Balance += data.lDollarAmount;
+    await this.em.persistAndFlush(user);
+    return user.l$Balance;
   };
-  getBalance(uuid: string) {
-    return User.findOne({
-      attributes: ['l$Balance'],
-      where: { uuid: uuid },
-    }).then((user) => {
-      if (user)
-        return {
-          result: Result.OK,
-          resulttext: 'get_balance_success',
-          custom: { balance: user.l$Balance },
-        };
-      else
-        return {
-          result: Result.FAIL,
-          resulttext: 'get_balance_fail',
-          custom: { balance: -1 },
-        };
-    });
+
+  async getBalance(uuid: string) {
+    const user = await this.em.findOneOrFail(User, { uuid: uuid });
+    if (user)
+      return {
+        result: Result.OK,
+        resulttext: 'get_balance_success',
+        custom: { balance: user.l$Balance },
+      };
+    else
+      return {
+        result: Result.FAIL,
+        resulttext: 'get_balance_fail',
+        custom: { balance: -1 },
+      };
   }
 }

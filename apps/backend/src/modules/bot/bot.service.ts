@@ -3,6 +3,7 @@ import {
   BotOptionFlags,
   LoginParameters,
 } from '@caspertech/node-metaverse';
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable } from '@nestjs/common';
 import { forkJoin } from 'rxjs';
 import { Op } from 'sequelize';
@@ -23,6 +24,8 @@ import { BotDb } from './entities/bot.entity';
 @Injectable()
 export class BotService {
   botInstances = new Array<SmartBot | BasicDiscBot>();
+
+  constructor(private em: EntityManager) {}
   slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
     loginParams.firstName = firstName;
@@ -44,7 +47,7 @@ export class BotService {
       this.slAccountExists(
         createBotDto.loginFirstName,
         createBotDto.loginLastName,
-        createBotDto.loginPassword
+        createBotDto.loginPassword,
       ).then((uuid) => {
         if (!uuid) return reject({ exists: false });
 
@@ -86,7 +89,7 @@ export class BotService {
                 console.error(err);
                 return reject(err);
               });
-          }
+          },
         );
       });
     });
@@ -203,7 +206,7 @@ export class BotService {
         ],
         where: { id: botId, userId: userId },
       })
-        .then((bot) => {
+        .then(async (bot) => {
           if (
             bot.loginFirstName === null ||
             bot.loginPassword === null ||
@@ -222,74 +225,69 @@ export class BotService {
             BotOptionFlags.StoreMyAttachmentsOnly;
 
           //get User uuid
-          User.findOne({
-            attributes: ['uuid', 'avatarName'],
-            where: { id: userId },
-          })
-            .then((user) => {
-              DiscordSettings.findAll({ where: { botId: botId } }).then(
-                (discordSettings) => {
-                  if (discordSettings.length > 0) {
-                    //start bot
-                    const workerBot = new BasicDiscBot(
-                      loginParameters,
-                      options,
-                      user,
-                      bot,
-                      discordSettings[0]
-                    );
-                    return workerBot
-                      .login()
-                      .then(() => workerBot.connectToSim())
-                      .then(() => {
-                        workerBot.isConnected = true;
-                        this.botInstances[botId] = workerBot;
-                        return BotDb.update(
-                          { running: true },
-                          { where: { id: botId, userId: userId } }
-                        )
-                          .then((result) => resolve(result))
-                          .catch((err) => reject(err));
-                      })
-                      .catch((err: Error) => {
+          const user = await this.em.findOneOrFail(
+            User,
+            { id: userId },
+            { fields: ['uuid', 'avatarName'] },
+          );
+          DiscordSettings.findAll({ where: { botId: botId } }).then(
+            (discordSettings) => {
+              if (discordSettings.length > 0) {
+                //start bot
+                const workerBot = new BasicDiscBot(
+                  loginParameters,
+                  options,
+                  user,
+                  bot,
+                  discordSettings[0],
+                );
+                return workerBot
+                  .login()
+                  .then(() => workerBot.connectToSim())
+                  .then(() => {
+                    workerBot.isConnected = true;
+                    this.botInstances[botId] = workerBot;
+                    return BotDb.update(
+                      { running: true },
+                      { where: { id: botId, userId: userId } },
+                    )
+                      .then((result) => resolve(result))
+                      .catch((err) => reject(err));
+                  })
+                  .catch((err: Error) => {
+                    console.error(err);
+                    return reject(err);
+                  });
+              } else {
+                //start bot
+                const workerBot = new SmartBot(
+                  loginParameters,
+                  options,
+                  user,
+                  bot,
+                );
+                return workerBot
+                  .login()
+                  .then(() => workerBot.connectToSim())
+                  .then(() => {
+                    this.botInstances[botId] = workerBot;
+                    return BotDb.update(
+                      { running: true },
+                      { where: { id: botId, userId: userId } },
+                    )
+                      .then((result) => resolve(result))
+                      .catch((err) => {
                         console.error(err);
                         return reject(err);
                       });
-                  } else {
-                    //start bot
-                    const workerBot = new SmartBot(
-                      loginParameters,
-                      options,
-                      user,
-                      bot
-                    );
-                    return workerBot
-                      .login()
-                      .then(() => workerBot.connectToSim())
-                      .then(() => {
-                        this.botInstances[botId] = workerBot;
-                        return BotDb.update(
-                          { running: true },
-                          { where: { id: botId, userId: userId } }
-                        )
-                          .then((result) => resolve(result))
-                          .catch((err) => {
-                            console.error(err);
-                            return reject(err);
-                          });
-                      })
-                      .catch((err: Error) => {
-                        console.error(err);
-                        return reject(err);
-                      });
-                  }
-                }
-              );
-            })
-            .catch((err) => {
-              console.error(err);
-              return reject(err);
-            });
+                  })
+                  .catch((err: Error) => {
+                    console.error(err);
+                    return reject(err);
+                  });
+              }
+            },
+          );
         })
         .catch((err) => {
           console.error(err);
@@ -305,7 +303,7 @@ export class BotService {
           this.botInstances[botId].isConnected = false;
           return BotDb.update(
             { running: false },
-            { where: { id: botId, userId: userId } }
+            { where: { id: botId, userId: userId } },
           )
             .then((result) => resolve(result))
             .catch((err) => reject(err));
@@ -379,7 +377,7 @@ export class BotService {
           loginRegion: data.loginRegion,
           loginSpawnLocation: data.loginSpawnLocation,
         },
-        { where: { id: data.botId } }
+        { where: { id: data.botId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
@@ -392,14 +390,14 @@ export class BotService {
         if (!this.botInstances[botId] && bot.running) {
           return BotDb.update(
             { running: false },
-            { where: { id: botId } }
+            { where: { id: botId } },
           ).then(() => resolve(true));
         }
         //else check if bot is offline and set running to false
         if (this.botInstances[botId]?.isConnected) {
           return BotDb.update(
             { running: false },
-            { where: { id: botId } }
+            { where: { id: botId } },
           ).then(() => resolve(true));
         }
         return resolve(true);

@@ -1,19 +1,23 @@
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 
 @Injectable()
 export class UserService {
+  constructor(private em: EntityManager) {}
   create(createUserDto: CreateUserDto) {
-    return User.create({
+    const newUser = this.em.create(User, {
       email: createUserDto.email,
       password: createUserDto.password,
-    })
-      .then((res) => ({
+    });
+    this.em
+      .persistAndFlush(newUser)
+      .then(() => ({
         success: true,
         message: 'Succesfuly created new user',
       }))
@@ -36,10 +40,12 @@ export class UserService {
     authenticateUserDto: AuthenticateUserDto,
   ): Promise<AuthenticateUserRes> {
     return new Promise((resolve, reject) => {
-      User.findOne({
-        attributes: ['id', 'email', 'password'],
-        where: { email: authenticateUserDto.email },
-      })
+      this.em
+        .findOne(
+          User,
+          { email: authenticateUserDto.email },
+          { fields: ['id', 'email', 'password'] },
+        )
         .then((user) => {
           if (!user) return reject({ message: 'invalid credentials' });
           bcrypt
@@ -57,11 +63,10 @@ export class UserService {
                   { expiresIn: '1d' },
                 );
                 //save refreshToken in db
-                User.update(
-                  { refreshToken: refreshToken },
-                  { where: { email: authenticateUserDto.email } },
-                )
-                  .then((updateResult) =>
+                user.refreshToken = refreshToken;
+                this.em
+                  .persistAndFlush(user)
+                  .then(() =>
                     resolve({
                       email: user.email,
                       authenticated: true,

@@ -6,7 +6,11 @@
     "all": "npx nx run-many --target=serve --all --maxParallel=100"
   },
   "mikro-orm": {
-    "useTsNode": true
+    "useTsNode": true,
+    "configPaths": [
+      "./apps/backend/src/mikro-orm.config.ts",
+      "./dist/apps/backend/mikro-orm.config.js"
+    ]
   },
   "private": true,
   "dependencies": {

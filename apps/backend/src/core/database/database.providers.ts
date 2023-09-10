@@ -10,7 +10,6 @@ import { SharedBot } from '../../modules/shared-bot/entities/shared-bot.entity';
 import { Subscription } from '../../modules/subscription/entities/subscription.entity';
 import { TerminalOwner } from '../../modules/terminal/entities/terminal-owner.entity';
 import { Terminal } from '../../modules/terminal/entities/terminal.entity';
-import { User } from '../../modules/user/entities/user.entity';
 import { databaseConfig } from './database.config';
 
 export const databaseProviders = [
@@ -34,7 +33,6 @@ export const databaseProviders = [
       const sequelize = new Sequelize(config);
       console.log(sequelize.models);
       sequelize.addModels([
-        User,
         Terminal,
         BotDb,
         SharedBot,

@@ -3,6 +3,7 @@ import {
   BotOptionFlags,
   LoginParameters,
 } from '@caspertech/node-metaverse';
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable } from '@nestjs/common';
 import { forkJoin } from 'rxjs';
 import { Op } from 'sequelize';
@@ -23,6 +24,8 @@ import { BotDb } from './entities/bot.entity';
 @Injectable()
 export class BotService {
   botInstances = new Array<SmartBot | BasicDiscBot>();
+
+  constructor(private em: EntityManager) {}
   slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
     loginParams.firstName = firstName;
@@ -213,7 +216,7 @@ export class BotService {
         ],
         where: { id: botId, userId: userId },
       })
-        .then((bot) => {
+        .then(async (bot) => {
           if (
             bot.loginFirstName === null ||
             bot.loginPassword === null ||

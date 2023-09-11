@@ -1,6 +1,6 @@
-import * as dotenv from 'dotenv';
 import { Options, UnderscoreNamingStrategy } from '@mikro-orm/core';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 const mikroOrmConfig: Options = {
@@ -10,8 +10,6 @@ const mikroOrmConfig: Options = {
   user: 'root',
   password: 'secondlifedev123',
   dbName: 'automatesl',
-  entities: ['dist/modules/**/entities/*.entity.js'],
-  entitiesTs: ['src/modules/user/entities/user.entity.ts'],
   namingStrategy: UnderscoreNamingStrategy,
   migrations: {
     path: './migrations',

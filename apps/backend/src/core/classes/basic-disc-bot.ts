@@ -1,6 +1,6 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import fetch from 'node-fetch';
-import urlMetadata from 'url-metadata';
+import * as urlMetadata from 'url-metadata';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
 import { User } from '../../modules/user/entities/user.entity';

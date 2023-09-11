@@ -1,12 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { discClient } from './core/services/discord-bot.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log();
   app.use(cookieParser());
   app.setGlobalPrefix('/api');
   app.enableCors({

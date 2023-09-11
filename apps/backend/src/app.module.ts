@@ -1,3 +1,4 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -6,6 +7,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './core/database/database.module';
 import { JwtMiddleware } from './core/guards/jwt/jwt.middleware';
 import { InitService } from './init.service';
+import mikroOrmConfig from './mikro-orm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { BotLogModule } from './modules/bot-log/bot-log.module';
 import { BotModule } from './modules/bot/bot.module';
@@ -16,12 +18,17 @@ import { SharedBotUserSubscriptionModule } from './modules/shared-bot-user-subsc
 import { SharedBotModule } from './modules/shared-bot/shared-bot.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
+import { User } from './modules/user/entities/user.entity';
 import { UserModule } from './modules/user/user.module';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 @Module({
   imports: [
-    MikroOrmModule.forRoot(),
+    MikroOrmModule.forRoot({
+      ...mikroOrmConfig,
+      autoLoadEntities: true,
+      entities: [User],
+      discovery: { disableDynamicFileAccess: true },
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, './automatesl.client'),
     }),

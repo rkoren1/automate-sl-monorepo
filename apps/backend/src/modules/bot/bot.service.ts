@@ -7,7 +7,7 @@ import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable } from '@nestjs/common';
 import { forkJoin } from 'rxjs';
 import { Op } from 'sequelize';
-import urlMetadata from 'url-metadata';
+import * as urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
 import { DiscordSettings } from '../discord-settings/entities/discord-setting.entity';

@@ -1,6 +1,6 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import fetch from 'node-fetch';
-import urlMetadata from 'url-metadata';
+import * as urlMetadata from 'url-metadata';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
 import { User } from '../../modules/user/entities/user.entity';
@@ -13,7 +13,7 @@ export class BasicDiscBot extends BaseBot {
     options: BotOptionFlags,
     user: User,
     bot: BotDb,
-    discParams: DiscordSettings
+    discParams: DiscordSettings,
   ) {
     super(login, options, user, bot);
     this.relayGroupChatToDisc(discParams.webHookUrl, discParams.slGroupUuid);
@@ -25,7 +25,7 @@ export class BasicDiscBot extends BaseBot {
       if (message.channelId === channelId && !message.author.bot) {
         this.clientCommands.comms.sendGroupMessage(
           slGroupId,
-          '[Discord] ' + message.author.username + ': ' + message.content
+          '[Discord] ' + message.author.username + ': ' + message.content,
         );
       }
     });
@@ -39,7 +39,7 @@ export class BasicDiscBot extends BaseBot {
         return;
       }
       urlMetadata(
-        'https://world.secondlife.com/resident/' + groupChat.from.toString()
+        'https://world.secondlife.com/resident/' + groupChat.from.toString(),
       ).then((metadata: any) => {
         const body = {
           content: groupChat.message,

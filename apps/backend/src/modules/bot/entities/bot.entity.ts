@@ -1,98 +1,92 @@
+import {
+  Collection,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import * as crypto from 'crypto';
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Subscription } from '../../subscription/entities/subscription.entity';
+import { User } from '../../user/entities/user.entity';
 
-@Table({ underscored: true, tableName: 'bot' })
+@Entity()
 export class BotDb extends Model<BotDb> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+  @PrimaryKey()
   id: number;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginFirstName: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginLastName: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    get() {
-      const rawValue = this.getDataValue('loginPassword');
-      if (rawValue) return decrypt(rawValue);
-    },
-    set(value: string) {
-      this.setDataValue('loginPassword', encrypt(value));
-    },
-  })
+  @Property({ type: 'string', nullable: false })
   loginPassword: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    name: 'loginPassword',
+  })
+  set encryptPassword(pass) {
+    this.loginPassword = encrypt(pass);
+  }
+  @Property({
+    persist: false,
+  })
+  get decryptedPassword() {
+    if (this.loginPassword) return decrypt(this.loginPassword);
+  }
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginSpawnLocation: string;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   userId: number;
-
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
+  @Property({
+    type: 'boolean',
+    nullable: false,
   })
   running: boolean;
-
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: true,
+  @Property({
+    type: 'boolean',
+    nullable: true,
   })
   shouldRun: boolean;
-
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   loginRegion: string;
-
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
+  @Property({
+    type: 'int',
+    nullable: true,
   })
   packageId: number;
-
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   uuid: string;
-
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   imageId: string;
-
-  @Column({
-    type: DataType.INTEGER,
+  @Property({
+    type: 'int',
   })
   actionId: number;
 
-  /*  @BelongsTo(() => User, 'userId')
-  user: User; */
+  @ManyToOne(() => User)
+  user: User;
 
-  @HasMany(() => Subscription, 'botId')
-  subscriptions: Subscription[];
+  @OneToMany(() => Subscription, (subscription) => subscription.botId)
+  subscriptions = new Collection<Subscription>(this);
 }
 
 function encrypt(text: string) {

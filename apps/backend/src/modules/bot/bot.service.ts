@@ -57,18 +57,20 @@ export class BotService {
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
 
-            BotDb.create({
+            const createBot = this.em.create(BotDb, {
               userId: createBotDto.userId,
               loginFirstName: createBotDto.loginFirstName,
               loginLastName: createBotDto.loginLastName,
-              loginPassword: createBotDto.loginPassword,
+              encryptPassword: createBotDto.loginPassword,
               running: false,
               shouldRun: false,
               loginSpawnLocation: createBotDto.loginSpawnLocation,
               loginRegion: createBotDto.loginRegion,
               uuid: uuid,
               imageId: metadata.imageid,
-            })
+            });
+            this.em
+              .persistAndFlush(createBot)
               .then((bot) => {
                 BotDb.findAll({
                   where: { userId: createBotDto.userId },

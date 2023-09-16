@@ -15,18 +15,14 @@ import { TerminalOwner } from './entities/terminal-owner.entity';
 @Injectable()
 export class TerminalService {
   constructor(private em: EntityManager) {}
-  getAllBotsFromUserUuid(uuid: string) {
-    return new Promise((resolve, reject) => {
-      return BotDb.findAll({
-        attributes: ['id', 'loginFirstName', 'running', 'imageId', 'packageId'],
-        where: {
-          uuid: uuid,
-        },
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
+
+  async getAllBotsFromUserUuid(uuid: string) {
+    const bots = await this.em.find(BotDb, {
+      uuid: uuid,
     });
+    return bots;
   }
+
   paySubscription(data: PaySubscriptionDto) {
     return new Promise((resolve, reject) => {
       const today = new Date();

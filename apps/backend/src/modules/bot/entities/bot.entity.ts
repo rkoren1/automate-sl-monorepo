@@ -11,7 +11,7 @@ import { Subscription } from '../../subscription/entities/subscription.entity';
 import { User } from '../../user/entities/user.entity';
 
 @Entity()
-export class BotDb extends Model<BotDb> {
+export class BotDb {
   @PrimaryKey()
   id: number;
   @Property({

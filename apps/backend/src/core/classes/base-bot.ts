@@ -5,6 +5,7 @@ import {
   LoginParameters,
   Vector3,
 } from '@caspertech/node-metaverse';
+import { EntityManager } from '@mikro-orm/core';
 import cron from 'node-cron';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
@@ -22,6 +23,7 @@ export class BaseBot extends Bot {
     options: BotOptionFlags,
     user: User,
     bot: BotDb,
+    private em?: EntityManager,
   ) {
     super(login, options);
     this.botData = bot;
@@ -72,7 +74,7 @@ export class BaseBot extends Bot {
     }
   }
   private pingBot(login: LoginParameters) {
-    BotDb.findOne({ where: { uuid: this.botData.uuid } }).then((resBot) => {
+    this.em.findOne(BotDb, { uuid: this.botData.uuid }).then((resBot) => {
       if (
         (this.currentRegion === undefined || this.currentRegion === null) &&
         (resBot.shouldRun || resBot.running)
@@ -104,7 +106,7 @@ export class BaseBot extends Bot {
     });
   }
   private onDiscconectLogToDb(login: LoginParameters) {
-    this.clientEvents.onDisconnected.subscribe((res) => {
+    this.clientEvents.onDisconnected.subscribe(async (res) => {
       BotLog.create({
         name: login.firstName + ' ' + login.lastName,
         botUuid: this.botData.uuid,
@@ -112,19 +114,18 @@ export class BaseBot extends Bot {
         event: 'disconnect',
       });
       if (res.requested === false) {
-        BotDb.update(
-          { running: false, shouldRun: true },
-          { where: { id: this.botData.id } },
-        );
-        //after 2.5min log bot back in, make log and set running true and should_run false
-        /* setTimeout(() => {
+        const bot = await this.em.findOne(BotDb, { id: this.botData.id });
+        bot.running = false;
+        bot.shouldRun = true;
+        this.em.persistAndFlush(bot);
+        //after 5min log bot back in, make log and set running true and should_run false
+        setTimeout(() => {
           this.login()
             .then(() => this.connectToSim())
             .then(() => {
-              BotDb.update(
-                { running: true, shouldRun: false },
-                { where: { id: this.botData.id } },
-              );
+              bot.running = true;
+              bot.shouldRun = false;
+              this.em.persistAndFlush(bot);
               BotLog.create({
                 name: login.firstName + ' ' + login.lastName,
                 botUuid: this.botData.uuid,

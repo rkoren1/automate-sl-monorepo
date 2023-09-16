@@ -37,8 +37,8 @@ export class Subscription extends Model<Subscription> {
   })
   botId: number;
 
-  @BelongsTo(() => BotDb, 'botId')
-  bot: BotDb;
+  /*   @BelongsTo(() => BotDb, 'botId')
+  bot: BotDb; */
   @BelongsTo(() => Package, 'packageId')
   package: Package;
 }

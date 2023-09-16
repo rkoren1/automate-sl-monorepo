@@ -57,7 +57,7 @@ export class BotService {
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
 
-            const createBot = this.em.create(BotDb, {
+            const bot = this.em.create(BotDb, {
               userId: createBotDto.userId,
               loginFirstName: createBotDto.loginFirstName,
               loginLastName: createBotDto.loginLastName,
@@ -70,22 +70,22 @@ export class BotService {
               imageId: metadata.imageid,
             });
             this.em
-              .persistAndFlush(createBot)
-              .then((bot) => {
-                BotDb.findAll({
-                  where: { userId: createBotDto.userId },
-                }).then((userBots) => {
-                  //if this is the only bot give 3 days of free subscription
-                  if (userBots.length < 2) {
-                    Subscription.create({
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: after3Days,
-                      packageId: 1,
-                      botId: bot.id,
-                    }).catch((err) => console.error(err));
-                  }
-                  return resolve(metadata.imageid);
-                });
+              .persistAndFlush(bot)
+              .then(() => {
+                this.em
+                  .find(BotDb, { userId: createBotDto.userId })
+                  .then((userBots) => {
+                    //if this is the only bot give 3 days of free subscription
+                    if (userBots.length < 2) {
+                      Subscription.create({
+                        subscriptionStart: currentDate,
+                        subscriptionEnd: after3Days,
+                        packageId: 1,
+                        botId: bot.id,
+                      }).catch((err) => console.error(err));
+                    }
+                    return resolve(metadata.imageid);
+                  });
               })
               .catch((err) => {
                 console.error(err);
@@ -101,7 +101,9 @@ export class BotService {
     return new Promise((resolve, reject) => {
       const currentDate = new Date();
       forkJoin([
-        BotDb.findAll({
+        this.em.find(BotDb, { userId: userId }),
+        //TODO fix subscription
+        /*  BotDb.findAll({
           attributes: [
             'id',
             'loginFirstName',
@@ -116,7 +118,7 @@ export class BotService {
             required: false,
           },
           where: { userId: userId },
-        }),
+        }), */
         SharedBot.findAll({
           attributes: [
             'id',
@@ -163,8 +165,16 @@ export class BotService {
       });
     });
   }
-  getBotConfiguration(data) {
-    return new Promise((resolve, reject) => {
+  async getBotConfiguration(data) {
+    const bot = await this.em.findOne(BotDb, {
+      loginFirstName: data.botFirstName,
+      loginLastName: data.botLastName,
+      userId: data.userId,
+    });
+    return bot;
+    //TODO fix subsriction
+    /* return new Promise((resolve, reject) => {
+
       return BotDb.findOne({
         attributes: [
           'id',
@@ -192,126 +202,91 @@ export class BotService {
           console.error(err);
           return reject(err);
         });
-    });
+    }); */
   }
-  startBot(botId: number, userId: number) {
-    return new Promise((resolve, reject) => {
-      return BotDb.findOne({
-        attributes: [
-          'id',
-          'loginFirstName',
-          'loginLastName',
-          'loginPassword',
-          'loginSpawnLocation',
-          'loginRegion',
-          'uuid',
-        ],
-        where: { id: botId, userId: userId },
-      })
-        .then(async (bot) => {
-          if (
-            bot.loginFirstName === null ||
-            bot.loginPassword === null ||
-            bot.loginSpawnLocation === null
-          )
-            return resolve({ changedRows: 0 });
+  async startBot(botId: number, userId: number) {
+    const bot = await this.em.findOne(BotDb, { id: botId, userId: userId });
+    if (
+      bot.loginFirstName === null ||
+      bot.loginPassword === null ||
+      bot.loginSpawnLocation === null
+    )
+      return { changedRows: 0 };
 
-          const loginParameters = new LoginParameters();
-          loginParameters.firstName = bot.loginFirstName;
-          loginParameters.lastName = bot.loginLastName;
-          loginParameters.password = bot.loginPassword;
-          loginParameters.start = bot.loginSpawnLocation; //region/x/y/z or home or last
+    const loginParameters = new LoginParameters();
+    loginParameters.firstName = bot.loginFirstName;
+    loginParameters.lastName = bot.loginLastName;
+    loginParameters.password = bot.loginPassword;
+    loginParameters.start = bot.loginSpawnLocation; //region/x/y/z or home or last
 
-          const options =
-            BotOptionFlags.LiteObjectStore |
-            BotOptionFlags.StoreMyAttachmentsOnly;
+    const options =
+      BotOptionFlags.LiteObjectStore | BotOptionFlags.StoreMyAttachmentsOnly;
 
-          //get User uuid
-          const user = await this.em.findOneOrFail(
-            User,
-            { id: userId },
-            { fields: ['uuid', 'avatarName'] },
+    //get User uuid
+    const user = await this.em.findOneOrFail(
+      User,
+      { id: userId },
+      { fields: ['uuid', 'avatarName'] },
+    );
+    DiscordSettings.findAll({ where: { botId: botId } }).then(
+      (discordSettings) => {
+        if (discordSettings.length > 0) {
+          //start bot
+          const workerBot = new BasicDiscBot(
+            loginParameters,
+            options,
+            user,
+            bot,
+            discordSettings[0],
           );
-          DiscordSettings.findAll({ where: { botId: botId } }).then(
-            (discordSettings) => {
-              if (discordSettings.length > 0) {
-                //start bot
-                const workerBot = new BasicDiscBot(
-                  loginParameters,
-                  options,
-                  user,
-                  bot,
-                  discordSettings[0],
-                );
-                return workerBot
-                  .login()
-                  .then(() => workerBot.connectToSim())
-                  .then(() => {
-                    workerBot.isConnected = true;
-                    this.botInstances[botId] = workerBot;
-                    return BotDb.update(
-                      { running: true },
-                      { where: { id: botId, userId: userId } },
-                    )
-                      .then((result) => resolve(result))
-                      .catch((err) => reject(err));
-                  })
-                  .catch((err: Error) => {
-                    console.error(err);
-                    return reject(err);
-                  });
-              } else {
-                //start bot
-                const workerBot = new SmartBot(
-                  loginParameters,
-                  options,
-                  user,
-                  bot,
-                );
-                return workerBot
-                  .login()
-                  .then(() => workerBot.connectToSim())
-                  .then(() => {
-                    this.botInstances[botId] = workerBot;
-                    return BotDb.update(
-                      { running: true },
-                      { where: { id: botId, userId: userId } },
-                    )
-                      .then((result) => resolve(result))
-                      .catch((err) => {
-                        console.error(err);
-                        return reject(err);
-                      });
-                  })
-                  .catch((err: Error) => {
-                    console.error(err);
-                    return reject(err);
-                  });
-              }
-            },
-          );
-        })
-        .catch((err) => {
-          console.error(err);
-          return reject(err);
-        });
-    });
+          return workerBot
+            .login()
+            .then(() => workerBot.connectToSim())
+            .then(async () => {
+              workerBot.isConnected = true;
+              this.botInstances[botId] = workerBot;
+              bot.running = true;
+              await this.em.persistAndFlush(bot);
+              return bot;
+            })
+            .catch((err: Error) => {
+              console.error(err);
+              return err;
+            });
+        } else {
+          //start bot
+          const workerBot = new SmartBot(loginParameters, options, user, bot);
+          return workerBot
+            .login()
+            .then(() => workerBot.connectToSim())
+            .then(async () => {
+              this.botInstances[botId] = workerBot;
+              bot.running = true;
+              await this.em.persistAndFlush(bot);
+              return bot;
+            })
+            .catch((err: Error) => {
+              console.error(err);
+              return err;
+            });
+        }
+      },
+    );
   }
-  stopBot(botId: number, userId: number) {
-    return new Promise((resolve, reject) => {
-      return this.botInstances[botId]
-        .close()
-        .then(() => {
-          this.botInstances[botId].isConnected = false;
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId, userId: userId } },
-          )
-            .then((result) => resolve(result))
-            .catch((err) => reject(err));
-        })
-        .catch((err: Error) => reject(err));
-    });
+  async stopBot(botId: number, userId: number) {
+    try {
+      await this.botInstances[botId].close();
+      this.botInstances[botId].isConnected = false;
+      const bot = await this.em.findOneOrFail(BotDb, {
+        id: botId,
+        userId: userId,
+      });
+      bot.running = false;
+      await this.em.persistAndFlush(bot);
+      return await bot;
+    } catch (err) {
+      return err;
+    }
   }
   getSharedBots(userId: number) {
     return new Promise((resolve, reject) => {
@@ -372,38 +347,27 @@ export class BotService {
         .catch((err) => reject(err));
     });
   }
-  setBotConfiguration(data: SetBotConfigurationBodyDto) {
-    return new Promise((resolve, reject) => {
-      return BotDb.update(
-        {
-          loginRegion: data.loginRegion,
-          loginSpawnLocation: data.loginSpawnLocation,
-        },
-        { where: { id: data.botId } },
-      )
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async setBotConfiguration(data: SetBotConfigurationBodyDto) {
+    const bot = await this.em.findOneOrFail(BotDb, { id: data.botId });
+    bot.loginRegion = data.loginRegion;
+    bot.loginSpawnLocation = data.loginSpawnLocation;
+    await this.em.persistAndFlush(bot);
+    return bot;
   }
-  refreshBotStatus(botId: number) {
-    return new Promise((resolve, reject) => {
-      BotDb.findOne({ where: { id: botId } }).then((bot) => {
-        //if bot doesnt exist and is running set running to false
-        if (!this.botInstances[botId] && bot.running) {
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId } },
-          ).then(() => resolve(true));
-        }
-        //else check if bot is offline and set running to false
-        if (this.botInstances[botId]?.isConnected) {
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId } },
-          ).then(() => resolve(true));
-        }
-        return resolve(true);
-      });
-    });
+  async refreshBotStatus(botId: number) {
+    const bot = await this.em.findOne(BotDb, { id: botId });
+    //if bot doesnt exist and is running set running to false
+    if (!this.botInstances[botId] && bot.running) {
+      bot.running = false;
+      await this.em.persistAndFlush(bot);
+      return true;
+    }
+    //else check if bot is offline and set running to false
+    if (this.botInstances[botId]?.isConnected) {
+      bot.running = false;
+      await this.em.persistAndFlush(bot);
+      return true;
+    }
+    return true;
   }
 }

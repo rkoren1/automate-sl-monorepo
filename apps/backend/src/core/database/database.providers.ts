@@ -34,7 +34,6 @@ export const databaseProviders = [
       console.log(sequelize.models);
       sequelize.addModels([
         Terminal,
-        BotDb,
         SharedBot,
         Subscription,
         SharedBotUserSubscription,

@@ -68,43 +68,37 @@ export class TerminalService {
     return data.password;
   }
   async addTerminal(data) {
-    return await TerminalOwner.create({
+    const terminalOwner = this.em.create(TerminalOwner, {
       avatarName: data.avatarName,
       avatarUuid: data.avatarUUID,
       parcelName: data.parcelName,
       slUrl: data.slUrl,
       lastActive: data.lastActive,
-    })
-      .then((result) => result)
-      .catch((err) => err);
+    });
+    await this.em.persistAndFlush(terminalOwner);
+    return terminalOwner;
   }
   async isRegistered(uuid: string) {
     return await this.em.findOneOrFail(User, { uuid: uuid });
   }
   async updateTerminalActivity(data) {
-    return await TerminalOwner.update(
-      { lastActive: data.lastActive },
-      { where: { id: data.terminalId } },
-    )
-      .then((result) => result)
-      .catch((err) => err);
+    const terminalOwner = new TerminalOwner();
+    terminalOwner.id = data.terminalId;
+    await this.em.persistAndFlush(terminalOwner);
+    return terminalOwner;
   }
-  updateTerminalOwner(data: UpdateTerminalOwnerBodyDto) {
-    return new Promise((resolve, reject) => {
-      const today = new Date();
-      return TerminalOwner.update(
-        {
-          avatarName: data.avatarName,
-          avatarUuid: data.avatarUUID,
-          parcelName: data.parcelName,
-          slUrl: data.slUrl,
-          lastActive: today,
-        },
-        { where: { id: data.terminalId } },
-      )
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
+  async updateTerminalOwner(data: UpdateTerminalOwnerBodyDto) {
+    const today = new Date();
+    const terminalOwner = new TerminalOwner();
+    this.em.assign(terminalOwner, {
+      avatarName: data.avatarName,
+      avatarUuid: data.avatarUUID,
+      parcelName: data.parcelName,
+      slUrl: data.slUrl,
+      lastActive: today,
     });
+    await this.em.persistAndFlush(terminalOwner);
+    return terminalOwner;
   }
   async setUserPassword(userUUID: string, password: string) {
     const hashedPass = await bcrypt.hash(password, 10);
@@ -114,7 +108,11 @@ export class TerminalService {
     return user;
   }
   async addBalance(data: AddBalanceBodyDto) {
-    PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
+    const paymentLog = this.em.create(PaymentLog, {
+      userUuid: data.UUID,
+      amount: data.lDollarAmount,
+    });
+    this.em.persistAndFlush(paymentLog);
     const user = await this.em.findOneOrFail(User, { uuid: data.UUID });
     user.l$Balance += data.lDollarAmount;
     await this.em.persistAndFlush(user);

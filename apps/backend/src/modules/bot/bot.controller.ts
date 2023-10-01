@@ -216,7 +216,7 @@ export class BotController {
   getDiscordSettings(@Query() query: GetDiscordSettingsQueryDto, @Res() res) {
     return this.botService
       .getDiscordSettings(query.botId)
-      .then((result: GetDiscordSettingsResponseDto) => {
+      .then((result) => {
         return res.json(result);
       })
       .catch((err) => {

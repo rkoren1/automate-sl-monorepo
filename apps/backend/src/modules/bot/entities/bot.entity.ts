@@ -85,7 +85,7 @@ export class BotDb {
   @ManyToOne(() => User)
   user: User;
 
-  @OneToMany(() => Subscription, (subscription) => subscription.botId)
+  @OneToMany(() => Subscription, (subscription) => subscription.bot)
   subscriptions = new Collection<Subscription>(this);
 }
 

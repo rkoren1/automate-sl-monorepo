@@ -1,14 +1,14 @@
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Terminal } from './../../../modules/terminal/entities/terminal.entity';
 
 @Injectable()
 export class TerminalApikeyMiddleware implements NestMiddleware {
+  constructor(private em: EntityManager) {}
   use(req: any, res: any, next: () => void) {
     const apiKey = req.query.apiKey;
-    Terminal.findOne({
-      attributes: ['name', 'apiKey'],
-      where: { apiKey: apiKey },
-    })
+    this.em
+      .findOne(Terminal, { apiKey: apiKey }, { fields: ['name', 'apiKey'] })
       .then((terminal) => {
         if (terminal === undefined || apiKey !== terminal.apiKey) {
           return res.status(401).json({ message: 'Unauthorized' });

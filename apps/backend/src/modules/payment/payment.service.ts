@@ -37,10 +37,11 @@ export class PaymentService {
     }
 
     //Create log
-    PaymentLog.create({
+    const paymentLog = this.em.create(PaymentLog, {
       userUuid: user.uuid,
       amount: subscriptionCost,
     });
+    this.em.persistAndFlush(paymentLog);
 
     user.l$Balance -= subscriptionCost;
     await this.em.persistAndFlush(user);

@@ -81,16 +81,14 @@ export class TerminalService {
   async isRegistered(uuid: string) {
     return await this.em.findOneOrFail(User, { uuid: uuid });
   }
-  updateTerminalActivity = (data) => {
-    return new Promise((resolve, reject) => {
-      return TerminalOwner.update(
-        { lastActive: data.lastActive },
-        { where: { id: data.terminalId } },
-      )
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
-  };
+  async updateTerminalActivity(data) {
+    return await TerminalOwner.update(
+      { lastActive: data.lastActive },
+      { where: { id: data.terminalId } },
+    )
+      .then((result) => result)
+      .catch((err) => err);
+  }
   updateTerminalOwner(data: UpdateTerminalOwnerBodyDto) {
     return new Promise((resolve, reject) => {
       const today = new Date();

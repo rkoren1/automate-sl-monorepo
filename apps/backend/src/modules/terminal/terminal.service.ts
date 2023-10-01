@@ -115,13 +115,13 @@ export class TerminalService {
     await this.em.persistAndFlush(user);
     return user;
   }
-  addBalance = async (data: AddBalanceBodyDto) => {
+  async addBalance(data: AddBalanceBodyDto) {
     PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
     const user = await this.em.findOneOrFail(User, { uuid: data.UUID });
     user.l$Balance += data.lDollarAmount;
     await this.em.persistAndFlush(user);
     return user.l$Balance;
-  };
+  }
 
   async getBalance(uuid: string) {
     const user = await this.em.findOneOrFail(User, { uuid: uuid });

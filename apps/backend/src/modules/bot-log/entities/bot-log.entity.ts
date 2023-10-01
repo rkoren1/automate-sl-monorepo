@@ -1,31 +1,27 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Table({ underscored: true, tableName: 'bot_log' })
-export class BotLog extends Model<BotLog> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class BotLog {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   name: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   botUuid: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   message: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   event: string;
 }

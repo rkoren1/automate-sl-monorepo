@@ -1,28 +1,24 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Table({ underscored: true, tableName: 'discord_settings' })
-export class DiscordSettings extends Model<DiscordSettings> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class DiscordSettings {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   botId: number;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   webHookUrl: string;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   slGroupUuid: string;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   discChannelId: string;
 }

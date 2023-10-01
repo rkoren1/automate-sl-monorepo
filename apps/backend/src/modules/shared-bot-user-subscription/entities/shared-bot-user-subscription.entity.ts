@@ -1,36 +1,32 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Table({ underscored: true, tableName: 'shared_bot_user_subscription' })
-export class SharedBotUserSubscription extends Model<SharedBotUserSubscription> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class SharedBotUserSubscription {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   sharedBotId: number;
-  @Column({
-    type: DataType.DATE,
-    allowNull: true,
+  @Property({
+    type: 'date',
+    nullable: true,
   })
   subscriptionStart: Date;
-  @Column({
-    type: DataType.DATE,
-    allowNull: true,
+  @Property({
+    type: 'date',
+    nullable: true,
   })
   subscriptionEnd: Date;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   packageId: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   userId: number;
 }

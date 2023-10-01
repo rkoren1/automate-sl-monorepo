@@ -1,59 +1,64 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 
-@Table({ underscored: true, tableName: 'shared_bot' })
-export class SharedBot extends Model<SharedBot> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class SharedBot {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginFirstName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginLastName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginPassword: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   loginSpawnLocation: string;
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
+  @Property({
+    type: 'boolean',
+    nullable: false,
   })
   running: boolean;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   loginRegion: string;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
+  @Property({
+    type: 'int',
+    nullable: true,
   })
   packageId: number;
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   uuid: string;
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   imageId: string;
 
-  @HasMany(() => SharedBotUserSubscription, 'sharedBotId')
-  sharedBotUserSubscriptions: SharedBotUserSubscription;
+  @OneToMany(
+    () => SharedBotUserSubscription,
+    (sharedBotUserSubscription) => sharedBotUserSubscription.sharedBotId,
+  )
+  sharedBotUserSubscriptions = new Collection<SharedBotUserSubscription>(this);
 }

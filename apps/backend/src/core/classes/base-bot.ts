@@ -79,12 +79,13 @@ export class BaseBot extends Bot {
         (this.currentRegion === undefined || this.currentRegion === null) &&
         (resBot.shouldRun || resBot.running)
       ) {
-        BotLog.create({
+        const botLog = this.em.create(BotLog, {
           name: login.firstName + ' ' + login.lastName,
           botUuid: this.botData.uuid,
           message: 'Tried to reconnect bot automatically',
           event: 'auto-reconnect',
         });
+        this.em.persistAndFlush(botLog);
         this.close()
           .catch((err) =>
             console.log(
@@ -107,12 +108,13 @@ export class BaseBot extends Bot {
   }
   private onDiscconectLogToDb(login: LoginParameters) {
     this.clientEvents.onDisconnected.subscribe(async (res) => {
-      BotLog.create({
+      const botLog = this.em.create(BotLog, {
         name: login.firstName + ' ' + login.lastName,
         botUuid: this.botData.uuid,
         message: JSON.stringify(res),
         event: 'disconnect',
       });
+      this.em.persistAndFlush(botLog);
       if (res.requested === false) {
         const bot = await this.em.findOne(BotDb, { id: this.botData.id });
         bot.running = false;
@@ -126,12 +128,13 @@ export class BaseBot extends Bot {
               bot.running = true;
               bot.shouldRun = false;
               this.em.persistAndFlush(bot);
-              BotLog.create({
+              const botLog = this.em.create(BotLog, {
                 name: login.firstName + ' ' + login.lastName,
                 botUuid: this.botData.uuid,
                 message: 'Tried to reconnect bot automatically',
                 event: 'auto-reconnect',
               });
+              this.em.persistAndFlush(botLog);
             });
         }, 150000); */
       }

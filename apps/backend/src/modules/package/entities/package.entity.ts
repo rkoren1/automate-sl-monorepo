@@ -40,6 +40,6 @@ export class Package {
   })
   couponId: number;
 
-  @OneToMany(() => Subscription, (subscription) => subscription.packageId)
+  @OneToMany(() => Subscription, (subscription) => subscription.package)
   subscriptions = new Collection<Subscription>(this);
 }

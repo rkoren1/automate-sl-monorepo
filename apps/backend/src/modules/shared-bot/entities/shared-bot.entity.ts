@@ -58,7 +58,7 @@ export class SharedBot {
 
   @OneToMany(
     () => SharedBotUserSubscription,
-    (sharedBotUserSubscription) => sharedBotUserSubscription.sharedBotId,
+    (sharedBotUserSubscription) => sharedBotUserSubscription.sharedBot,
   )
   sharedBotUserSubscriptions = new Collection<SharedBotUserSubscription>(this);
 }

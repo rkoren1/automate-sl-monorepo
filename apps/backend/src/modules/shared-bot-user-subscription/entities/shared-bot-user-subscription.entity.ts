@@ -1,4 +1,5 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { SharedBot } from '../../shared-bot/entities/shared-bot.entity';
 
 @Entity()
 export class SharedBotUserSubscription {
@@ -29,4 +30,7 @@ export class SharedBotUserSubscription {
     nullable: false,
   })
   userId: number;
+
+  @ManyToOne(() => SharedBot)
+  sharedBot: SharedBot;
 }

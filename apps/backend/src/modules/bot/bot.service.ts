@@ -11,7 +11,6 @@ import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
 import { DiscordSettings } from '../discord-settings/entities/discord-setting.entity';
 import { Package } from '../package/entities/package.entity';
-import { SharedBotUserSubscription } from '../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { User } from '../user/entities/user.entity';
@@ -107,19 +106,20 @@ export class BotService {
           userId: userId,
           subscriptions: { subscriptionEnd: { $gt: currentDate } },
         }),
-        SharedBot.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: [
-            { model: SharedBotUserSubscription, where: { userId: userId } },
-          ],
-        }),
+        this.em.find(
+          SharedBot,
+          { sharedBotUserSubscriptions: { userId: userId } },
+          {
+            fields: [
+              'id',
+              'loginFirstName',
+              'loginLastName',
+              'running',
+              'uuid',
+              'imageId',
+            ],
+          },
+        ),
       ]).subscribe({
         next: (result) => {
           const response: GetBotDto = { my: [], shared: [] };
@@ -207,50 +207,49 @@ export class BotService {
       { id: userId },
       { fields: ['uuid', 'avatarName'] },
     );
-    DiscordSettings.findAll({ where: { botId: botId } }).then(
-      (discordSettings) => {
-        if (discordSettings.length > 0) {
-          //start bot
-          const workerBot = new BasicDiscBot(
-            loginParameters,
-            options,
-            user,
-            bot,
-            discordSettings[0],
-          );
-          return workerBot
-            .login()
-            .then(() => workerBot.connectToSim())
-            .then(async () => {
-              workerBot.isConnected = true;
-              this.botInstances[botId] = workerBot;
-              bot.running = true;
-              await this.em.persistAndFlush(bot);
-              return bot;
-            })
-            .catch((err: Error) => {
-              console.error(err);
-              return err;
-            });
-        } else {
-          //start bot
-          const workerBot = new SmartBot(loginParameters, options, user, bot);
-          return workerBot
-            .login()
-            .then(() => workerBot.connectToSim())
-            .then(async () => {
-              this.botInstances[botId] = workerBot;
-              bot.running = true;
-              await this.em.persistAndFlush(bot);
-              return bot;
-            })
-            .catch((err: Error) => {
-              console.error(err);
-              return err;
-            });
-        }
-      },
-    );
+    const discordSettings = await this.em.find(DiscordSettings, {
+      botId: botId,
+    });
+    if (discordSettings.length > 0) {
+      //start bot
+      const workerBot = new BasicDiscBot(
+        loginParameters,
+        options,
+        user,
+        bot,
+        discordSettings[0],
+      );
+      return workerBot
+        .login()
+        .then(() => workerBot.connectToSim())
+        .then(async () => {
+          workerBot.isConnected = true;
+          this.botInstances[botId] = workerBot;
+          bot.running = true;
+          await this.em.persistAndFlush(bot);
+          return bot;
+        })
+        .catch((err: Error) => {
+          console.error(err);
+          return err;
+        });
+    } else {
+      //start bot
+      const workerBot = new SmartBot(loginParameters, options, user, bot);
+      return workerBot
+        .login()
+        .then(() => workerBot.connectToSim())
+        .then(async () => {
+          this.botInstances[botId] = workerBot;
+          bot.running = true;
+          await this.em.persistAndFlush(bot);
+          return bot;
+        })
+        .catch((err: Error) => {
+          console.error(err);
+          return err;
+        });
+    }
   }
   async stopBot(botId: number, userId: number) {
     try {
@@ -267,10 +266,12 @@ export class BotService {
       return err;
     }
   }
-  getSharedBots(userId: number) {
-    return new Promise((resolve, reject) => {
-      SharedBot.findAll({
-        attributes: [
+  async getSharedBots(userId: number) {
+    return await this.em.find(
+      SharedBot,
+      { sharedBotUserSubscriptions: { userId: userId } },
+      {
+        fields: [
           'id',
           'loginFirstName',
           'loginLastName',
@@ -278,41 +279,30 @@ export class BotService {
           'uuid',
           'imageId',
         ],
-        include: [
-          { model: SharedBotUserSubscription, where: { userId: userId } },
-        ],
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+      },
+    );
   }
   async getPackages() {
     const packages = await this.em.find(Package, {});
     return packages;
   }
 
-  getDiscordSettings(botId: number) {
-    return new Promise((resolve, reject) => {
-      return DiscordSettings.findAll({
-        attributes: ['id', 'webHookUrl', 'slGroupUuid', 'discChannelId'],
-        where: { botId: botId },
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async getDiscordSettings(botId: number) {
+    return await this.em.find(
+      DiscordSettings,
+      { botId: botId },
+      { fields: ['id', 'webHookUrl', 'slGroupUuid', 'discChannelId'] },
+    );
   }
-  setDiscordSettings(data: SetDiscordSettingsBodyDto) {
-    return new Promise((resolve, reject) => {
-      return DiscordSettings.upsert({
-        id: data.id,
-        botId: data.botId,
-        discChannelId: data.discChannelId,
-        webHookUrl: data.webHookUrl,
-        slGroupUuid: data.slGroupUuid,
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
+  async setDiscordSettings(data: SetDiscordSettingsBodyDto) {
+    const discSettings = await this.em.upsert(DiscordSettings, {
+      id: data.id,
+      botId: data.botId,
+      discChannelId: data.discChannelId,
+      webHookUrl: data.webHookUrl,
+      slGroupUuid: data.slGroupUuid,
     });
+    return discSettings;
   }
   async setBotConfiguration(data: SetBotConfigurationBodyDto) {
     const bot = await this.em.findOneOrFail(BotDb, { id: data.botId });

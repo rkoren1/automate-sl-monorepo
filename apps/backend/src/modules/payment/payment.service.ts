@@ -19,8 +19,8 @@ export class PaymentService {
   async payForPackage(data: any) {
     let subscriptionCost: number;
     const user = await this.em.findOneOrFail(User, { id: data.packageId });
-    const selectedPackage = await Package.findOne({
-      where: { id: data.packageId },
+    const selectedPackage = await this.em.findOne(Package, {
+      id: data.packageId,
     });
     switch (data.dateUnit) {
       case 'Week':
@@ -46,82 +46,81 @@ export class PaymentService {
     await this.em.persistAndFlush(user);
 
     //removes free trial if exists for this bot
-    Subscription.destroy({
-      where: { packageId: 1, botId: data.botId },
-    })
-      .then(() => {
-        Subscription.findOne({ where: { botId: data.botId } }).then((sub) => {
-          const currentDate = new Date();
+    const freeTrialSub = await this.em.findOne(Subscription, {
+      packageId: 1,
+      botId: data.botId,
+    });
+    await this.em.removeAndFlush(freeTrialSub);
+    const subscription = await this.em.findOne(Subscription, {
+      botId: data.botId,
+    });
+    const currentDate = new Date();
 
-          //updates subscription if it already exists, otherwise it should create it
-          if (sub) {
-            let endDate = sub.subscriptionEnd;
-            switch (data.dateUnit) {
-              case 'Week':
-                endDate = addDaysToDate(endDate, data.amountOfDateUnits * 7);
-                break;
-              case 'Month':
-                endDate = addMonthsToDate(endDate, data.amountOfDateUnits);
-                break;
-            }
-            //updates subscription length
-            return Subscription.update(
-              {
-                subscriptionStart: currentDate,
-                subscriptionEnd: endDate,
-              },
-              {
-                where: {
-                  botId: data.botId,
-                  packageId: data.packageId,
-                },
-              },
-            )
-              .then(() => {
-                console.log(endDate);
-                return {
-                  success: true,
-                  message: 'Payment Successful',
-                };
-              })
-              .catch((err) => {
-                console.error(err);
-                return {
-                  success: false,
-                  message: 'Unknown Error Occured',
-                };
-              });
-          } else {
-            let endDate = new Date();
-            switch (data.dateUnit) {
-              case 'Week':
-                endDate = addDaysToDate(endDate, data.amountOfDateUnits * 7);
-                break;
-              case 'Month':
-                endDate = addMonthsToDate(endDate, data.amountOfDateUnits);
-                break;
-            }
-            //create subscription
-            return Subscription.create({
-              packageId: data.packageId,
-              subscriptionStart: currentDate,
-              subscriptionEnd: endDate,
-              botId: data.botId,
-            })
-              .then(() => ({
-                success: true,
-                message: 'Payment Successful',
-              }))
-              .catch((err) => {
-                console.error(err);
-                return {
-                  success: false,
-                  message: 'Unknown Error Occured',
-                };
-              });
-          }
+    //updates subscription if it already exists, otherwise it should create it
+    if (subscription) {
+      let endDate = subscription.subscriptionEnd;
+      switch (data.dateUnit) {
+        case 'Week':
+          endDate = addDaysToDate(endDate, data.amountOfDateUnits * 7);
+          break;
+        case 'Month':
+          endDate = addMonthsToDate(endDate, data.amountOfDateUnits);
+          break;
+      }
+      //updates subscription length
+      const sub = this.em.findOneOrFail(Subscription, {
+        botId: data.botId,
+        packageId: data.packageId,
+      });
+      this.em.assign(sub, {
+        subscriptionStart: currentDate,
+        subscriptionEnd: endDate,
+      });
+      this.em
+        .persistAndFlush(sub)
+        .then(() => {
+          return {
+            success: true,
+            message: 'Payment Successful',
+          };
+        })
+        .catch((err) => {
+          console.error(err);
+          return {
+            success: false,
+            message: 'Unknown Error Occured',
+          };
         });
-      })
-      .catch((err) => console.error(err));
+    } else {
+      let endDate = new Date();
+      switch (data.dateUnit) {
+        case 'Week':
+          endDate = addDaysToDate(endDate, data.amountOfDateUnits * 7);
+          break;
+        case 'Month':
+          endDate = addMonthsToDate(endDate, data.amountOfDateUnits);
+          break;
+      }
+      //create subscription
+      const sub = this.em.create(Subscription, {
+        packageId: data.packageId,
+        subscriptionStart: currentDate,
+        subscriptionEnd: endDate,
+        botId: data.botId,
+      });
+      this.em
+        .persistAndFlush(sub)
+        .then(() => ({
+          success: true,
+          message: 'Payment Successful',
+        }))
+        .catch((err) => {
+          console.error(err);
+          return {
+            success: false,
+            message: 'Unknown Error Occured',
+          };
+        });
+    }
   }
 }

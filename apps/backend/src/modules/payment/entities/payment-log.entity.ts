@@ -1,20 +1,16 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Table({ underscored: true, tableName: 'payment_log' })
-export class PaymentLog extends Model<PaymentLog> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class PaymentLog {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   userUuid: string;
-  @Column({
-    type: DataType.INTEGER,
+  @Property({
+    type: 'int',
   })
   amount: number;
 }

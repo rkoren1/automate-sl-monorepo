@@ -1,36 +1,32 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Table({ underscored: true, tableName: 'terminal_owner' })
-export class TerminalOwner extends Model<TerminalOwner> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class TerminalOwner {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   avatarUuid: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   avatarName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   parcelName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   slUrl: string;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
+  @Property({
+    type: 'datetime',
+    nullable: false,
   })
   lastActive: Date;
 }

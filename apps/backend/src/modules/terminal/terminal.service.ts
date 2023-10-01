@@ -23,26 +23,26 @@ export class TerminalService {
     return bots;
   }
 
-  paySubscription(data: PaySubscriptionDto) {
-    return new Promise((resolve, reject) => {
-      const today = new Date();
-      let endDate;
-      if (data.extensionTimeUnit === ExtensionPeriodUnit.WEEK) {
-        endDate = addDaysToDate(today, data.extensionTime * 7);
-      } else if (data.extensionTimeUnit === ExtensionPeriodUnit.MONTH) {
-        endDate = addDaysToDate(today, data.extensionTime * 30);
-      } else {
-        return reject('Invalid time unit');
-      }
-      Subscription.create({
-        subscriptionStart: today,
-        subscriptionEnd: endDate,
-        botId: data.botId,
-        packageId: data.packageId,
-      })
-        .then(() => resolve(endDate))
-        .catch((err) => reject(err));
+  async paySubscription(data: PaySubscriptionDto) {
+    const today = new Date();
+    let endDate;
+    if (data.extensionTimeUnit === ExtensionPeriodUnit.WEEK) {
+      endDate = addDaysToDate(today, data.extensionTime * 7);
+    } else if (data.extensionTimeUnit === ExtensionPeriodUnit.MONTH) {
+      endDate = addDaysToDate(today, data.extensionTime * 30);
+    } else {
+      return 'Invalid time unit';
+    }
+    const sub = this.em.create(Subscription, {
+      subscriptionStart: today,
+      subscriptionEnd: endDate,
+      botId: data.botId,
+      packageId: data.packageId,
     });
+    return await this.em
+      .persistAndFlush(sub)
+      .then(() => endDate)
+      .catch((err) => err);
   }
   generatePassword(length) {
     let password = '';
@@ -67,18 +67,16 @@ export class TerminalService {
     await this.em.persistAndFlush(newUser);
     return data.password;
   }
-  addTerminal(data) {
-    return new Promise((resolve, reject) => {
-      return TerminalOwner.create({
-        avatarName: data.avatarName,
-        avatarUuid: data.avatarUUID,
-        parcelName: data.parcelName,
-        slUrl: data.slUrl,
-        lastActive: data.lastActive,
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async addTerminal(data) {
+    return await TerminalOwner.create({
+      avatarName: data.avatarName,
+      avatarUuid: data.avatarUUID,
+      parcelName: data.parcelName,
+      slUrl: data.slUrl,
+      lastActive: data.lastActive,
+    })
+      .then((result) => result)
+      .catch((err) => err);
   }
   async isRegistered(uuid: string) {
     return await this.em.findOneOrFail(User, { uuid: uuid });

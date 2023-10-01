@@ -1,42 +1,45 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Subscription } from '../../subscription/entities/subscription.entity';
 
-@Table({ underscored: true, tableName: 'package' })
-export class Package extends Model<Package> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity()
+export class Package {
+  @PrimaryKey()
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
+  @Property({
+    type: 'string',
+    nullable: false,
   })
   packageName: string;
-  @Column({
-    type: DataType.STRING,
+  @Property({
+    type: 'string',
   })
   packageDescription: string;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   pricePerWeek: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   discount: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
+  @Property({
+    type: 'int',
+    nullable: false,
   })
   pricePerMonth: number;
-  @Column({
-    type: DataType.INTEGER,
+  @Property({
+    type: 'int',
   })
   couponId: number;
-  @HasMany(() => Subscription, 'packageId')
-  subscriptions: Subscription[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.packageId)
+  subscriptions = new Collection<Subscription>(this);
 }

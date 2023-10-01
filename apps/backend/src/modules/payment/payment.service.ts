@@ -19,8 +19,8 @@ export class PaymentService {
   async payForPackage(data: any) {
     let subscriptionCost: number;
     const user = await this.em.findOneOrFail(User, { id: data.packageId });
-    const selectedPackage = await Package.findOne({
-      where: { id: data.packageId },
+    const selectedPackage = await this.em.findOne(Package, {
+      id: data.packageId,
     });
     switch (data.dateUnit) {
       case 'Week':
@@ -46,12 +46,15 @@ export class PaymentService {
     await this.em.persistAndFlush(user);
 
     //removes free trial if exists for this bot
-    Subscription.destroy({
-      where: { packageId: 1, botId: data.botId },
-    })
-      .then(() => {
-        Subscription.findOne({ where: { botId: data.botId } }).then((sub) => {
-          const currentDate = new Date();
+    const freeTrialSub = await this.em.findOne(Subscription, {
+      packageId: 1,
+      botId: data.botId,
+    });
+    await this.em.removeAndFlush(freeTrialSub);
+    const subscription = await this.em.findOne(Subscription, {
+      botId: data.botId,
+    });
+    const currentDate = new Date();
 
           //updates subscription if it already exists, otherwise it should create it
           if (sub) {

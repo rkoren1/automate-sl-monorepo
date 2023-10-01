@@ -73,15 +73,16 @@ export class BotService {
               .then(() => {
                 this.em
                   .find(BotDb, { userId: createBotDto.userId })
-                  .then((userBots) => {
+                  .then(async (userBots) => {
                     //if this is the only bot give 3 days of free subscription
                     if (userBots.length < 2) {
-                      Subscription.create({
+                      const createSub = this.em.create(Subscription, {
                         subscriptionStart: currentDate,
                         subscriptionEnd: after3Days,
                         packageId: 1,
                         botId: bot.id,
-                      }).catch((err) => console.error(err));
+                      });
+                      await this.em.persistAndFlush(createSub);
                     }
                     return resolve(metadata.imageid);
                   });
@@ -102,24 +103,10 @@ export class BotService {
     return new Promise((resolve, reject) => {
       const currentDate = new Date();
       forkJoin([
-        this.em.find(BotDb, { userId: userId }),
-        //TODO fix subscription
-        /*  BotDb.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: {
-            model: Subscription,
-            where: { subscriptionEnd: { [Op.gt]: currentDate } },
-            required: false,
-          },
-          where: { userId: userId },
-        }), */
+        this.em.find(BotDb, {
+          userId: userId,
+          subscriptions: { subscriptionEnd: { $gt: currentDate } },
+        }),
         SharedBot.findAll({
           attributes: [
             'id',
@@ -167,43 +154,34 @@ export class BotService {
     });
   }
   async getBotConfiguration(data) {
-    const bot = await this.em.findOne(BotDb, {
-      loginFirstName: data.botFirstName,
-      loginLastName: data.botLastName,
-      userId: data.userId,
-    });
-    return bot;
-    //TODO fix subsriction
-    /* return new Promise((resolve, reject) => {
-
-      return BotDb.findOne({
-        attributes: [
+    //TODO CHECK IF IT WORKS
+    const bot = await this.em.findOne(
+      BotDb,
+      {
+        loginFirstName: data.botFirstName,
+        loginLastName: data.botLastName,
+        userId: data.userId,
+        subscriptions: { package: {} },
+      },
+      {
+        fields: [
           'id',
           'loginFirstName',
           'imageId',
           'loginLastName',
           'loginSpawnLocation',
           'loginRegion',
+          {
+            subscriptions: [
+              'subscriptionStart',
+              'subscriptionEnd',
+              { package: ['id', 'packageName'] },
+            ],
+          },
         ],
-        where: {
-          loginFirstName: data.botFirstName,
-          loginLastName: data.botLastName,
-          userId: data.userId,
-        },
-        include: {
-          model: Subscription,
-          attributes: ['subscriptionStart', 'subscriptionEnd'],
-          include: [{ model: Package, attributes: ['id', 'packageName'] }],
-        },
-      })
-        .then((result) => {
-          return resolve(result.dataValues);
-        })
-        .catch((err) => {
-          console.error(err);
-          return reject(err);
-        });
-    }); */
+      },
+    );
+    return bot;
   }
   async startBot(botId: number, userId: number) {
     const bot = await this.em.findOne(BotDb, { id: botId, userId: userId });
@@ -308,23 +286,11 @@ export class BotService {
         .catch((err) => reject(err));
     });
   }
-  getPackages() {
-    return new Promise((resolve, reject) => {
-      return Package.findAll({
-        attributes: [
-          'id',
-          'packageName',
-          'packageDescription',
-          'pricePerWeek',
-          'discount',
-          'pricePerMonth',
-          'couponId',
-        ],
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async getPackages() {
+    const packages = await this.em.find(Package, {});
+    return packages;
   }
+
   getDiscordSettings(botId: number) {
     return new Promise((resolve, reject) => {
       return DiscordSettings.findAll({

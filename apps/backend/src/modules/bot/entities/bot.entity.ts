@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 import { Subscription } from '../../subscription/entities/subscription.entity';
 import { User } from '../../user/entities/user.entity';
 
-@Entity()
+@Entity({ tableName: 'bot' })
 export class BotDb {
   @PrimaryKey()
   id: number;

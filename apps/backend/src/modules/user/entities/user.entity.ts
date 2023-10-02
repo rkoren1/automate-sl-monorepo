@@ -23,7 +23,7 @@ export class User {
   @Property({
     type: 'int',
   })
-  l$Balance: number;
+  ldollarBalance: number;
   @Property({
     type: 'string',
     unique: 'uuid',
@@ -45,7 +45,7 @@ export class User {
     this.email = email;
     this.password = password;
     this.refreshToken = refreshToken;
-    this.l$Balance = l$Balance;
+    this.ldollarBalance = l$Balance;
     this.uuid = uuid;
     this.avatarName = avatarName;
   }

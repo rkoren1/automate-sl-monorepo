@@ -24,8 +24,10 @@ export class BotDb {
     nullable: false,
   })
   loginLastName: string;
+
   @Property({ type: 'string', nullable: false })
-  loginPassword: string;
+  private loginPassword: string;
+
   @Property({
     name: 'loginPassword',
   })
@@ -38,6 +40,7 @@ export class BotDb {
   get decryptedPassword() {
     if (this.loginPassword) return decrypt(this.loginPassword);
   }
+
   @Property({
     type: 'string',
     nullable: false,

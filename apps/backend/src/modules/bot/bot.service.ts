@@ -191,7 +191,7 @@ export class BotService {
     const bot = await this.em.findOne(BotDb, { id: botId, userId: userId });
     if (
       bot.loginFirstName === null ||
-      bot.loginPassword === null ||
+      bot.decryptedPassword === null ||
       bot.loginSpawnLocation === null
     )
       return { changedRows: 0 };
@@ -199,7 +199,7 @@ export class BotService {
     const loginParameters = new LoginParameters();
     loginParameters.firstName = bot.loginFirstName;
     loginParameters.lastName = bot.loginLastName;
-    loginParameters.password = bot.loginPassword;
+    loginParameters.password = bot.decryptedPassword;
     loginParameters.start = bot.loginSpawnLocation; //region/x/y/z or home or last
 
     const options =

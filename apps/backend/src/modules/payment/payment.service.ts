@@ -18,7 +18,7 @@ export class PaymentService {
   }
   async payForPackage(data: any) {
     let subscriptionCost: number;
-    const user = await this.em.findOneOrFail(User, { id: data.packageId });
+    const user = await this.em.findOneOrFail(User, { id: data.userId });
     const selectedPackage = await this.em.findOne(Package, {
       id: data.packageId,
     });
@@ -47,11 +47,10 @@ export class PaymentService {
     await this.em.persistAndFlush(user);
 
     //removes free trial if exists for this bot
-    const freeTrialSub = await this.em.findOne(Subscription, {
+    await this.em.nativeDelete(Subscription, {
       packageId: 1,
       botId: data.botId,
     });
-    await this.em.removeAndFlush(freeTrialSub);
     const subscription = await this.em.findOne(Subscription, {
       botId: data.botId,
     });

@@ -14,7 +14,7 @@ export class PaymentService {
   constructor(private em: EntityManager) {}
   async getLDollarBalance(userId: number) {
     const user = await this.em.findOneOrFail(User, { id: userId });
-    return { lDollarBalance: user.l$Balance };
+    return { lDollarBalance: user.ldollarBalance };
   }
   async payForPackage(data: any) {
     let subscriptionCost: number;
@@ -32,7 +32,7 @@ export class PaymentService {
           data.amountOfDateUnits * selectedPackage.pricePerMonth;
         break;
     }
-    if (user.l$Balance < subscriptionCost) {
+    if (user.ldollarBalance < subscriptionCost) {
       return { success: false, message: 'Balance Too Low' };
     }
 
@@ -43,7 +43,7 @@ export class PaymentService {
     });
     this.em.persistAndFlush(paymentLog);
 
-    user.l$Balance -= subscriptionCost;
+    user.ldollarBalance -= subscriptionCost;
     await this.em.persistAndFlush(user);
 
     //removes free trial if exists for this bot

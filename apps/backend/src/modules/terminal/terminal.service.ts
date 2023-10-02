@@ -62,7 +62,7 @@ export class TerminalService {
       uuid: data.uuid,
       avatarName: data.avatarName,
       password: hashedPass,
-      l$Balance: 0,
+      ldollarBalance: 0,
     });
     await this.em.persistAndFlush(newUser);
     return data.password;
@@ -114,9 +114,9 @@ export class TerminalService {
     });
     this.em.persistAndFlush(paymentLog);
     const user = await this.em.findOneOrFail(User, { uuid: data.UUID });
-    user.l$Balance += data.lDollarAmount;
+    user.ldollarBalance += data.lDollarAmount;
     await this.em.persistAndFlush(user);
-    return user.l$Balance;
+    return user.ldollarBalance;
   }
 
   async getBalance(uuid: string) {
@@ -125,7 +125,7 @@ export class TerminalService {
       return {
         result: Result.OK,
         resulttext: 'get_balance_success',
-        custom: { balance: user.l$Balance },
+        custom: { balance: user.ldollarBalance },
       };
     else
       return {

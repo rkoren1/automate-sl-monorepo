@@ -237,6 +237,7 @@ export class BotController {
         });
       })
       .catch((err) => {
+        console.error(err);
         return res.json({
           success: false,
           message: 'Failed to add discord settings',

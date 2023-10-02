@@ -102,10 +102,14 @@ export class BotService {
     return new Promise((resolve, reject) => {
       const currentDate = new Date();
       forkJoin([
-        this.em.find(BotDb, {
-          userId: userId,
-          subscriptions: { subscriptionEnd: { $gt: currentDate } },
-        }),
+        this.em.find(
+          BotDb,
+          {
+            userId: userId,
+            subscriptions: { subscriptionEnd: { $gt: currentDate } },
+          },
+          { fields: ['*', { subscriptions: ['*'] }] },
+        ),
         this.em.find(
           SharedBot,
           { sharedBotUserSubscriptions: { userId: userId } },
@@ -124,6 +128,7 @@ export class BotService {
         next: (result) => {
           const response: GetBotDto = { my: [], shared: [] };
           result[0].forEach((ele) => {
+            ele.subscriptions.init();
             response.my.push({
               id: ele.id,
               loginName: ele.loginFirstName,
@@ -161,7 +166,6 @@ export class BotService {
         loginFirstName: data.botFirstName,
         loginLastName: data.botLastName,
         userId: data.userId,
-        subscriptions: { package: {} },
       },
       {
         fields: [

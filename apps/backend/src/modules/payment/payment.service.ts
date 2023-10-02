@@ -18,7 +18,7 @@ export class PaymentService {
   }
   async payForPackage(data: any) {
     let subscriptionCost: number;
-    const user = await this.em.findOneOrFail(User, { id: data.packageId });
+    const user = await this.em.findOneOrFail(User, { id: data.userId });
     const selectedPackage = await this.em.findOne(Package, {
       id: data.packageId,
     });
@@ -47,11 +47,10 @@ export class PaymentService {
     await this.em.persistAndFlush(user);
 
     //removes free trial if exists for this bot
-    const freeTrialSub = await this.em.findOne(Subscription, {
+    await this.em.nativeDelete(Subscription, {
       packageId: 1,
       botId: data.botId,
     });
-    await this.em.removeAndFlush(freeTrialSub);
     const subscription = await this.em.findOne(Subscription, {
       botId: data.botId,
     });
@@ -69,7 +68,7 @@ export class PaymentService {
           break;
       }
       //updates subscription length
-      const sub = this.em.findOneOrFail(Subscription, {
+      const sub = await this.em.findOneOrFail(Subscription, {
         botId: data.botId,
         packageId: data.packageId,
       });
@@ -77,7 +76,7 @@ export class PaymentService {
         subscriptionStart: currentDate,
         subscriptionEnd: endDate,
       });
-      this.em
+      return this.em
         .persistAndFlush(sub)
         .then(() => {
           return {
@@ -109,12 +108,14 @@ export class PaymentService {
         subscriptionEnd: endDate,
         botId: data.botId,
       });
-      this.em
+      return this.em
         .persistAndFlush(sub)
-        .then(() => ({
-          success: true,
-          message: 'Payment Successful',
-        }))
+        .then(() => {
+          ({
+            success: true,
+            message: 'Payment Successful',
+          });
+        })
         .catch((err) => {
           console.error(err);
           return {

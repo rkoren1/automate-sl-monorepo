@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Result } from '../../core/constants/constants';
-import { User } from '../user/entities/user.entity';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { AddTerminalBodyDto } from './dto/add-terminal-body.dto';
 import { GetBalanceQueryDto } from './dto/get-balance-query.dto';
@@ -57,14 +56,14 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'endDate',
           custom: { endDate: result },
-        })
+        }),
       )
       .catch((err) =>
         res.json({
           result: Result.FAIL,
           resulttext: 'Payment Failed',
           custom: '',
-        })
+        }),
       );
   }
   @Post('register')
@@ -83,7 +82,7 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'newClient',
           custom: { password: password, uuid: data.uuid },
-        })
+        }),
       )
       .catch((err) => {
         if (err.errno === 1062)
@@ -116,14 +115,14 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'registered',
           custom: { terminalId: result.id },
-        })
+        }),
       )
       .catch((err) =>
         res.json({
           result: Result.FAIL,
           resulttext: 'Adding terminal failed',
           custom: {},
-        })
+        }),
       );
   }
   @Get('isregistered')
@@ -134,7 +133,7 @@ export class TerminalController {
     };
     return this.terminalService
       .isRegistered(data.uuid)
-      .then((result: User) => {
+      .then((result: any) => {
         if (result) {
           return res.json({
             result: Result.OK,
@@ -153,14 +152,14 @@ export class TerminalController {
           result: Result.FAIL,
           resulttext: 'FAIL',
           custom: {},
-        })
+        }),
       );
   }
   @Post('updateterminalactivity')
   @ApiOkResponse({ type: SharedActionsResponseDto })
   updateTerminalActivity(
     @Res() res,
-    @Query() query: UpdateTerminalActivityQueryDto
+    @Query() query: UpdateTerminalActivityQueryDto,
   ) {
     const data = {
       lastActive: new Date(),
@@ -173,14 +172,14 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'Last activity prolonged',
           custom: {},
-        })
+        }),
       )
       .catch((err) =>
         res.json({
           result: Result.FAIL,
           resulttext: 'FAIL',
           custom: {},
-        })
+        }),
       );
   }
   @Put('updateterminalowner')
@@ -201,14 +200,14 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'Terminal updated successfully',
           custom: {},
-        })
+        }),
       )
       .catch((err) =>
         res.json({
           result: Result.FAIL,
           resulttext: 'Error occured',
           custom: {},
-        })
+        }),
       );
   }
   @Put('setuserpassword')
@@ -216,7 +215,7 @@ export class TerminalController {
   setUserPassword(
     @Res() res,
     @Body() body: SetUserPasswordBodyDto,
-    @Query() query: SetUserPasswordQueryDto
+    @Query() query: SetUserPasswordQueryDto,
   ) {
     const data = {
       userUUID: query.userUUID,
@@ -224,7 +223,7 @@ export class TerminalController {
     };
     return this.terminalService
       .setUserPassword(data.userUUID, data.password)
-      .then((user: User) =>
+      .then((user: any) =>
         res.json({
           result: Result.OK,
           resulttext: 'password_updated',
@@ -233,7 +232,7 @@ export class TerminalController {
             password: data.password,
             email: user.email,
           },
-        })
+        }),
       )
       .catch((err) => {
         res.json({
@@ -253,14 +252,14 @@ export class TerminalController {
           result: Result.OK,
           resulttext: 'payment_success',
           custom: { UUID: body.UUID, newBalance: newBalance },
-        })
+        }),
       )
       .catch((err) =>
         res.json({
           result: Result.FAIL,
           resulttext: 'payment_fail',
           custom: { UUID: body.UUID },
-        })
+        }),
       );
   }
   @Get('getbalance')

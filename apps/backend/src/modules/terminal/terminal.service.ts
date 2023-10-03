@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
 import { addDaysToDate } from '../../core/services/helper.service';
 import { BotDb } from '../bot/entities/bot.entity';
 import { PaymentLog } from '../payment/entities/payment-log.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
-import { User } from '../user/entities/user.entity';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { PaySubscriptionDto } from './dto/pay-subscription.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
@@ -13,6 +13,7 @@ import { TerminalOwner } from './entities/terminal-owner.entity';
 
 @Injectable()
 export class TerminalService {
+  prisma = new PrismaClient();
   getAllBotsFromUserUuid(uuid: string) {
     return new Promise((resolve, reject) => {
       return BotDb.findAll({
@@ -52,7 +53,7 @@ export class TerminalService {
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < length; i++) {
       password += characters.charAt(
-        Math.floor(Math.random() * characters.length)
+        Math.floor(Math.random() * characters.length),
       );
     }
     return password;
@@ -60,13 +61,16 @@ export class TerminalService {
   terminalRegister(data) {
     return new Promise((resolve, reject) => {
       bcrypt.hash(data.password, 10).then((hashedPass) => {
-        return User.create({
-          email: data.email,
-          uuid: data.uuid,
-          avatarName: data.avatarName,
-          password: hashedPass,
-          l$Balance: 0,
-        })
+        return this.prisma.user
+          .create({
+            data: {
+              email: data.email,
+              uuid: data.uuid,
+              avatar_name: data.avatarName,
+              password: hashedPass,
+              l__balance: 0,
+            },
+          })
           .then((result) => resolve(data.password))
           .catch((err) => {
             console.error(err);
@@ -90,7 +94,8 @@ export class TerminalService {
   }
   isRegistered(uuid: string) {
     return new Promise((resolve, reject) => {
-      return User.findOne({ attributes: ['id'], where: { uuid: uuid } })
+      return this.prisma.user
+        .findUnique({ select: { id: true }, where: { uuid: uuid } })
         .then((user) => {
           if (user) return resolve(user);
           return resolve(null);
@@ -102,7 +107,7 @@ export class TerminalService {
     return new Promise((resolve, reject) => {
       return TerminalOwner.update(
         { lastActive: data.lastActive },
-        { where: { id: data.terminalId } }
+        { where: { id: data.terminalId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
@@ -119,7 +124,7 @@ export class TerminalService {
           slUrl: data.slUrl,
           lastActive: today,
         },
-        { where: { id: data.terminalId } }
+        { where: { id: data.terminalId } },
       )
         .then((result) => resolve(result))
         .catch((err) => reject(err));
@@ -128,9 +133,11 @@ export class TerminalService {
   setUserPassword(userUUID: string, password: string) {
     return new Promise((resolve, reject) => {
       bcrypt.hash(password, 10).then((hashedPass) => {
-        User.update({ password: hashedPass }, { where: { uuid: userUUID } })
+        this.prisma.user
+          .update({ data: { password: hashedPass }, where: { uuid: userUUID } })
           .then((res) => {
-            User.findOne({ where: { uuid: userUUID } })
+            this.prisma.user
+              .findUnique({ where: { uuid: userUUID } })
               .then((user) => {
                 return resolve(user);
               })
@@ -143,31 +150,36 @@ export class TerminalService {
   addBalance = (data: AddBalanceBodyDto) => {
     return new Promise((resolve, reject) => {
       PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
-      User.findOne({ where: { uuid: data.UUID } }).then((user) => {
-        const newBalance = user.l$Balance + data.lDollarAmount;
-        User.update({ l$Balance: newBalance }, { where: { uuid: data.UUID } })
-          .then((res) => resolve(newBalance))
-          .catch((err) => reject(err));
-      });
+      this.prisma.user
+        .findUnique({ where: { uuid: data.UUID } })
+        .then((user) => {
+          const newBalance = user.l__balance + data.lDollarAmount;
+          this.prisma.user
+            .update({
+              data: { l__balance: newBalance },
+              where: { uuid: data.UUID },
+            })
+            .then((res) => resolve(newBalance))
+            .catch((err) => reject(err));
+        });
     });
   };
   getBalance(uuid: string) {
-    return User.findOne({
-      attributes: ['l$Balance'],
-      where: { uuid: uuid },
-    }).then((user) => {
-      if (user)
-        return {
-          result: Result.OK,
-          resulttext: 'get_balance_success',
-          custom: { balance: user.l$Balance },
-        };
-      else
-        return {
-          result: Result.FAIL,
-          resulttext: 'get_balance_fail',
-          custom: { balance: -1 },
-        };
-    });
+    return this.prisma.user
+      .findUnique({ select: { l__balance: true }, where: { uuid: uuid } })
+      .then((user) => {
+        if (user)
+          return {
+            result: Result.OK,
+            resulttext: 'get_balance_success',
+            custom: { balance: user.l__balance },
+          };
+        else
+          return {
+            result: Result.FAIL,
+            resulttext: 'get_balance_fail',
+            custom: { balance: -1 },
+          };
+      });
   }
 }

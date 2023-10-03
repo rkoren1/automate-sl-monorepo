@@ -1,14 +1,6 @@
 import * as crypto from 'crypto';
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Subscription } from '../../subscription/entities/subscription.entity';
-import { User } from '../../user/entities/user.entity';
 
 @Table({ underscored: true, tableName: 'bot' })
 export class BotDb extends Model<BotDb> {
@@ -84,8 +76,8 @@ export class BotDb extends Model<BotDb> {
   })
   actionId: number;
 
-  @BelongsTo(() => User, 'userId')
-  user: User;
+  /*   @BelongsTo(() => User, 'userId')
+  user: User; */
 
   @HasMany(() => Subscription, 'botId')
   subscriptions: Subscription[];
@@ -96,7 +88,7 @@ function encrypt(text) {
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -109,7 +101,7 @@ function decrypt(encryptedData: string) {
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
 
   let decrypted = decipher.update(encryptedText);

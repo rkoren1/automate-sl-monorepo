@@ -55,21 +55,21 @@ export class BotService {
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
 
-            this.prisma.bot.create({
-              data: {
-                user_id: createBotDto.userId,
-                login_first_name: createBotDto.loginFirstName,
-                login_last_name: createBotDto.loginLastName,
-                login_password: createBotDto.loginPassword,
-                running: false,
-                should_run: false,
-                login_spawn_location: createBotDto.loginSpawnLocation,
-                login_region: createBotDto.loginRegion,
-                uuid: uuid,
-                image_id: metadata.imageid,
-              },
-            });
-            BotDb.create({})
+            this.prisma.bot
+              .create({
+                data: {
+                  user_id: createBotDto.userId,
+                  login_first_name: createBotDto.loginFirstName,
+                  login_last_name: createBotDto.loginLastName,
+                  login_password: createBotDto.loginPassword,
+                  running: false,
+                  should_run: false,
+                  login_spawn_location: createBotDto.loginSpawnLocation,
+                  login_region: createBotDto.loginRegion,
+                  uuid: uuid,
+                  image_id: metadata.imageid,
+                },
+              })
               .then((bot) => {
                 BotDb.findAll({
                   where: { userId: createBotDto.userId },

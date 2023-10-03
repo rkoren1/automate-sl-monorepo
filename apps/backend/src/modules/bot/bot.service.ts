@@ -59,7 +59,7 @@ export class BotService {
               userId: createBotDto.userId,
               loginFirstName: createBotDto.loginFirstName,
               loginLastName: createBotDto.loginLastName,
-              encryptPassword: createBotDto.loginPassword,
+              loginPassword: createBotDto.loginPassword,
               running: false,
               shouldRun: false,
               loginSpawnLocation: createBotDto.loginSpawnLocation,

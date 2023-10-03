@@ -26,14 +26,14 @@ export class BotDb {
   loginLastName: string;
 
   @Property({ type: 'string', nullable: false })
-  private loginPassword: string;
+  loginPassword: string;
 
-  @Property({
+  /*  @Property({
     name: 'loginPassword',
   })
   set encryptPassword(pass) {
     this.loginPassword = encrypt(pass);
-  }
+  } */
   @Property({
     persist: false,
   })
@@ -63,6 +63,7 @@ export class BotDb {
   shouldRun: boolean;
   @Property({
     type: 'string',
+    nullable: true,
   })
   loginRegion: string;
   @Property({
@@ -82,10 +83,11 @@ export class BotDb {
   imageId: string;
   @Property({
     type: 'int',
+    nullable: true,
   })
   actionId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { joinColumn: 'userId' })
   user: User;
 
   @OneToMany(() => Subscription, (subscription) => subscription.bot)

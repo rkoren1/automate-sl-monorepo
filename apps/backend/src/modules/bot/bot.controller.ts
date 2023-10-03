@@ -57,7 +57,6 @@ export class BotController {
       loginSpawnLocation: body.loginSpawnLocation,
       loginRegion: body.loginRegion,
     };
-    console.log(data);
     return this.botService
       .create(data)
       .then((result) => {

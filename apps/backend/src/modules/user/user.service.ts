@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
-import { PrismaService } from '../../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
-  /*  create(createUserDto: CreateUserDto) {
-    return User.create({
-      email: createUserDto.email,
-      password: createUserDto.password,
-    })
+  prisma = new PrismaClient();
+  create(createUserDto: CreateUserDto) {
+    this.prisma.user
+      .create({
+        data: { email: createUserDto.email, password: createUserDto.password },
+      })
       .then((res) => ({
         success: true,
         message: 'Succesfuly created new user',
@@ -31,7 +32,7 @@ export class UserService {
           };
         }
       });
-  } */
+  }
   async authenticate(
     authenticateUserDto: AuthenticateUserDto,
   ): Promise<AuthenticateUserRes> {
@@ -55,7 +56,7 @@ export class UserService {
       );
       //save refreshToken in db
       await this.prisma.user.update({
-        data: { refreshToken },
+        data: { refresh_token: refreshToken },
         where: { email: authenticateUserDto.email },
       });
       return {

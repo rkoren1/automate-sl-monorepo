@@ -1,20 +1,13 @@
-import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Op } from 'sequelize';
-import { BasicDiscBot } from './core/classes/basic-disc-bot';
-import { SmartBot } from './core/classes/smart-bot';
 import { BotService } from './modules/bot/bot.service';
-import { BotDb } from './modules/bot/entities/bot.entity';
-import { DiscordSettings } from './modules/discord-settings/entities/discord-setting.entity';
-import { Subscription } from './modules/subscription/entities/subscription.entity';
-import { User } from './modules/user/entities/user.entity';
 
 @Injectable()
 export class InitService implements OnModuleInit {
   @Inject(BotService)
   private readonly botService: BotService;
   reviveBots() {
-    const currentDate = new Date();
+    //TODO FIX THIS
+    /* const currentDate = new Date();
     BotDb.findAll({
       where: { running: true },
       include: [
@@ -66,7 +59,7 @@ export class InitService implements OnModuleInit {
           },
         );
       });
-    });
+    }); */
   }
   onModuleInit() {
     console.log('reviving bots');

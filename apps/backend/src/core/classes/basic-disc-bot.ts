@@ -3,7 +3,6 @@ import fetch from 'node-fetch';
 import urlMetadata from 'url-metadata';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
-import { User } from '../../modules/user/entities/user.entity';
 import { discClient } from '../services/discord-bot.service';
 import { BaseBot } from './base-bot';
 
@@ -11,7 +10,7 @@ export class BasicDiscBot extends BaseBot {
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
-    user: User,
+    user: any,
     bot: BotDb,
     discParams: DiscordSettings,
   ) {

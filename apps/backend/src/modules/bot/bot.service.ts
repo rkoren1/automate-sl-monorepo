@@ -4,6 +4,7 @@ import {
   LoginParameters,
 } from '@caspertech/node-metaverse';
 import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { forkJoin } from 'rxjs';
 import { Op } from 'sequelize';
 import urlMetadata from 'url-metadata';
@@ -14,16 +15,14 @@ import { Package } from '../package/entities/package.entity';
 import { SharedBotUserSubscription } from '../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
-import { User } from '../user/entities/user.entity';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { BotDb } from './entities/bot.entity';
-import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class BotService {
-  constructor(private prisma: PrismaService) {}
+  prisma = new PrismaClient();
   botInstances = new Array<SmartBot | BasicDiscBot>();
   slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
@@ -56,18 +55,21 @@ export class BotService {
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
 
-            BotDb.create({
-              userId: createBotDto.userId,
-              loginFirstName: createBotDto.loginFirstName,
-              loginLastName: createBotDto.loginLastName,
-              loginPassword: createBotDto.loginPassword,
-              running: false,
-              shouldRun: false,
-              loginSpawnLocation: createBotDto.loginSpawnLocation,
-              loginRegion: createBotDto.loginRegion,
-              uuid: uuid,
-              imageId: metadata.imageid,
-            })
+            this.prisma.bot.create({
+              data: {
+                user_id: createBotDto.userId,
+                login_first_name: createBotDto.loginFirstName,
+                login_last_name: createBotDto.loginLastName,
+                login_password: createBotDto.loginPassword,
+                running: false,
+                should_run: false,
+                login_spawn_location: createBotDto.loginSpawnLocation,
+                login_region: createBotDto.loginRegion,
+                uuid: uuid,
+                image_id: metadata.imageid,
+              },
+            });
+            BotDb.create({})
               .then((bot) => {
                 BotDb.findAll({
                   where: { userId: createBotDto.userId },
@@ -234,10 +236,11 @@ export class BotService {
             BotOptionFlags.StoreMyAttachmentsOnly;
 
           //get User uuid
-          User.findOne({
-            attributes: ['uuid', 'avatarName'],
-            where: { id: userId },
-          })
+          this.prisma.user
+            .findUnique({
+              where: { id: userId },
+              select: { uuid: true, avatar_name: true },
+            })
             .then((user) => {
               DiscordSettings.findAll({ where: { botId: botId } }).then(
                 (discordSettings) => {

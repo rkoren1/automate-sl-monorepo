@@ -1,12 +1,13 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { User } from '../user/entities/user.entity';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
+import { PrismaClient } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
+import { AuthService } from './auth.service';
+import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
 
 @Controller()
 export class AuthController {
+  prisma = new PrismaClient();
   constructor(private readonly authService: AuthService) {}
   @Get('refreshtoken')
   @ApiOkResponse({
@@ -15,12 +16,13 @@ export class AuthController {
   refreshToken(@Req() req, @Res() res) {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(401);
-    const refreshToken = cookies.jwt;
+    const refreshToken: string = cookies.jwt;
     //find user with upper refresh token
-    return User.findOne({
-      attributes: ['email'],
-      where: { refreshToken: refreshToken },
-    })
+    return this.prisma.user
+      .findFirst({
+        select: { email: true },
+        where: { refresh_token: refreshToken },
+      })
       .then((foundUser) => {
         if (!foundUser) return res.sendStatus(204);
         //evaluate jwt
@@ -51,13 +53,18 @@ export class AuthController {
     if (!cookies?.jwt) return res.sendStatus(204); //no content
     const refreshToken = cookies.jwt;
     //find user with upper refresh token
-    User.findOne({
-      attributes: ['email'],
-      where: { refreshToken: refreshToken },
-    })
+    this.prisma.user
+      .findFirst({
+        select: { email: true },
+        where: { refresh_token: refreshToken },
+      })
       .then((foundUser) => {
         //delete refreshtoken in db (make it empty string)
-        User.update({ refreshToken: '' }, { where: { email: foundUser.email } })
+        this.prisma.user
+          .update({
+            data: { refresh_token: '' },
+            where: { email: foundUser.email },
+          })
           .then((result) => {
             res.clearCookie('jwt', { httpOnly: true, maxAge: 86400000 }); //secure: true - only serves on https
             return res.sendStatus(204);

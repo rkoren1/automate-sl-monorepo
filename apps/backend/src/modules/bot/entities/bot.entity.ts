@@ -1,14 +1,6 @@
 import * as crypto from 'crypto';
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Subscription } from '../../subscription/entities/subscription.entity';
-import { User } from '../../user/entities/user.entity';
 
 @Table({ underscored: true, tableName: 'bot' })
 export class BotDb extends Model<BotDb> {
@@ -96,8 +88,8 @@ export class BotDb extends Model<BotDb> {
   })
   actionId: number;
 
-  @BelongsTo(() => User, 'userId')
-  user: User;
+  /*   @BelongsTo(() => User, 'userId')
+  user: User; */
 
   @HasMany(() => Subscription, 'botId')
   subscriptions: Subscription[];

@@ -8,7 +8,6 @@ import {
 import cron from 'node-cron';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
-import { User } from '../../modules/user/entities/user.entity';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
 
@@ -20,7 +19,7 @@ export class BaseBot extends Bot {
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
-    user: User,
+    user: any,
     bot: BotDb,
   ) {
     super(login, options);

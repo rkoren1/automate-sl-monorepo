@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,29 +7,198 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id Int @default(autoincrement()) @id
-  email String  @unique
-  password  String
-  refreshToken String?
-  lDolBalance Int?
-  uuid String? @unique
-  avatarName String?
-  bots BotDb[]
+model bot {
+  id                   Int            @id @default(autoincrement())
+  login_first_name     String         @db.VarChar(255)
+  login_last_name      String         @db.VarChar(255)
+  login_password       String         @db.VarChar(255)
+  login_spawn_location String         @db.VarChar(255)
+  user_id              Int
+  running              Boolean
+  should_run           Boolean?
+  login_region         String?        @db.VarChar(255)
+  package_id           Int?
+  uuid                 String         @db.VarChar(36)
+  image_id             String         @db.VarChar(36)
+  action_id            Int?
+  created_at           DateTime?      @db.DateTime(0)
+  updated_at           DateTime?      @db.DateTime(0)
+  user                 user           @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "bot_ibfk_1")
+  subscription         subscription[]
+
+  @@index([user_id], map: "user_id")
 }
 
-model BotDb {
-  id Int @default(autoincrement()) @id
-  loginFirstName String
-  loginLastName String
-  loginPassword String
-  loginSpawnLocation String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  running Boolean @default(false)
-  loginRegion String?
-  packageId Int
-  uuid String
-  imageId String?
-  actionId Int
+model bot_log {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  bot_uuid   String    @db.VarChar(255)
+  message    String    @db.VarChar(255)
+  event      String    @db.VarChar(255)
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
+}
+
+model coupon {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(255)
+  type           String           @db.VarChar(255)
+  duration       Int
+  uses           Int
+  created_at     DateTime?        @db.DateTime(0)
+  updated_at     DateTime?        @db.DateTime(0)
+  Renamedpackage Renamedpackage[]
+}
+
+model discord_settings {
+  id              Int       @id @default(autoincrement())
+  bot_id          Int
+  web_hook_url    String?   @db.VarChar(255)
+  sl_group_uuid   String?   @db.VarChar(255)
+  disc_channel_id String?   @db.VarChar(255)
+  created_at      DateTime? @db.DateTime(0)
+  updated_at      DateTime? @db.DateTime(0)
+}
+
+model group_im_avatar {
+  id               Int           @id @default(autoincrement())
+  uuid             String        @db.VarChar(255)
+  group_im_list_id Int
+  created_at       DateTime?     @db.DateTime(0)
+  updated_at       DateTime?     @db.DateTime(0)
+  group_im_list    group_im_list @relation(fields: [group_im_list_id], references: [id], onDelete: Cascade, map: "group_im_avatar_ibfk_1")
+
+  @@index([group_im_list_id], map: "group_im_list_id")
+}
+
+model group_im_list {
+  id              Int               @id @default(autoincrement())
+  list_name       String            @db.VarChar(255)
+  user_id         Int
+  created_at      DateTime?         @db.DateTime(0)
+  updated_at      DateTime?         @db.DateTime(0)
+  group_im_avatar group_im_avatar[]
+  user            user              @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "group_im_list_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model mikro_orm_migrations {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  name        String?   @db.VarChar(255)
+  executed_at DateTime? @default(now()) @db.DateTime(0)
+}
+
+/// This model has been renamed to 'Renamedpackage' during introspection, because the original name 'package' is reserved.
+model Renamedpackage {
+  id                           Int                            @id @default(autoincrement())
+  package_name                 String                         @db.VarChar(255)
+  package_description          String?                        @db.VarChar(255)
+  price_per_week               Int
+  discount                     Int
+  price_per_month              Int
+  coupon_id                    Int?
+  created_at                   DateTime?                      @db.DateTime(0)
+  updated_at                   DateTime?                      @db.DateTime(0)
+  coupon                       coupon?                        @relation(fields: [coupon_id], references: [id], onDelete: Cascade, map: "package_ibfk_1")
+  shared_bot_user_subscription shared_bot_user_subscription[]
+  subscription                 subscription[]
+
+  @@index([coupon_id], map: "coupon_id")
+  @@map("package")
+}
+
+model payment_log {
+  id         Int       @id @default(autoincrement())
+  user_uuid  String    @db.VarChar(255)
+  amount     Int
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
+  user       user      @relation(fields: [user_uuid], references: [uuid], onDelete: Cascade, map: "payment_log_ibfk_1")
+
+  @@index([user_uuid], map: "user_uuid")
+}
+
+model shared_bot {
+  id                           Int                            @id @default(autoincrement())
+  login_first_name             String                         @db.VarChar(255)
+  login_last_name              String                         @db.VarChar(255)
+  login_password               String                         @db.VarChar(255)
+  login_spawn_location         String                         @db.VarChar(255)
+  running                      Boolean
+  login_region                 String?                        @db.VarChar(255)
+  package_id                   Int?
+  uuid                         String                         @db.VarChar(36)
+  image_id                     String                         @db.VarChar(36)
+  created_at                   DateTime?                      @db.DateTime(0)
+  updated_at                   DateTime?                      @db.DateTime(0)
+  shared_bot_user_subscription shared_bot_user_subscription[]
+}
+
+model shared_bot_user_subscription {
+  id                 Int            @id @default(autoincrement())
+  shared_bot_id      Int
+  user_id            Int
+  subscription_start DateTime?      @db.DateTime(0)
+  subscription_end   DateTime?      @db.DateTime(0)
+  package_id         Int
+  created_at         DateTime?      @db.DateTime(0)
+  updated_at         DateTime?      @db.DateTime(0)
+  shared_bot         shared_bot     @relation(fields: [shared_bot_id], references: [id], onDelete: Cascade, map: "shared_bot_user_subscription_ibfk_1")
+  user               user           @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "shared_bot_user_subscription_ibfk_2")
+  Renamedpackage     Renamedpackage @relation(fields: [package_id], references: [id], onDelete: Cascade, map: "shared_bot_user_subscription_ibfk_3")
+
+  @@index([package_id], map: "package_id")
+  @@index([shared_bot_id], map: "shared_bot_id")
+  @@index([user_id], map: "user_id")
+}
+
+model subscription {
+  id                 Int            @id @default(autoincrement())
+  package_id         Int
+  subscription_start DateTime       @db.DateTime(0)
+  subscription_end   DateTime       @db.DateTime(0)
+  bot_id             Int
+  created_at         DateTime?      @db.DateTime(0)
+  updated_at         DateTime?      @db.DateTime(0)
+  Renamedpackage     Renamedpackage @relation(fields: [package_id], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
+  bot                bot            @relation(fields: [bot_id], references: [id], onDelete: Cascade, map: "subscription_ibfk_2")
+
+  @@unique([package_id, bot_id], map: "subscription_packageId_botId_unique")
+  @@index([bot_id], map: "bot_id")
+}
+
+model terminal {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  api_key    String    @db.VarChar(255)
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
+}
+
+model terminal_owner {
+  id          Int       @id @default(autoincrement())
+  avatar_uuid String    @db.VarChar(255)
+  avatar_name String    @db.VarChar(255)
+  parcel_name String    @db.VarChar(255)
+  sl_url      String    @db.VarChar(255)
+  last_active DateTime  @db.DateTime(0)
+  created_at  DateTime? @db.DateTime(0)
+  updated_at  DateTime? @db.DateTime(0)
+}
+
+model user {
+  id                           Int                            @id @default(autoincrement())
+  email                        String                         @unique(map: "email") @db.VarChar(255)
+  password                     String                         @db.VarChar(255)
+  refresh_token                String?                        @db.VarChar(255)
+  l__balance                   Int?                           @map("l$_balance")
+  uuid                         String?                        @unique(map: "uuid") @db.VarChar(36)
+  avatar_name                  String?                        @db.VarChar(255)
+  created_at                   DateTime?                      @db.DateTime(0)
+  updated_at                   DateTime?                      @db.DateTime(0)
+  bot                          bot[]
+  group_im_list                group_im_list[]
+  payment_log                  payment_log[]
+  shared_bot_user_subscription shared_bot_user_subscription[]
 }

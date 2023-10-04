@@ -9,15 +9,10 @@ import { forkJoin } from 'rxjs';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
-import { DiscordSettings } from '../discord-settings/entities/discord-setting.entity';
-import { Package } from '../package/entities/package.entity';
-import { SharedBotUserSubscription } from '../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
-import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
-import { BotDb } from './entities/bot.entity';
 @Injectable()
 export class BotService {
   prisma = new PrismaClient();
@@ -54,30 +49,30 @@ export class BotService {
             this.prisma.bot
               .create({
                 data: {
-                  user_id: createBotDto.userId,
-                  login_first_name: createBotDto.loginFirstName,
-                  login_last_name: createBotDto.loginLastName,
-                  login_password: createBotDto.loginPassword,
+                  userId: createBotDto.userId,
+                  loginFirstName: createBotDto.loginFirstName,
+                  loginLastName: createBotDto.loginLastName,
+                  loginPassword: createBotDto.loginPassword,
                   running: false,
-                  should_run: false,
-                  login_spawn_location: createBotDto.loginSpawnLocation,
-                  login_region: createBotDto.loginRegion,
+                  shouldRun: false,
+                  loginSpawnLocation: createBotDto.loginSpawnLocation,
+                  loginRegion: createBotDto.loginRegion,
                   uuid: uuid,
-                  image_id: metadata.imageid,
+                  imageId: metadata.imageid,
                 },
               })
               .then(async (bot) => {
                 const userBots = await this.prisma.bot.findMany({
-                  where: { user_id: createBotDto.userId },
+                  where: { userId: createBotDto.userId },
                 });
                 //if this is the only bot give 3 days of free subscription
                 if (userBots.length < 2) {
                   this.prisma.subscription.create({
                     data: {
-                      subscription_start: currentDate,
-                      subscription_end: after3Days,
-                      package_id: 1,
-                      bot_id: bot.id,
+                      subscriptionStart: currentDate,
+                      subscriptionEnd: after3Days,
+                      packageId: 1,
+                      botId: bot.id,
                     },
                   });
                 }
@@ -85,10 +80,10 @@ export class BotService {
                 else {
                   this.prisma.subscription.create({
                     data: {
-                      subscription_start: currentDate,
-                      subscription_end: currentDate,
-                      package_id: 1,
-                      bot_id: bot.id,
+                      subscriptionStart: currentDate,
+                      subscriptionEnd: currentDate,
+                      packageId: 1,
+                      botId: bot.id,
                     },
                   });
                 }
@@ -113,24 +108,24 @@ export class BotService {
         this.prisma.bot.findMany({
           select: {
             id: true,
-            login_first_name: true,
-            login_last_name: true,
+            loginFirstName: true,
+            loginLastName: true,
             running: true,
             uuid: true,
-            image_id: true,
-            subscription: { where: { subscription_end: { gt: currentDate } } },
+            imageId: true,
+            subscription: { where: { subscriptionEnd: { gt: currentDate } } },
           },
-          where: { user_id: userId },
+          where: { userId: userId },
         }),
-        this.prisma.shared_bot.findMany({
+        this.prisma.sharedBot.findMany({
           select: {
             id: true,
-            login_first_name: true,
-            login_last_name: true,
+            loginFirstName: true,
+            loginLastName: true,
             running: true,
             uuid: true,
-            image_id: true,
-            shared_bot_user_subscription: { where: { user_id: userId } },
+            imageId: true,
+            sharedBotUserSubscription: { where: { userId: userId } },
           },
         }),
       ]).subscribe({
@@ -139,22 +134,22 @@ export class BotService {
           result[0].forEach((ele) => {
             response.my.push({
               id: ele.id,
-              loginName: ele.login_first_name,
-              loginLastName: ele.login_last_name,
+              loginName: ele.loginFirstName,
+              loginLastName: ele.loginLastName,
               running: ele.running,
               uuid: ele.uuid,
-              imageId: ele.image_id,
+              imageId: ele.imageId,
               validSubscription: ele.subscription.length > 0 ? true : false,
             });
           });
           result[1].forEach((ele) => {
             response.shared.push({
               id: ele.id,
-              loginName: ele.login_first_name,
-              loginLastName: ele.login_last_name,
+              loginName: ele.loginFirstName,
+              loginLastName: ele.loginLastName,
               running: ele.running,
               uuid: ele.uuid,
-              imageId: ele.image_id,
+              imageId: ele.imageId,
               validSubscription: false,
             });
           });
@@ -171,25 +166,25 @@ export class BotService {
       .findMany({
         select: {
           id: true,
-          login_first_name: true,
-          image_id: true,
-          login_last_name: true,
-          login_spawn_location: true,
-          login_region: true,
+          loginFirstName: true,
+          imageId: true,
+          loginLastName: true,
+          loginSpawnLocation: true,
+          loginRegion: true,
           subscription: {
             select: {
-              subscription_start: true,
-              subscription_end: true,
+              subscriptionStart: true,
+              subscriptionEnd: true,
               subPackage: {
-                select: { id: true, package_name: true },
+                select: { id: true, packageName: true },
               },
             },
           },
         },
         where: {
-          login_first_name: data.botFirstName,
-          login_last_name: data.botLastName,
-          user_id: data.userId,
+          loginFirstName: data.botFirstName,
+          loginLastName: data.botLastName,
+          userId: data.userId,
         },
       })
       .then((result) => {
@@ -202,18 +197,19 @@ export class BotService {
   }
   startBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
-      return BotDb.findOne({
-        attributes: [
-          'id',
-          'loginFirstName',
-          'loginLastName',
-          'loginPassword',
-          'loginSpawnLocation',
-          'loginRegion',
-          'uuid',
-        ],
-        where: { id: botId, userId: userId },
-      })
+      return this.prisma.bot
+        .findFirst({
+          select: {
+            id: true,
+            loginFirstName: true,
+            loginLastName: true,
+            loginPassword: true,
+            loginSpawnLocation: true,
+            loginRegion: true,
+            uuid: true,
+          },
+          where: { id: botId, userId: userId },
+        })
         .then((bot) => {
           if (
             bot.loginFirstName === null ||
@@ -236,11 +232,12 @@ export class BotService {
           this.prisma.user
             .findUnique({
               where: { id: userId },
-              select: { uuid: true, avatar_name: true },
+              select: { uuid: true, avatarName: true },
             })
             .then((user) => {
-              DiscordSettings.findAll({ where: { botId: botId } }).then(
-                (discordSettings) => {
+              this.prisma.discordSettings
+                .findMany({ where: { botId: botId } })
+                .then((discordSettings) => {
                   if (discordSettings.length > 0) {
                     //start bot
                     const workerBot = new BasicDiscBot(
@@ -256,10 +253,12 @@ export class BotService {
                       .then(() => {
                         workerBot.isConnected = true;
                         this.botInstances[botId] = workerBot;
-                        return BotDb.update(
-                          { running: true },
-                          { where: { id: botId, userId: userId } },
-                        )
+
+                        return this.prisma.bot
+                          .update({
+                            data: { running: true },
+                            where: { id: botId, userId: userId },
+                          })
                           .then((result) => resolve(result))
                           .catch((err) => reject(err));
                       })
@@ -280,10 +279,11 @@ export class BotService {
                       .then(() => workerBot.connectToSim())
                       .then(() => {
                         this.botInstances[botId] = workerBot;
-                        return BotDb.update(
-                          { running: true },
-                          { where: { id: botId, userId: userId } },
-                        )
+                        return this.prisma.bot
+                          .update({
+                            data: { running: true },
+                            where: { id: botId, userId: userId },
+                          })
                           .then((result) => resolve(result))
                           .catch((err) => {
                             console.error(err);
@@ -295,8 +295,7 @@ export class BotService {
                         return reject(err);
                       });
                   }
-                },
-              );
+                });
             })
             .catch((err) => {
               console.error(err);
@@ -309,114 +308,128 @@ export class BotService {
         });
     });
   }
-  async stopBot(botId: number, userId: number) {
-    try {
-      await this.botInstances[botId].close();
-      this.botInstances[botId].isConnected = false;
-      await BotDb.update(
-        { running: false },
-        { where: { id: botId, userId: userId } },
-      );
-      return true;
-    } catch (err) {
-      await BotDb.update(
-        { running: false },
-        { where: { id: botId, userId: userId } },
-      );
-      return true;
-    }
+  stopBot(botId: number, userId: number) {
+    return new Promise((resolve, reject) => {
+      return this.botInstances[botId]
+        .close()
+        .then(() => {
+          this.botInstances[botId].isConnected = false;
+          return this.prisma.bot
+            .update({
+              data: { running: false },
+              where: { id: botId, userId: userId },
+            })
+            .then((result) => resolve(result))
+            .catch((err) => reject(err));
+        })
+        .catch((err: Error) => reject(err));
+    });
   }
   getSharedBots(userId: number) {
     return new Promise((resolve, reject) => {
-      SharedBot.findAll({
-        attributes: [
-          'id',
-          'loginFirstName',
-          'loginLastName',
-          'running',
-          'uuid',
-          'imageId',
-        ],
-        include: [
-          { model: SharedBotUserSubscription, where: { userId: userId } },
-        ],
-      })
+      this.prisma.sharedBot
+        .findMany({
+          select: {
+            id: true,
+            loginFirstName: true,
+            loginLastName: true,
+            running: true,
+            uuid: true,
+            imageId: true,
+            sharedBotUserSubscription: { where: { userId: userId } },
+          },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }
   getPackages() {
     return new Promise((resolve, reject) => {
-      return Package.findAll({
-        attributes: [
-          'id',
-          'packageName',
-          'packageDescription',
-          'pricePerWeek',
-          'discount',
-          'pricePerMonth',
-          'couponId',
-        ],
-      })
+      return this.prisma.subPackage
+        .findMany({
+          select: {
+            id: true,
+            packageName: true,
+            packageDescription: true,
+            pricePerWeek: true,
+            discount: true,
+            pricePerMonth: true,
+            couponId: true,
+          },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }
   getDiscordSettings(botId: number) {
     return new Promise((resolve, reject) => {
-      return DiscordSettings.findAll({
-        attributes: ['id', 'webHookUrl', 'slGroupUuid', 'discChannelId'],
-        where: { botId: botId },
-      })
+      return this.prisma.discordSettings
+        .findMany({
+          select: {
+            id: true,
+            webHookUrl: true,
+            slGroupUuid: true,
+            discChannelId: true,
+          },
+          where: { botId: botId },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }
-  setDiscordSettings(data: SetDiscordSettingsBodyDto) {
-    return new Promise((resolve, reject) => {
-      return DiscordSettings.upsert({
-        id: data.id,
-        botId: data.botId,
-        discChannelId: data.discChannelId,
-        webHookUrl: data.webHookUrl,
-        slGroupUuid: data.slGroupUuid,
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async setDiscordSettings(data: SetDiscordSettingsBodyDto) {
+    try {
+      const result = await this.prisma.discordSettings.upsert({
+        create: {
+          id: data.id,
+          botId: data.botId,
+          discChannelId: data.discChannelId,
+          webHookUrl: data.webHookUrl,
+          slGroupUuid: data.slGroupUuid,
+        },
+        update: {
+          botId: data.botId,
+          discChannelId: data.discChannelId,
+          webHookUrl: data.webHookUrl,
+          slGroupUuid: data.slGroupUuid,
+        },
+        where: { id: data.id },
+      });
+      return result;
+    } catch (err) {
+      return err;
+    }
   }
-  setBotConfiguration(data: SetBotConfigurationBodyDto) {
-    return new Promise((resolve, reject) => {
-      return BotDb.update(
-        {
+  async setBotConfiguration(data: SetBotConfigurationBodyDto) {
+    try {
+      const result = await this.prisma.bot.update({
+        data: {
           loginRegion: data.loginRegion,
           loginSpawnLocation: data.loginSpawnLocation,
         },
-        { where: { id: data.botId } },
-      )
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
-  }
-  refreshBotStatus(botId: number) {
-    return new Promise((resolve, reject) => {
-      BotDb.findOne({ where: { id: botId } }).then((bot) => {
-        //if bot doesnt exist and is running set running to false
-        if (!this.botInstances[botId] && bot.running) {
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId } },
-          ).then(() => resolve(true));
-        }
-        //else check if bot is offline and set running to false
-        if (!this.botInstances[botId]?.isConnected) {
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId } },
-          ).then(() => resolve(true));
-        }
-        return resolve(true);
+        where: {
+          id: data.botId,
+        },
       });
-    });
+      return result;
+    } catch (err) {
+      return err;
+    }
+  }
+  async refreshBotStatus(botId: number) {
+    const bot = await this.prisma.bot.findUnique({ where: { id: botId } });
+    //if bot doesnt exist and is running set running to false
+    if (!this.botInstances[botId] && bot.running) {
+      return this.prisma.bot
+        .update({ data: { running: false }, where: { id: botId } })
+        .then(() => true);
+    }
+    //else check if bot is offline and set running to false
+    if (!this.botInstances[botId]?.isConnected) {
+      return this.prisma.bot
+        .update({ data: { running: false }, where: { id: botId } })
+        .then(() => true);
+    }
+    return true;
   }
 }

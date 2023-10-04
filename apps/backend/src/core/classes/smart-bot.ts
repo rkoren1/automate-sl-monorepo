@@ -1,5 +1,4 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
-import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { BaseBot } from './base-bot';
 
 export class SmartBot extends BaseBot {
@@ -7,7 +6,7 @@ export class SmartBot extends BaseBot {
     login: LoginParameters,
     options: BotOptionFlags,
     user: any,
-    bot: BotDb,
+    bot: any,
   ) {
     super(login, options, user, bot);
   }

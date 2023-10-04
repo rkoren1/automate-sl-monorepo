@@ -161,9 +161,9 @@ export class BotService {
       });
     });
   }
-  getBotConfiguration(data) {
-    return this.prisma.bot
-      .findMany({
+  async getBotConfiguration(data) {
+    try {
+      const result = await this.prisma.bot.findMany({
         select: {
           id: true,
           loginFirstName: true,
@@ -186,14 +186,12 @@ export class BotService {
           loginLastName: data.botLastName,
           userId: data.userId,
         },
-      })
-      .then((result) => {
-        return result;
-      })
-      .catch((err) => {
-        console.error(err);
-        return err;
       });
+      return result;
+    } catch (err) {
+      console.error(err);
+      return err;
+    }
   }
   startBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
@@ -322,44 +320,44 @@ export class BotService {
             .then((result) => resolve(result))
             .catch((err) => reject(err));
         })
-        .catch((err: Error) => reject(err));
-    });
-  }
-  getSharedBots(userId: number) {
-    return new Promise((resolve, reject) => {
-      this.prisma.sharedBot
-        .findMany({
-          select: {
-            id: true,
-            loginFirstName: true,
-            loginLastName: true,
-            running: true,
-            uuid: true,
-            imageId: true,
-            sharedBotUserSubscription: { where: { userId: userId } },
-          },
-        })
-        .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }
-  getPackages() {
-    return new Promise((resolve, reject) => {
-      return this.prisma.subPackage
-        .findMany({
-          select: {
-            id: true,
-            packageName: true,
-            packageDescription: true,
-            pricePerWeek: true,
-            discount: true,
-            pricePerMonth: true,
-            couponId: true,
-          },
-        })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
-    });
+  async getSharedBots(userId: number) {
+    try {
+      const result = await this.prisma.sharedBot.findMany({
+        select: {
+          id: true,
+          loginFirstName: true,
+          loginLastName: true,
+          running: true,
+          uuid: true,
+          imageId: true,
+          sharedBotUserSubscription: { where: { userId: userId } },
+        },
+      });
+      return result;
+    } catch (err) {
+      return err;
+    }
+  }
+  async getPackages() {
+    try {
+      const result = await this.prisma.subPackage.findMany({
+        select: {
+          id: true,
+          packageName: true,
+          packageDescription: true,
+          pricePerWeek: true,
+          discount: true,
+          pricePerMonth: true,
+          couponId: true,
+        },
+      });
+      return result;
+    } catch (err) {
+      return err;
+    }
   }
   getDiscordSettings(botId: number) {
     return new Promise((resolve, reject) => {

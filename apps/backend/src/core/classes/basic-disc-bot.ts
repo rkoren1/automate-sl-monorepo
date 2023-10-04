@@ -1,8 +1,6 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import fetch from 'node-fetch';
 import urlMetadata from 'url-metadata';
-import { BotDb } from '../../modules/bot/entities/bot.entity';
-import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
 import { discClient } from '../services/discord-bot.service';
 import { BaseBot } from './base-bot';
 
@@ -11,8 +9,8 @@ export class BasicDiscBot extends BaseBot {
     login: LoginParameters,
     options: BotOptionFlags,
     user: any,
-    bot: BotDb,
-    discParams: DiscordSettings,
+    bot: any,
+    discParams: any,
   ) {
     super(login, options, user, bot);
     this.relayGroupChatToDisc(discParams.webHookUrl, discParams.slGroupUuid);

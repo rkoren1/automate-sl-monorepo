@@ -6,7 +6,6 @@ import {
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { forkJoin } from 'rxjs';
-import { Op } from 'sequelize';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
@@ -14,7 +13,6 @@ import { DiscordSettings } from '../discord-settings/entities/discord-setting.en
 import { Package } from '../package/entities/package.entity';
 import { SharedBotUserSubscription } from '../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
-import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
@@ -24,21 +22,19 @@ import { BotDb } from './entities/bot.entity';
 export class BotService {
   prisma = new PrismaClient();
   botInstances = new Array<SmartBot | BasicDiscBot>();
-  slAccountExists(firstName: string, lastName: string, password: string) {
+  async slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
     loginParams.firstName = firstName;
     loginParams.lastName = lastName;
     loginParams.password = password;
     loginParams.start = 'last';
     const bot: Bot = new Bot(loginParams, BotOptionFlags.None);
-    return bot
-      .login()
-      .then((res) => {
-        return res.agent.agentID['mUUID'];
-      })
-      .catch(() => {
-        return false;
-      });
+    try {
+      const res = await bot.login();
+      return res.agent.agentID['mUUID'];
+    } catch {
+      return false;
+    }
   }
   create(createBotDto: CreateBotDto) {
     return new Promise((resolve, reject) => {
@@ -70,29 +66,33 @@ export class BotService {
                   image_id: metadata.imageid,
                 },
               })
-              .then((bot) => {
-                BotDb.findAll({
-                  where: { userId: createBotDto.userId },
-                }).then((userBots) => {
-                  //if this is the only bot give 3 days of free subscription
-                  if (userBots.length < 2) {
-                    Subscription.create({
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: after3Days,
-                      packageId: 1,
-                      botId: bot.id,
-                    }).catch((err) => console.error(err));
-                  } //just create an empty subscription
-                  else {
-                    Subscription.create({
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: currentDate,
-                      packageId: 1,
-                      botId: bot.id,
-                    }).catch((err) => console.error(err));
-                  }
-                  return resolve(metadata.imageid);
+              .then(async (bot) => {
+                const userBots = await this.prisma.bot.findMany({
+                  where: { user_id: createBotDto.userId },
                 });
+                //if this is the only bot give 3 days of free subscription
+                if (userBots.length < 2) {
+                  this.prisma.subscription.create({
+                    data: {
+                      subscription_start: currentDate,
+                      subscription_end: after3Days,
+                      package_id: 1,
+                      bot_id: bot.id,
+                    },
+                  });
+                }
+                //just create an empty subscription
+                else {
+                  this.prisma.subscription.create({
+                    data: {
+                      subscription_start: currentDate,
+                      subscription_end: currentDate,
+                      package_id: 1,
+                      bot_id: bot.id,
+                    },
+                  });
+                }
+                return resolve(metadata.imageid);
               })
               .catch((err) => {
                 console.error(err);
@@ -110,34 +110,28 @@ export class BotService {
     return new Promise((resolve, reject) => {
       const currentDate = new Date();
       forkJoin([
-        BotDb.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: {
-            model: Subscription,
-            where: { subscriptionEnd: { [Op.gt]: currentDate } },
-            required: false,
+        this.prisma.bot.findMany({
+          select: {
+            id: true,
+            login_first_name: true,
+            login_last_name: true,
+            running: true,
+            uuid: true,
+            image_id: true,
+            subscription: { where: { subscription_end: { gt: currentDate } } },
           },
-          where: { userId: userId },
+          where: { user_id: userId },
         }),
-        SharedBot.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: [
-            { model: SharedBotUserSubscription, where: { userId: userId } },
-          ],
+        this.prisma.shared_bot.findMany({
+          select: {
+            id: true,
+            login_first_name: true,
+            login_last_name: true,
+            running: true,
+            uuid: true,
+            image_id: true,
+            shared_bot_user_subscription: { where: { user_id: userId } },
+          },
         }),
       ]).subscribe({
         next: (result) => {
@@ -145,22 +139,22 @@ export class BotService {
           result[0].forEach((ele) => {
             response.my.push({
               id: ele.id,
-              loginName: ele.loginFirstName,
-              loginLastName: ele.loginLastName,
+              loginName: ele.login_first_name,
+              loginLastName: ele.login_last_name,
               running: ele.running,
               uuid: ele.uuid,
-              imageId: ele.imageId,
-              validSubscription: ele.subscriptions.length > 0 ? true : false,
+              imageId: ele.image_id,
+              validSubscription: ele.subscription.length > 0 ? true : false,
             });
           });
           result[1].forEach((ele) => {
             response.shared.push({
               id: ele.id,
-              loginName: ele.loginFirstName,
-              loginLastName: ele.loginLastName,
+              loginName: ele.login_first_name,
+              loginLastName: ele.login_last_name,
               running: ele.running,
               uuid: ele.uuid,
-              imageId: ele.imageId,
+              imageId: ele.image_id,
               validSubscription: false,
             });
           });
@@ -173,35 +167,38 @@ export class BotService {
     });
   }
   getBotConfiguration(data) {
-    return new Promise((resolve, reject) => {
-      return BotDb.findOne({
-        attributes: [
-          'id',
-          'loginFirstName',
-          'imageId',
-          'loginLastName',
-          'loginSpawnLocation',
-          'loginRegion',
-        ],
-        where: {
-          loginFirstName: data.botFirstName,
-          loginLastName: data.botLastName,
-          userId: data.userId,
+    return this.prisma.bot
+      .findMany({
+        select: {
+          id: true,
+          login_first_name: true,
+          image_id: true,
+          login_last_name: true,
+          login_spawn_location: true,
+          login_region: true,
+          subscription: {
+            select: {
+              subscription_start: true,
+              subscription_end: true,
+              subPackage: {
+                select: { id: true, package_name: true },
+              },
+            },
+          },
         },
-        include: {
-          model: Subscription,
-          attributes: ['subscriptionStart', 'subscriptionEnd'],
-          include: [{ model: Package, attributes: ['id', 'packageName'] }],
+        where: {
+          login_first_name: data.botFirstName,
+          login_last_name: data.botLastName,
+          user_id: data.userId,
         },
       })
-        .then((result) => {
-          return resolve(result.dataValues);
-        })
-        .catch((err) => {
-          console.error(err);
-          return reject(err);
-        });
-    });
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        console.error(err);
+        return err;
+      });
   }
   startBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {

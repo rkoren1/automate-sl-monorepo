@@ -56,7 +56,7 @@ export class UserService {
       );
       //save refreshToken in db
       await this.prisma.user.update({
-        data: { refresh_token: refreshToken },
+        data: { refreshToken: refreshToken },
         where: { email: authenticateUserDto.email },
       });
       return {

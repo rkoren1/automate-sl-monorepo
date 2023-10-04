@@ -15,7 +15,7 @@ export class PaymentService {
     return this.prisma.user
       .findUnique({ where: { id: userId } })
       .then((user) => {
-        return { lDollarBalance: user.l__balance };
+        return { lDollarBalance: user.ldollarBalance };
       })
       .catch((err) => {
         console.error(err);
@@ -43,7 +43,7 @@ export class PaymentService {
                       data.amountOfDateUnits * selectedPackage.pricePerMonth;
                     break;
                 }
-                if (user.l__balance < subscriptionCost) {
+                if (user.ldollarBalance < subscriptionCost) {
                   return resolve({
                     success: false,
                     message: 'Balance Too Low',
@@ -57,7 +57,9 @@ export class PaymentService {
                 });
                 //Deduct the money
                 this.prisma.user.update({
-                  data: { l__balance: user.l__balance - subscriptionCost },
+                  data: {
+                    ldollarBalance: user.ldollarBalance - subscriptionCost,
+                  },
                   where: { id: data.userId },
                 });
 

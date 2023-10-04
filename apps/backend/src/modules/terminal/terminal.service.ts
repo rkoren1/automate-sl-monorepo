@@ -66,12 +66,12 @@ export class TerminalService {
             data: {
               email: data.email,
               uuid: data.uuid,
-              avatar_name: data.avatarName,
+              avatarName: data.avatarName,
               password: hashedPass,
-              l__balance: 0,
+              ldollarBalance: 0,
             },
           })
-          .then((result) => resolve(data.password))
+          .then(() => resolve(data.password))
           .catch((err) => {
             console.error(err);
             return reject(err);
@@ -153,10 +153,10 @@ export class TerminalService {
       this.prisma.user
         .findUnique({ where: { uuid: data.UUID } })
         .then((user) => {
-          const newBalance = user.l__balance + data.lDollarAmount;
+          const newBalance = user.ldollarBalance + data.lDollarAmount;
           this.prisma.user
             .update({
-              data: { l__balance: newBalance },
+              data: { ldollarBalance: newBalance },
               where: { uuid: data.UUID },
             })
             .then((res) => resolve(newBalance))
@@ -166,13 +166,13 @@ export class TerminalService {
   };
   getBalance(uuid: string) {
     return this.prisma.user
-      .findUnique({ select: { l__balance: true }, where: { uuid: uuid } })
+      .findUnique({ select: { ldollarBalance: true }, where: { uuid: uuid } })
       .then((user) => {
         if (user)
           return {
             result: Result.OK,
             resulttext: 'get_balance_success',
-            custom: { balance: user.l__balance },
+            custom: { balance: user.ldollarBalance },
           };
         else
           return {

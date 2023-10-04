@@ -21,7 +21,7 @@ export class AuthController {
     return this.prisma.user
       .findFirst({
         select: { email: true },
-        where: { refresh_token: refreshToken },
+        where: { refreshToken: refreshToken },
       })
       .then((foundUser) => {
         if (!foundUser) return res.sendStatus(204);
@@ -43,7 +43,7 @@ export class AuthController {
         );
       })
       .catch(
-        (err) => res.sendStatus(403), //unauthorized
+        () => res.sendStatus(403), //unauthorized
       );
   }
   @Get('logout')
@@ -56,16 +56,16 @@ export class AuthController {
     this.prisma.user
       .findFirst({
         select: { email: true },
-        where: { refresh_token: refreshToken },
+        where: { refreshToken: refreshToken },
       })
       .then((foundUser) => {
         //delete refreshtoken in db (make it empty string)
         this.prisma.user
           .update({
-            data: { refresh_token: '' },
+            data: { refreshToken: '' },
             where: { email: foundUser.email },
           })
-          .then((result) => {
+          .then(() => {
             res.clearCookie('jwt', { httpOnly: true, maxAge: 86400000 }); //secure: true - only serves on https
             return res.sendStatus(204);
           })

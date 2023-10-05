@@ -4,7 +4,7 @@ import {
   LoginParameters,
 } from '@caspertech/node-metaverse';
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, bot, user } from '@prisma/client';
 import { forkJoin } from 'rxjs';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
@@ -208,7 +208,7 @@ export class BotService {
           },
           where: { id: botId, userId: userId },
         })
-        .then((bot) => {
+        .then((bot: bot) => {
           if (
             bot.loginFirstName === null ||
             bot.loginPassword === null ||
@@ -232,7 +232,7 @@ export class BotService {
               where: { id: userId },
               select: { uuid: true, avatarName: true },
             })
-            .then((user) => {
+            .then((user: user) => {
               this.prisma.discordSettings
                 .findMany({ where: { botId: botId } })
                 .then((discordSettings) => {

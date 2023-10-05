@@ -6,6 +6,7 @@ import {
   Vector3,
 } from '@caspertech/node-metaverse';
 import cron from 'node-cron';
+import { bot, user } from '@prisma/client';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { isUuidValid } from '../services/helper.service';
@@ -15,12 +16,12 @@ export class BaseBot extends Bot {
   public isConnected = false;
   protected ownerUUID: string;
   protected ownerName: string;
-  protected botData: BotDb;
+  protected botData: bot;
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
-    user: any,
-    bot: BotDb,
+    user: user,
+    bot: bot,
   ) {
     super(login, options);
     this.botData = bot;

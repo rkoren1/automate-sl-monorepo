@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bot {
+  id                   Int            @id @default(autoincrement())
+  loginFirstName     String         @db.VarChar(255)
+  loginLastName      String         @db.VarChar(255)
+  loginPassword       String         @db.VarChar(255)
+  loginSpawnLocation String         @db.VarChar(255)
+  userId              Int
+  running              Boolean
+  shouldRun           Boolean?
+  loginRegion         String?        @db.VarChar(255)
+  packageId           Int?
+  uuid                 String         @db.VarChar(36)
+  imageId             String         @db.VarChar(36)
+  actionId            Int?
+  createdAt           DateTime?      @db.DateTime(0)
+  updatedAt           DateTime?      @db.DateTime(0)
+  user                 user           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "bot_ibfk_1")
+  subscription         subscription[]
+
+  @@index([userId], map: "userId")
+}
+
+model botLog {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  botUuid   String    @db.VarChar(255)
+  message    String    @db.VarChar(255)
+  event      String    @db.VarChar(255)
+  createdAt DateTime? @db.DateTime(0)
+  updatedAt DateTime? @db.DateTime(0)
+}
+
+model coupon {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(255)
+  type           String           @db.VarChar(255)
+  duration       Int
+  uses           Int
+  createdAt     DateTime?        @db.DateTime(0)
+  updatedAt     DateTime?        @db.DateTime(0)
+  subPackage subPackage[]
+}
+
+model discordSettings {
+  id              Int       @id @default(autoincrement())
+  botId          Int
+  webHookUrl    String?   @db.VarChar(255)
+  slGroupUuid   String?   @db.VarChar(255)
+  discChannelId String?   @db.VarChar(255)
+  createdAt      DateTime? @db.DateTime(0)
+  updatedAt      DateTime? @db.DateTime(0)
+}
+
+model groupImAvatar {
+  id               Int           @id @default(autoincrement())
+  uuid             String        @db.VarChar(255)
+  groupImListId Int
+  createdAt       DateTime?     @db.DateTime(0)
+  updatedAt       DateTime?     @db.DateTime(0)
+  groupImList    groupImList @relation(fields: [groupImListId], references: [id], onDelete: Cascade, map: "groupImAvatar_ibfk_1")
+
+  @@index([groupImListId], map: "groupImListId")
+}
+
+model groupImList {
+  id              Int               @id @default(autoincrement())
+  listName       String            @db.VarChar(255)
+  userId         Int
+  createdAt      DateTime?         @db.DateTime(0)
+  updatedAt      DateTime?         @db.DateTime(0)
+  groupImAvatar groupImAvatar[]
+  user            user              @relation(fields: [userId], references: [id], onDelete: Cascade, map: "groupImList_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+/// This model has been renamed to 'subPackage' during introspection, because the original name 'package' is reserved.
+model subPackage {
+  id                           Int                            @id @default(autoincrement())
+  packageName                 String                         @db.VarChar(255)
+  packageDescription          String?                        @db.VarChar(255)
+  pricePerWeek               Int
+  discount                     Int
+  pricePerMonth              Int
+  couponId                    Int?
+  createdAt                   DateTime?                      @db.DateTime(0)
+  updatedAt                   DateTime?                      @db.DateTime(0)
+  coupon                       coupon?                        @relation(fields: [couponId], references: [id], onDelete: Cascade, map: "package_ibfk_1")
+  sharedBotUserSubscription sharedBotUserSubscription[]
+  subscription                 subscription[]
+
+  @@index([couponId], map: "couponId")
+  @@map("package")
+}
+
+model paymentLog {
+  id         Int       @id @default(autoincrement())
+  userUuid  String    @db.VarChar(255)
+  amount     Int
+  createdAt DateTime? @db.DateTime(0)
+  updatedAt DateTime? @db.DateTime(0)
+  user       user      @relation(fields: [userUuid], references: [uuid], onDelete: Cascade, map: "paymentLog_ibfk_1")
+
+  @@index([userUuid], map: "userUuid")
+}
+
+model sharedBot {
+  id                           Int                            @id @default(autoincrement())
+  loginFirstName             String                         @db.VarChar(255)
+  loginLastName              String                         @db.VarChar(255)
+  loginPassword               String                         @db.VarChar(255)
+  loginSpawnLocation         String                         @db.VarChar(255)
+  running                      Boolean
+  loginRegion                 String?                        @db.VarChar(255)
+  packageId                   Int?
+  uuid                         String                         @db.VarChar(36)
+  imageId                     String                         @db.VarChar(36)
+  createdAt                   DateTime?                      @db.DateTime(0)
+  updatedAt                   DateTime?                      @db.DateTime(0)
+  sharedBotUserSubscription sharedBotUserSubscription[]
+}
+
+model sharedBotUserSubscription {
+  id                 Int            @id @default(autoincrement())
+  sharedBotId      Int
+  userId            Int
+  subscriptionStart DateTime?      @db.DateTime(0)
+  subscriptionEnd   DateTime?      @db.DateTime(0)
+  packageId         Int
+  createdAt         DateTime?      @db.DateTime(0)
+  updatedAt         DateTime?      @db.DateTime(0)
+  sharedBot         sharedBot     @relation(fields: [sharedBotId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_1")
+  user               user           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_2")
+  subPackage     subPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_3")
+
+  @@index([packageId], map: "packageId")
+  @@index([sharedBotId], map: "sharedBotId")
+  @@index([userId], map: "userId")
+}
+
+model subscription {
+  id                 Int            @id @default(autoincrement())
+  packageId         Int
+  subscriptionStart DateTime       @db.DateTime(0)
+  subscriptionEnd   DateTime       @db.DateTime(0)
+  botId             Int
+  createdAt         DateTime?      @db.DateTime(0)
+  updatedAt         DateTime?      @db.DateTime(0)
+  subPackage     subPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
+  bot                bot            @relation(fields: [botId], references: [id], onDelete: Cascade, map: "subscription_ibfk_2")
+
+  @@unique([packageId, botId], map: "subscriptionPackageIdBotId_unique")
+  @@index([botId], map: "botId")
+}
+
+model terminal {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  apiKey    String    @db.VarChar(255)
+  createdAt DateTime? @db.DateTime(0)
+  updatedAt DateTime? @db.DateTime(0)
+}
+
+model terminalOwner {
+  id          Int       @id @default(autoincrement())
+  avatarUuid String    @db.VarChar(255)
+  avatarName String    @db.VarChar(255)
+  parcelName String    @db.VarChar(255)
+  slUrl      String    @db.VarChar(255)
+  lastActive DateTime  @db.DateTime(0)
+  createdAt  DateTime? @db.DateTime(0)
+  updatedAt  DateTime? @db.DateTime(0)
+}
+
+model user {
+  id                           Int                            @id @default(autoincrement())
+  email                        String                         @unique(map: "email") @db.VarChar(255)
+  password                     String                         @db.VarChar(255)
+  refreshToken                String?                        @db.VarChar(255)
+  ldollarBalance                   Int?                       @db.Int
+  uuid                         String?                        @unique(map: "uuid") @db.VarChar(36)
+  avatarName                  String?                        @db.VarChar(255)
+  createdAt                   DateTime?                      @db.DateTime(0)
+  updatedAt                   DateTime?                      @db.DateTime(0)
+  bot                          bot[]
+  groupImList                groupImList[]
+  paymentLog                  paymentLog[]
+  sharedBotUserSubscription sharedBotUserSubscription[]
+}
+

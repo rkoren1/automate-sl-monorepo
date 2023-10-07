@@ -1,28 +1,28 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("terminal_owner", { schema: "automatesl" })
+@Entity('terminal_owner', { schema: 'automatesl' })
 export class TerminalOwner {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("varchar", { name: "avatar_uuid", length: 255 })
+  @Column('varchar')
   avatarUuid: string;
 
-  @Column("varchar", { name: "avatar_name", length: 255 })
+  @Column('varchar')
   avatarName: string;
 
-  @Column("varchar", { name: "parcel_name", length: 255 })
+  @Column('varchar')
   parcelName: string;
 
-  @Column("varchar", { name: "sl_url", length: 255 })
+  @Column('varchar')
   slUrl: string;
 
-  @Column("datetime", { name: "last_active" })
+  @Column('datetime')
   lastActive: Date;
 
-  @Column("datetime", { name: "created_at" })
+  @Column('datetime')
   createdAt: Date;
 
-  @Column("datetime", { name: "updated_at" })
+  @Column('datetime')
   updatedAt: Date;
 }

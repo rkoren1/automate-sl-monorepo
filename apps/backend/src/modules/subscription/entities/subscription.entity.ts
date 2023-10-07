@@ -5,48 +5,48 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Package } from "./Package";
-import { Bot } from "./Bot";
+} from 'typeorm';
+import { BotDb } from '../../bot/entities/bot.entity';
+import { SubPackage } from '../../package/entities/sub-package.entity';
 
-@Index("subscriptionPackageIdBotId_unique", ["packageId", "botId"], {
+@Index('subscriptionPackageIdBotId_unique', ['packageId', 'botId'], {
   unique: true,
 })
-@Index("botId", ["botId"], {})
-@Entity("subscription", { schema: "automatesl" })
+@Index('botId', ['botId'], {})
+@Entity('subscription', { schema: 'automatesl' })
 export class Subscription {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("int", { name: "botId" })
+  @Column('int')
   botId: number;
 
-  @Column("datetime", { name: "createdAt", nullable: true })
+  @Column('datetime', { nullable: true })
   createdAt: Date | null;
 
-  @Column("int", { name: "packageId" })
+  @Column('int')
   packageId: number;
 
-  @Column("datetime", { name: "subscriptionEnd" })
+  @Column('datetime')
   subscriptionEnd: Date;
 
-  @Column("datetime", { name: "subscriptionStart" })
+  @Column('datetime')
   subscriptionStart: Date;
 
-  @Column("datetime", { name: "updatedAt", nullable: true })
+  @Column('datetime', { nullable: true })
   updatedAt: Date | null;
 
-  @ManyToOne(() => Package, (package) => package.subscriptions, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+  @ManyToOne(() => SubPackage, (subPackage) => subPackage.subscriptions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "packageId", referencedColumnName: "id" }])
-  package: Package;
+  @JoinColumn([{ name: 'packageId', referencedColumnName: 'id' }])
+  package: SubPackage;
 
-  @ManyToOne(() => Bot, (bot) => bot.subscriptions, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+  @ManyToOne(() => BotDb, (botDb) => botDb.subscriptions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "botId", referencedColumnName: "id" }])
-  bot: Bot;
+  @JoinColumn([{ name: 'botId', referencedColumnName: 'id' }])
+  bot: BotDb;
 }

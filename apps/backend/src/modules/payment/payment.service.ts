@@ -3,7 +3,7 @@ import {
   addDaysToDate,
   addMonthsToDate,
 } from '../../core/services/helper.service';
-import { Package } from '../package/entities/package.entity';
+import { SubPackage } from '../package/entities/sub-package.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { User } from '../user/entities/user.entity';
 import { PaymentLog } from './entities/payment-log.entity';
@@ -27,7 +27,7 @@ export class PaymentService {
         //optimize -> call user and package at same time
         //calculate if user has enough money and calculate how much his package costs
         User.findOne({ where: { id: data.userId } }).then((user) => {
-          Package.findOne({ where: { id: data.packageId } }).then(
+          SubPackage.findOne({ where: { id: data.packageId } }).then(
             (selectedPackage) => {
               switch (data.dateUnit) {
                 case 'Week':
@@ -51,7 +51,7 @@ export class PaymentService {
               //Deduct the money
               User.update(
                 { l$Balance: user.l$Balance - subscriptionCost },
-                { where: { id: data.userId } }
+                { where: { id: data.userId } },
               );
 
               //removes free trial if exists for this bot
@@ -70,13 +70,13 @@ export class PaymentService {
                           case 'Week':
                             endDate = addDaysToDate(
                               endDate,
-                              data.amountOfDateUnits * 7
+                              data.amountOfDateUnits * 7,
                             );
                             break;
                           case 'Month':
                             endDate = addMonthsToDate(
                               endDate,
-                              data.amountOfDateUnits
+                              data.amountOfDateUnits,
                             );
                             break;
                         }
@@ -91,7 +91,7 @@ export class PaymentService {
                               botId: data.botId,
                               packageId: data.packageId,
                             },
-                          }
+                          },
                         )
                           .then((res) => {
                             console.log(endDate);
@@ -113,13 +113,13 @@ export class PaymentService {
                           case 'Week':
                             endDate = addDaysToDate(
                               endDate,
-                              data.amountOfDateUnits * 7
+                              data.amountOfDateUnits * 7,
                             );
                             break;
                           case 'Month':
                             endDate = addMonthsToDate(
                               endDate,
-                              data.amountOfDateUnits
+                              data.amountOfDateUnits,
                             );
                             break;
                         }
@@ -134,7 +134,7 @@ export class PaymentService {
                             resolve({
                               success: true,
                               message: 'Payment Successful',
-                            })
+                            }),
                           )
                           .catch((err) => {
                             console.error(err);
@@ -144,14 +144,14 @@ export class PaymentService {
                             });
                           });
                       }
-                    }
+                    },
                   );
                 })
                 .catch((err) => console.error(err));
-            }
+            },
           );
         });
-      }
+      },
     );
   }
 }

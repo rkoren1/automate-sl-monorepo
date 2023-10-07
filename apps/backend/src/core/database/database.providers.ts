@@ -3,7 +3,7 @@ import { DEVELOPMENT, PRODUCTION, SEQUELIZE, TEST } from '../../constants';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
-import { Package } from '../../modules/package/entities/package.entity';
+import { SubPackage } from '../../modules/package/entities/sub-package.entity';
 import { PaymentLog } from '../../modules/payment/entities/payment-log.entity';
 import { SharedBotUserSubscription } from '../../modules/shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../../modules/shared-bot/entities/shared-bot.entity';
@@ -41,7 +41,7 @@ export const databaseProviders = [
         Subscription,
         SharedBotUserSubscription,
         PaymentLog,
-        Package,
+        SubPackage,
         DiscordSettings,
         BotLog,
         TerminalOwner,

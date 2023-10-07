@@ -1,20 +1,19 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Table({ underscored: true, tableName: 'payment_log' })
-export class PaymentLog extends Model<PaymentLog> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity("payment_log", { schema: "automatesl" })
+export class PaymentLog {
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "user_uuid", length: 255 })
   userUuid: string;
-  @Column({
-    type: DataType.INTEGER,
-  })
-  amount: number;
+
+  @Column("int", { name: "amount", nullable: true })
+  amount: number | null;
+
+  @Column("datetime", { name: "created_at" })
+  createdAt: Date;
+
+  @Column("datetime", { name: "updated_at" })
+  updatedAt: Date;
 }

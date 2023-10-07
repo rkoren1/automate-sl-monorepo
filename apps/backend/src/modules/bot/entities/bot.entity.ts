@@ -1,115 +1,70 @@
-import * as crypto from 'crypto';
 import {
-  AfterLoad,
-  BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
+  Index,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Subscription } from '../../subscription/entities/subscription.entity';
-import { User } from '../../user/entities/user.entity';
+import { Subscription } from './Subscription';
+import { User } from './User';
 
-@Entity({ name: 'bot' })
-export class BotDb extends BaseEntity {
-  @PrimaryGeneratedColumn()
+@Index('userId', ['userId'], {})
+@Entity('bot', { schema: 'automatesl' })
+export class BotDb {
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
-  @Column({
-    nullable: false,
-    name: 'login_first_name',
-  })
-  loginFirstName: string;
-  @Column({
-    nullable: false,
-    name: 'login_last_name',
-  })
-  loginLastName: string;
-  @Column({
-    nullable: false,
-    name: 'login_password',
-  })
-  loginPassword: string;
-  @Column({
-    nullable: false,
-    name: 'login_spawn_location',
-  })
-  loginSpawnLocation: string;
-  @Column({
-    nullable: false,
-    name: 'user_id',
-  })
-  userId: number;
-  @Column({
-    nullable: false,
-  })
+
+  @Column('tinyint', { name: 'running', width: 1 })
   running: boolean;
-  @Column({
-    name: 'login_region',
-  })
-  loginRegion: string;
-  @Column({
-    nullable: true,
-    name: 'package_id',
-  })
-  packageId: number;
-  @Column({
-    nullable: false,
-  })
+
+  @Column('varchar', { name: 'uuid', length: 36 })
   uuid: string;
-  @Column({
-    nullable: false,
-    name: 'image_id',
-  })
+
+  @Column('int', { name: 'actionId', nullable: true })
+  actionId: number | null;
+
+  @Column('datetime', { name: 'createdAt', nullable: true })
+  createdAt: Date | null;
+
+  @Column('varchar', { name: 'imageId', length: 36 })
   imageId: string;
-  @Column({
-    name: 'action_id',
+
+  @Column('varchar', { name: 'loginFirstName', length: 255 })
+  loginFirstName: string;
+
+  @Column('varchar', { name: 'loginLastName', length: 255 })
+  loginLastName: string;
+
+  @Column('varchar', { name: 'loginPassword', length: 255 })
+  loginPassword: string;
+
+  @Column('varchar', { name: 'loginRegion', nullable: true, length: 255 })
+  loginRegion: string | null;
+
+  @Column('varchar', { name: 'loginSpawnLocation', length: 255 })
+  loginSpawnLocation: string;
+
+  @Column('int', { name: 'packageId', nullable: true })
+  packageId: number | null;
+
+  @Column('tinyint', { name: 'shouldRun', nullable: true, width: 1 })
+  shouldRun: boolean | null;
+
+  @Column('datetime', { name: 'updatedAt', nullable: true })
+  updatedAt: Date | null;
+
+  @Column('int', { name: 'userId' })
+  userId: number;
+
+  @ManyToOne(() => User, (user) => user.bots, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  actionId: number;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  beforeBotupsert() {
-    this.loginPassword = encrypt(this.loginPassword);
-  }
-
-  @AfterLoad()
-  afterGetBot() {
-    this.loginPassword = decrypt(this.loginPassword);
-  }
-
-  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @OneToMany(() => Subscription, (subscription) => subscription.botId)
+  @OneToMany(() => Subscription, (subscription) => subscription.bot)
   subscriptions: Subscription[];
-}
-
-function encrypt(text) {
-  const iv = process.env.LOGIN_PASS_IV;
-  const cipher = crypto.createCipheriv(
-    'aes-256-cbc',
-    Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv,
-  );
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return encrypted.toString('hex');
-}
-function decrypt(encryptedData: string) {
-  const iv = process.env.LOGIN_PASS_IV;
-  const encryptedText = Buffer.from(encryptedData, 'hex');
-
-  const decipher = crypto.createDecipheriv(
-    'aes-256-cbc',
-    Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv,
-  );
-
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-
-  return decrypted.toString();
 }

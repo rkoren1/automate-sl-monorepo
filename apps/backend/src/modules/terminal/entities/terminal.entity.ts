@@ -1,21 +1,19 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Table({ underscored: true, tableName: 'terminal' })
-export class Terminal extends Model<Terminal> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity("terminal", { schema: "automatesl" })
+export class Terminal {
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "name", length: 255 })
   name: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "apiKey", length: 255 })
   apiKey: string;
+
+  @Column("datetime", { name: "createdAt", nullable: true })
+  createdAt: Date | null;
+
+  @Column("datetime", { name: "updatedAt", nullable: true })
+  updatedAt: Date | null;
 }

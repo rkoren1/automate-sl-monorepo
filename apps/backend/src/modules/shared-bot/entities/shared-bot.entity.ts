@@ -1,59 +1,47 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { SharedBotUserSubscription } from '../../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { SharedBotUserSubscription } from "./SharedBotUserSubscription";
 
-@Table({ underscored: true, tableName: 'shared_bot' })
-export class SharedBot extends Model<SharedBot> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity("shared_bot", { schema: "automatesl" })
+export class SharedBot {
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "login_first_name", length: 255 })
   loginFirstName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "login_last_name", length: 255 })
   loginLastName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "login_password", length: 255 })
   loginPassword: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "login_spawn_location", length: 255 })
   loginSpawnLocation: string;
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-  })
+
+  @Column("tinyint", { name: "running", width: 1 })
   running: boolean;
-  @Column({
-    type: DataType.STRING,
-  })
-  loginRegion: string;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
-  })
-  packageId: number;
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "login_region", nullable: true, length: 255 })
+  loginRegion: string | null;
+
+  @Column("int", { name: "package_id", nullable: true })
+  packageId: number | null;
+
+  @Column("varchar", { name: "uuid", length: 36 })
   uuid: string;
-  @Column({
-    type: DataType.STRING(36),
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "image_id", length: 36 })
   imageId: string;
 
-  @HasMany(() => SharedBotUserSubscription, 'sharedBotId')
-  sharedBotUserSubscriptions: SharedBotUserSubscription;
+  @Column("datetime", { name: "created_at" })
+  createdAt: Date;
+
+  @Column("datetime", { name: "updated_at" })
+  updatedAt: Date;
+
+  @OneToMany(
+    () => SharedBotUserSubscription,
+    (sharedBotUserSubscription) => sharedBotUserSubscription.sharedBot
+  )
+  sharedBotUserSubscriptions: SharedBotUserSubscription[];
 }

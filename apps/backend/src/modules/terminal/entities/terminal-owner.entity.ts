@@ -1,36 +1,28 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Table({ underscored: true, tableName: 'terminal_owner' })
-export class TerminalOwner extends Model<TerminalOwner> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Entity("terminal_owner", { schema: "automatesl" })
+export class TerminalOwner {
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "avatar_uuid", length: 255 })
   avatarUuid: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "avatar_name", length: 255 })
   avatarName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "parcel_name", length: 255 })
   parcelName: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
+  @Column("varchar", { name: "sl_url", length: 255 })
   slUrl: string;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
+
+  @Column("datetime", { name: "last_active" })
   lastActive: Date;
+
+  @Column("datetime", { name: "created_at" })
+  createdAt: Date;
+
+  @Column("datetime", { name: "updated_at" })
+  updatedAt: Date;
 }

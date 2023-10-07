@@ -1,44 +1,52 @@
 import {
-  BelongsTo,
   Column,
-  DataType,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-import { BotDb } from '../../bot/entities/bot.entity';
-import { Package } from '../../package/entities/package.entity';
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Package } from "./Package";
+import { Bot } from "./Bot";
 
-@Table({ underscored: true, tableName: 'subscription' })
-export class Subscription extends Model<Subscription> {
-  @Column({
-    type: DataType.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  })
+@Index("subscriptionPackageIdBotId_unique", ["packageId", "botId"], {
+  unique: true,
+})
+@Index("botId", ["botId"], {})
+@Entity("subscription", { schema: "automatesl" })
+export class Subscription {
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  subscriptionStart: Date;
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  subscriptionEnd: Date;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  packageId: number;
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+
+  @Column("int", { name: "botId" })
   botId: number;
 
-  @BelongsTo(() => BotDb, 'botId')
-  bot: BotDb;
-  @BelongsTo(() => Package, 'packageId')
+  @Column("datetime", { name: "createdAt", nullable: true })
+  createdAt: Date | null;
+
+  @Column("int", { name: "packageId" })
+  packageId: number;
+
+  @Column("datetime", { name: "subscriptionEnd" })
+  subscriptionEnd: Date;
+
+  @Column("datetime", { name: "subscriptionStart" })
+  subscriptionStart: Date;
+
+  @Column("datetime", { name: "updatedAt", nullable: true })
+  updatedAt: Date | null;
+
+  @ManyToOne(() => Package, (package) => package.subscriptions, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  @JoinColumn([{ name: "packageId", referencedColumnName: "id" }])
   package: Package;
+
+  @ManyToOne(() => Bot, (bot) => bot.subscriptions, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  @JoinColumn([{ name: "botId", referencedColumnName: "id" }])
+  bot: Bot;
 }

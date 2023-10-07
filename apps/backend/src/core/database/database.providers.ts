@@ -1,8 +1,8 @@
-import { Sequelize } from 'sequelize-typescript';
-import { DEVELOPMENT, PRODUCTION, SEQUELIZE, TEST } from '../../constants';
+import { DataSource } from 'typeorm';
+import { DEVELOPMENT, PRODUCTION, TEST } from '../../constants';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
-import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
+import { DiscordSettings } from '../../modules/discord-settings/entities/discord-settings.entity';
 import { SubPackage } from '../../modules/package/entities/sub-package.entity';
 import { PaymentLog } from '../../modules/payment/entities/payment-log.entity';
 import { SharedBotUserSubscription } from '../../modules/shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
@@ -15,7 +15,7 @@ import { databaseConfig } from './database.config';
 
 export const databaseProviders = [
   {
-    provide: SEQUELIZE,
+    provide: 'DATA_SOURCE',
     useFactory: async () => {
       let config;
       switch (process.env.NODE_ENV) {
@@ -31,23 +31,21 @@ export const databaseProviders = [
         default:
           config = databaseConfig.development;
       }
-      const sequelize = new Sequelize(config);
-      console.log(sequelize.models);
-      sequelize.addModels([
-        User,
-        Terminal,
+      config.entities = [
         BotDb,
-        SharedBot,
+        User,
         Subscription,
-        SharedBotUserSubscription,
-        PaymentLog,
         SubPackage,
-        DiscordSettings,
-        BotLog,
+        Terminal,
         TerminalOwner,
-      ]);
-      await sequelize.sync();
-      return sequelize;
+        BotLog,
+        DiscordSettings,
+        PaymentLog,
+        SharedBot,
+        SharedBotUserSubscription,
+      ];
+      const dataSource = new DataSource(config);
+      return dataSource.initialize();
     },
   },
 ];

@@ -4,8 +4,9 @@ import {
   LoginParameters,
 } from '@caspertech/node-metaverse';
 import { Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
 import { forkJoin } from 'rxjs';
-import { Op } from 'sequelize';
+import { EntityManager, MoreThan } from 'typeorm';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
@@ -22,140 +23,129 @@ import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { BotDb } from './entities/bot.entity';
 @Injectable()
 export class BotService {
+  constructor(
+    @InjectEntityManager()
+    private em: EntityManager,
+  ) {}
   botInstances = new Array<SmartBot | BasicDiscBot>();
-  slAccountExists(firstName: string, lastName: string, password: string) {
+  async slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
     loginParams.firstName = firstName;
     loginParams.lastName = lastName;
     loginParams.password = password;
     loginParams.start = 'last';
     const bot: Bot = new Bot(loginParams, BotOptionFlags.None);
-    return bot
-      .login()
-      .then((res) => {
-        return res.agent.agentID['mUUID'];
-      })
-      .catch((err) => {
-        return false;
-      });
+    try {
+      const res = await bot.login();
+      return res.agent.agentID['mUUID'];
+    } catch (err) {
+      return false;
+    }
   }
-  create(createBotDto: CreateBotDto) {
-    return new Promise((resolve, reject) => {
-      this.slAccountExists(
-        createBotDto.loginFirstName,
-        createBotDto.loginLastName,
-        createBotDto.loginPassword,
-      ).then((uuid) => {
-        if (!uuid) return reject({ exists: false });
+  async create(createBotDto: CreateBotDto) {
+    const uuid = await this.slAccountExists(
+      createBotDto.loginFirstName,
+      createBotDto.loginLastName,
+      createBotDto.loginPassword,
+    );
+    if (!uuid) return { exists: false };
 
-        urlMetadata('https://world.secondlife.com/resident/' + uuid).then(
-          (metadata: any) => {
-            const currentDate = new Date();
-            const after3Days = new Date();
-            after3Days.setDate(after3Days.getDate() + 3);
+    const metadata: any = await urlMetadata(
+      'https://world.secondlife.com/resident/' + uuid,
+    );
+    const currentDate = new Date();
+    const after3Days = new Date();
+    after3Days.setDate(after3Days.getDate() + 3);
 
-            BotDb.create({
-              userId: createBotDto.userId,
-              loginFirstName: createBotDto.loginFirstName,
-              loginLastName: createBotDto.loginLastName,
-              loginPassword: createBotDto.loginPassword,
-              running: false,
-              shouldRun: false,
-              loginSpawnLocation: createBotDto.loginSpawnLocation,
-              loginRegion: createBotDto.loginRegion,
-              uuid: uuid,
-              imageId: metadata.imageid,
-            })
-              .then((bot) => {
-                BotDb.findAll({
-                  where: { userId: createBotDto.userId },
-                }).then((userBots) => {
-                  //if this is the only bot give 3 days of free subscription
-                  if (userBots.length < 2) {
-                    Subscription.create({
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: after3Days,
-                      packageId: 1,
-                      botId: bot.id,
-                    }).catch((err) => console.error(err));
-                  }
-                  return resolve(metadata.imageid);
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-                return reject(err);
-              });
-          },
-        );
-      });
+    const bot = this.em.create(BotDb, {
+      userId: createBotDto.userId,
+      loginFirstName: createBotDto.loginFirstName,
+      loginLastName: createBotDto.loginLastName,
+      loginPassword: createBotDto.loginPassword,
+      running: false,
+      shouldRun: false,
+      loginSpawnLocation: createBotDto.loginSpawnLocation,
+      loginRegion: createBotDto.loginRegion,
+      uuid: uuid,
+      imageId: metadata.imageid,
     });
+    await this.em.save(bot);
+    const userBots = await this.em.find(BotDb, {
+      where: { userId: createBotDto.userId },
+    });
+    //if this is the only bot give 3 days of free subscription
+    if (userBots.length < 2) {
+      const sub = this.em.create(Subscription, {
+        subscriptionStart: currentDate,
+        subscriptionEnd: after3Days,
+        packageId: 1,
+        botId: bot.id,
+      });
+      this.em.save(sub);
+    }
+    return metadata.imageid;
   }
 
-  getAllBots(userId: number) {
-    return new Promise((resolve, reject) => {
-      const currentDate = new Date();
-      forkJoin([
-        BotDb.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: {
-            model: Subscription,
-            where: { subscriptionEnd: { [Op.gt]: currentDate } },
-            required: false,
-          },
-          where: { userId: userId },
-        }),
-        SharedBot.findAll({
-          attributes: [
-            'id',
-            'loginFirstName',
-            'loginLastName',
-            'running',
-            'uuid',
-            'imageId',
-          ],
-          include: [
-            { model: SharedBotUserSubscription, where: { userId: userId } },
-          ],
-        }),
-      ]).subscribe({
-        next: (result) => {
-          const response: GetBotDto = { my: [], shared: [] };
-          result[0].forEach((ele) => {
-            response.my.push({
-              id: ele.id,
-              loginName: ele.loginFirstName,
-              loginLastName: ele.loginLastName,
-              running: ele.running,
-              uuid: ele.uuid,
-              imageId: ele.imageId,
-              validSubscription: ele.subscriptions.length > 0 ? true : false,
-            });
-          });
-          result[1].forEach((ele) => {
-            response.shared.push({
-              id: ele.id,
-              loginName: ele.loginFirstName,
-              loginLastName: ele.loginLastName,
-              running: ele.running,
-              uuid: ele.uuid,
-              imageId: ele.imageId,
-              validSubscription: false,
-            });
-          });
-          resolve(response);
+  async getAllBots(userId: number) {
+    const currentDate = new Date();
+    forkJoin([
+      this.em.find(BotDb, {
+        select: [
+          'id',
+          'loginFirstName',
+          'loginLastName',
+          'running',
+          'uuid',
+          'imageId',
+        ],
+        where: {
+          userId: userId,
+          subscriptions: { subscriptionEnd: MoreThan(currentDate) },
         },
-        error: (err) => {
-          reject(err);
+      }),
+      this.em.find(SharedBot, {
+        select: [
+          'id',
+          'loginFirstName',
+          'loginLastName',
+          'running',
+          'uuid',
+          'imageId',
+        ],
+        where: {
+          sharedBotUserSubscriptions: { userId: userId },
         },
-      });
+      }),
+    ]).subscribe({
+      next: (result) => {
+        const response: GetBotDto = { my: [], shared: [] };
+        result[0].forEach((ele) => {
+          response.my.push({
+            id: ele.id,
+            loginName: ele.loginFirstName,
+            loginLastName: ele.loginLastName,
+            running: ele.running,
+            uuid: ele.uuid,
+            imageId: ele.imageId,
+            validSubscription: ele.subscriptions.length > 0 ? true : false,
+          });
+        });
+        result[1].forEach((ele) => {
+          response.shared.push({
+            id: ele.id,
+            loginName: ele.loginFirstName,
+            loginLastName: ele.loginLastName,
+            running: ele.running,
+            uuid: ele.uuid,
+            imageId: ele.imageId,
+            validSubscription: false,
+          });
+        });
+        return response;
+      },
+      error: (err) => {
+        return err;
+      },
     });
   }
   getBotConfiguration(data) {

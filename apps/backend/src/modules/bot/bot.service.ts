@@ -410,7 +410,7 @@ export class BotService {
         .then(() => true);
     }
     //else check if bot is offline and set running to false
-    if (this.botInstances[botId]?.isConnected) {
+    if (!this.botInstances[botId]?.isConnected) {
       return this.prisma.bot
         .update({ data: { running: false }, where: { id: botId } })
         .then(() => true);

@@ -322,7 +322,7 @@ export class BotService {
       return true;
     }
     //else check if bot is offline and set running to false
-    if (this.botInstances[botId]?.isConnected) {
+    if (!this.botInstances[botId]?.isConnected) {
       bot.running = false;
       await this.em.persistAndFlush(bot);
       return true;

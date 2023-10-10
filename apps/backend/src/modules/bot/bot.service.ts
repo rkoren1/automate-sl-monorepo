@@ -386,7 +386,7 @@ export class BotService {
           ).then(() => resolve(true));
         }
         //else check if bot is offline and set running to false
-        if (this.botInstances[botId]?.isConnected) {
+        if (!this.botInstances[botId]?.isConnected) {
           return BotDb.update(
             { running: false },
             { where: { id: botId } },

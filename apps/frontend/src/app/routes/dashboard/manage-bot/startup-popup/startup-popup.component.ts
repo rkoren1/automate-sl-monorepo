@@ -11,15 +11,16 @@ import { StartupPopupService } from './startup-popup.service';
 })
 export class StartupPopupComponent implements OnInit {
   startupForm: FormGroup;
-  selectedSpawnLocation = 'last';
+  selectedSpawnLocation: string;
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public inputParams: IBotConfiguration,
     private startupPopupService: StartupPopupService,
-    private dialogRef: MatDialogRef<StartupPopupComponent>
+    private dialogRef: MatDialogRef<StartupPopupComponent>,
   ) {}
 
   ngOnInit() {
+    this.selectedSpawnLocation = this.inputParams.loginSpawnLocation;
     this.initForm();
   }
 

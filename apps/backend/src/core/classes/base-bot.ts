@@ -141,7 +141,7 @@ export class BaseBot extends Bot {
 
   private subscribeToImCommands() {
     this.clientEvents.onInstantMessage.subscribe(
-      (messageEvent: InstantMessageEvent) => {
+      async (messageEvent: InstantMessageEvent) => {
         if (messageEvent.message === '') return;
         if (
           messageEvent.from?.toString() !== this.ownerUUID &&
@@ -151,7 +151,7 @@ export class BaseBot extends Bot {
             messageEvent.source === 1 &&
             messageEvent.fromName !== 'Second Life'
           ) {
-            this.clientCommands.comms.sendInstantMessage(
+            await this.clientCommands.comms.sendInstantMessage(
               messageEvent.from,
               "I'm sorry, but the Bot's commands are restricted to certain users with higher permissions. At this time, you do not have those permissions.",
             );
@@ -165,14 +165,14 @@ export class BaseBot extends Bot {
         switch (messageCommand) {
           case 'send_im': {
             if (commandParams.length !== 2) {
-              this.clientCommands.comms.sendInstantMessage(
+              await this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
                 'Invalid Command!',
               );
               break;
             }
             if (!isUuidValid(commandParams[0])) {
-              this.clientCommands.comms.sendInstantMessage(
+              await this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
                 'Invalid UUID!',
               );
@@ -182,18 +182,18 @@ export class BaseBot extends Bot {
                   messageEvent.from,
                   'Command Accepted'
                 ); */
-            this.clientCommands.comms.sendInstantMessage(
+            await this.clientCommands.comms.sendInstantMessage(
               commandParams[0],
               commandParams[1],
             );
             break;
           }
           case 'say': {
-            this.clientCommands.comms.say(commandParams[0]);
+            await this.clientCommands.comms.say(commandParams[0]);
             break;
           }
           case 'teleport': {
-            this.clientCommands.teleport.teleportTo(
+            await this.clientCommands.teleport.teleportTo(
               commandParams[0],
               new Vector3([
                 +commandParams[1],
@@ -205,15 +205,17 @@ export class BaseBot extends Bot {
             break;
           }
           case 'shout': {
-            this.clientCommands.comms.shout(commandParams[0]);
+            await this.clientCommands.comms.shout(commandParams[0]);
             break;
           }
           case 'group_im': {
-            this.clientCommands.comms.startGroupChatSession(
+            await this.clientCommands.comms.startGroupChatSession(
               commandParams[0],
               commandParams[1],
             );
-            this.clientCommands.comms.endGroupChatSession(commandParams[0]);
+            await this.clientCommands.comms.endGroupChatSession(
+              commandParams[0],
+            );
             /* this.clientCommands.comms.sendGroupMessage(
               commandParams[0],
               commandParams[1],
@@ -222,7 +224,7 @@ export class BaseBot extends Bot {
           }
           case 'group_notice': {
             if (commandParams.length !== 3) {
-              this.clientCommands.comms.sendInstantMessage(
+              await this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
                 'Invalid Command!',
               );
@@ -237,7 +239,7 @@ export class BaseBot extends Bot {
           }
           case 'group_invite': {
             if (commandParams.length !== 3) {
-              this.clientCommands.comms.sendInstantMessage(
+              await this.clientCommands.comms.sendInstantMessage(
                 messageEvent.from,
                 'Invalid Command!',
               );

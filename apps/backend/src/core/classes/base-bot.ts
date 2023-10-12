@@ -209,10 +209,15 @@ export class BaseBot extends Bot {
             break;
           }
           case 'group_im': {
-            this.clientCommands.comms.sendGroupMessage(
+            this.clientCommands.comms.startGroupChatSession(
               commandParams[0],
               commandParams[1],
             );
+            this.clientCommands.comms.endGroupChatSession(commandParams[0]);
+            /* this.clientCommands.comms.sendGroupMessage(
+              commandParams[0],
+              commandParams[1],
+            ); */
             break;
           }
           case 'group_notice': {

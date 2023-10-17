@@ -156,7 +156,7 @@ export class BotController {
     };
     return this.botService
       .stopBot(data.botId, data.userId)
-      .then((result) => res.json({ success: true }))
+      .then((result) => res.json({ success: result }))
       .catch((err) => res.json({ success: false }));
   }
   @Get('getsharedbots')

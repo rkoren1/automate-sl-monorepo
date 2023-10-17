@@ -297,21 +297,22 @@ export class BotService {
         });
     });
   }
-  stopBot(botId: number, userId: number) {
-    return new Promise((resolve, reject) => {
-      return this.botInstances[botId]
-        .close()
-        .then(() => {
-          this.botInstances[botId].isConnected = false;
-          return BotDb.update(
-            { running: false },
-            { where: { id: botId, userId: userId } },
-          )
-            .then((result) => resolve(result))
-            .catch((err) => reject(err));
-        })
-        .catch((err: Error) => reject(err));
-    });
+  async stopBot(botId: number, userId: number) {
+    try {
+      await this.botInstances[botId].close();
+      this.botInstances[botId].isConnected = false;
+      await BotDb.update(
+        { running: false },
+        { where: { id: botId, userId: userId } },
+      );
+      return true;
+    } catch (err) {
+      await BotDb.update(
+        { running: false },
+        { where: { id: botId, userId: userId } },
+      );
+      return true;
+    }
   }
   getSharedBots(userId: number) {
     return new Promise((resolve, reject) => {

@@ -12,7 +12,6 @@ import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
 import { DiscordSettings } from '../discord-settings/entities/discord-setting.entity';
 import { SubPackage } from '../package/entities/sub-package.entity';
-import { SharedBotUserSubscription } from '../shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { User } from '../user/entities/user.entity';
@@ -303,24 +302,20 @@ export class BotService {
         .catch((err: Error) => reject(err));
     });
   }
-  getSharedBots(userId: number) {
-    return new Promise((resolve, reject) => {
-      SharedBot.findAll({
-        attributes: [
-          'id',
-          'loginFirstName',
-          'loginLastName',
-          'running',
-          'uuid',
-          'imageId',
-        ],
-        include: [
-          { model: SharedBotUserSubscription, where: { userId: userId } },
-        ],
-      })
-        .then((result) => resolve(result))
-        .catch((err) => reject(err));
+  async getSharedBots(userId: number) {
+    const sharedBots = await this.em.find(SharedBot, {
+      select: [
+        'id',
+        'loginFirstName',
+        'loginLastName',
+        'running',
+        'uuid',
+        'imageId',
+        'sharedBotUserSubscriptions',
+      ],
+      where: { sharedBotUserSubscriptions: { userId: userId } },
     });
+    return sharedBots;
   }
   getPackages() {
     return new Promise((resolve, reject) => {

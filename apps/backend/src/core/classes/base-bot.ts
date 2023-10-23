@@ -223,7 +223,7 @@ export class BaseBot extends Bot {
               );
               break;
             }
-            this.clientCommands.group.sendGroupNotice(
+            await this.clientCommands.group.sendGroupNotice(
               commandParams[0],
               commandParams[1],
               commandParams[2],

@@ -238,7 +238,7 @@ export class BaseBot extends Bot {
               );
               break;
             }
-            this.clientCommands.group.sendGroupInvite(
+            await this.clientCommands.group.sendGroupInvite(
               commandParams[0],
               commandParams[1],
               commandParams[2],
@@ -246,7 +246,7 @@ export class BaseBot extends Bot {
             break;
           }
           default: {
-            this.clientCommands.comms.sendInstantMessage(
+            await this.clientCommands.comms.sendInstantMessage(
               messageEvent.from,
               'Invalid Command!',
             );

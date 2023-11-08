@@ -1,0 +1,374 @@
+{
+  "nodes": {
+    "frontend-e2e": {
+      "name": "frontend-e2e",
+      "type": "e2e",
+      "data": {
+        "name": "frontend-e2e",
+        "root": "apps/frontend-e2e",
+        "$schema": "../../node_modules/nx/schemas/project-schema.json",
+        "sourceRoot": "apps/frontend-e2e/src",
+        "projectType": "application",
+        "targets": {
+          "e2e": {
+            "inputs": [
+              "default",
+              "^production"
+            ],
+            "executor": "@nx/cypress:cypress",
+            "options": {
+              "cypressConfig": "apps/frontend-e2e/cypress.config.ts",
+              "devServerTarget": "frontend:serve:development",
+              "testingType": "e2e"
+            },
+            "configurations": {
+              "production": {
+                "devServerTarget": "frontend:serve:production"
+              },
+              "ci": {
+                "devServerTarget": "frontend:serve-static"
+              }
+            }
+          },
+          "lint": {
+            "inputs": [
+              "default",
+              "{workspaceRoot}/.eslintrc.json",
+              "{workspaceRoot}/.eslintignore"
+            ],
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+              "{options.outputFile}"
+            ],
+            "options": {
+              "lintFilePatterns": [
+                "apps/frontend-e2e/**/*.{js,ts}"
+              ]
+            },
+            "configurations": {}
+          }
+        },
+        "tags": [],
+        "implicitDependencies": [
+          "frontend"
+        ]
+      }
+    },
+    "backend-e2e": {
+      "name": "backend-e2e",
+      "type": "lib",
+      "data": {
+        "name": "backend-e2e",
+        "root": "apps/backend-e2e",
+        "$schema": "../../node_modules/nx/schemas/project-schema.json",
+        "implicitDependencies": [
+          "backend"
+        ],
+        "targets": {
+          "e2e": {
+            "inputs": [
+              "default",
+              "^production"
+            ],
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/{e2eProjectRoot}"
+            ],
+            "options": {
+              "jestConfig": "apps/backend-e2e/jest.config.ts",
+              "passWithNoTests": true
+            },
+            "configurations": {}
+          },
+          "lint": {
+            "inputs": [
+              "default",
+              "{workspaceRoot}/.eslintrc.json",
+              "{workspaceRoot}/.eslintignore"
+            ],
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+              "{options.outputFile}"
+            ],
+            "options": {
+              "lintFilePatterns": [
+                "apps/backend-e2e/**/*.{js,ts}"
+              ]
+            },
+            "configurations": {}
+          }
+        },
+        "tags": []
+      }
+    },
+    "frontend": {
+      "name": "frontend",
+      "type": "app",
+      "data": {
+        "name": "frontend",
+        "root": "apps/frontend",
+        "$schema": "../../node_modules/nx/schemas/project-schema.json",
+        "projectType": "application",
+        "prefix": "automate-sl",
+        "sourceRoot": "apps/frontend/src",
+        "tags": [],
+        "targets": {
+          "build": {
+            "dependsOn": [
+              "^build"
+            ],
+            "inputs": [
+              "production",
+              "^production"
+            ],
+            "executor": "@angular-devkit/build-angular:browser",
+            "outputs": [
+              "{options.outputPath}"
+            ],
+            "options": {
+              "outputPath": "dist/apps/automatesl.client",
+              "index": "apps/frontend/src/index.html",
+              "main": "apps/frontend/src/main.ts",
+              "polyfills": [
+                "zone.js"
+              ],
+              "tsConfig": "apps/frontend/tsconfig.app.json",
+              "assets": [
+                "apps/frontend/src/favicon.ico",
+                "apps/frontend/src/assets"
+              ],
+              "styles": [
+                "apps/frontend/src/styles.scss",
+                "./node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              ],
+              "scripts": []
+            },
+            "configurations": {
+              "production": {
+                "fileReplacements": [
+                  {
+                    "replace": "apps/frontend/src/environments/environment.ts",
+                    "with": "apps/frontend/src/environments/environment.prod.ts"
+                  }
+                ],
+                "budgets": [
+                  {
+                    "type": "initial",
+                    "maximumWarning": "2mb",
+                    "maximumError": "5mb"
+                  },
+                  {
+                    "type": "anyComponentStyle",
+                    "maximumWarning": "2kb",
+                    "maximumError": "4kb"
+                  }
+                ],
+                "outputHashing": "all"
+              },
+              "development": {
+                "buildOptimizer": false,
+                "optimization": false,
+                "vendorChunk": true,
+                "extractLicenses": false,
+                "sourceMap": true,
+                "namedChunks": true
+              }
+            },
+            "defaultConfiguration": "production"
+          },
+          "serve": {
+            "executor": "@angular-devkit/build-angular:dev-server",
+            "configurations": {
+              "production": {
+                "browserTarget": "frontend:build:production",
+                "fileReplacements": [
+                  {
+                    "replace": "apps/frontend/src/environments/environment.ts",
+                    "with": "apps/frontend/src/environments/environment.prod.ts"
+                  }
+                ]
+              },
+              "development": {
+                "browserTarget": "frontend:build:development"
+              }
+            },
+            "defaultConfiguration": "development",
+            "options": {}
+          },
+          "extract-i18n": {
+            "executor": "@angular-devkit/build-angular:extract-i18n",
+            "options": {
+              "browserTarget": "frontend:build"
+            },
+            "configurations": {}
+          },
+          "lint": {
+            "inputs": [
+              "default",
+              "{workspaceRoot}/.eslintrc.json",
+              "{workspaceRoot}/.eslintignore"
+            ],
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+              "{options.outputFile}"
+            ],
+            "options": {
+              "lintFilePatterns": [
+                "apps/frontend/**/*.ts",
+                "apps/frontend/**/*.html"
+              ]
+            },
+            "configurations": {}
+          },
+          "test": {
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+              "jestConfig": "apps/frontend/jest.config.ts",
+              "passWithNoTests": true
+            },
+            "configurations": {
+              "ci": {
+                "ci": true,
+                "codeCoverage": true
+              }
+            }
+          },
+          "serve-static": {
+            "executor": "@nx/web:file-server",
+            "options": {
+              "buildTarget": "frontend:build"
+            },
+            "configurations": {}
+          }
+        },
+        "implicitDependencies": []
+      }
+    },
+    "backend": {
+      "name": "backend",
+      "type": "app",
+      "data": {
+        "name": "backend",
+        "root": "apps/backend",
+        "$schema": "../../node_modules/nx/schemas/project-schema.json",
+        "sourceRoot": "apps/backend/src",
+        "projectType": "application",
+        "targets": {
+          "build": {
+            "dependsOn": [
+              "^build"
+            ],
+            "inputs": [
+              "production",
+              "^production"
+            ],
+            "executor": "@nx/webpack:webpack",
+            "outputs": [
+              "{options.outputPath}"
+            ],
+            "defaultConfiguration": "production",
+            "options": {
+              "target": "node",
+              "compiler": "tsc",
+              "outputPath": "dist/apps/backend",
+              "main": "apps/backend/src/main.ts",
+              "tsConfig": "apps/backend/tsconfig.app.json",
+              "assets": [
+                "apps/backend/src/assets"
+              ],
+              "isolatedConfig": true,
+              "webpackConfig": "apps/backend/webpack.config.js"
+            },
+            "configurations": {
+              "development": {},
+              "production": {}
+            }
+          },
+          "serve": {
+            "executor": "@nx/js:node",
+            "defaultConfiguration": "development",
+            "options": {
+              "buildTarget": "backend:build"
+            },
+            "configurations": {
+              "development": {
+                "buildTarget": "backend:build:development"
+              },
+              "production": {
+                "buildTarget": "backend:build:production"
+              }
+            }
+          },
+          "lint": {
+            "inputs": [
+              "default",
+              "{workspaceRoot}/.eslintrc.json",
+              "{workspaceRoot}/.eslintignore"
+            ],
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+              "{options.outputFile}"
+            ],
+            "options": {
+              "lintFilePatterns": [
+                "apps/backend/**/*.ts"
+              ]
+            },
+            "configurations": {}
+          },
+          "test": {
+            "inputs": [
+              "default",
+              "^production",
+              "{workspaceRoot}/jest.preset.js"
+            ],
+            "executor": "@nx/jest:jest",
+            "outputs": [
+              "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+              "jestConfig": "apps/backend/jest.config.ts",
+              "passWithNoTests": true
+            },
+            "configurations": {
+              "ci": {
+                "ci": true,
+                "codeCoverage": true
+              }
+            }
+          }
+        },
+        "tags": [],
+        "implicitDependencies": []
+      }
+    }
+  },
+  "externalNodes": {},
+  "dependencies": {
+    "frontend-e2e": [
+      {
+        "source": "frontend-e2e",
+        "target": "frontend",
+        "type": "implicit"
+      }
+    ],
+    "backend-e2e": [
+      {
+        "source": "backend-e2e",
+        "target": "backend",
+        "type": "implicit"
+      }
+    ],
+    "frontend": [],
+    "backend": []
+  },
+  "version": "6.0"
+}

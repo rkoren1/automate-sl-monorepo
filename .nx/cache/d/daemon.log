@@ -1,0 +1,16 @@
+[NX Daemon Server] - 2023-11-09T20:19:39.799Z - Started listening on: \\.\pipe\nx\C:\Users\koren\AppData\Local\Temp\700b35edd77816c26cf5\d.sock
+[NX Daemon Server] - 2023-11-09T20:19:39.803Z - [WATCHER]: Subscribed to changes within: C:\Users\koren\Desktop\sl-dev\automate-sl-monorepo (native)
+[NX Daemon Server] - 2023-11-09T20:19:39.813Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2023-11-09T20:19:39.817Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2023-11-09T20:19:39.818Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2023-11-09T20:19:39.821Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2023-11-09T20:19:39.967Z - [REQUEST]: Updated file-hasher based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2023-11-09T20:19:39.967Z - [REQUEST]: 
+[NX Daemon Server] - 2023-11-09T20:19:39.967Z - [REQUEST]: 
+[NX Daemon Server] - 2023-11-09T20:19:40.179Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2023-11-09T20:19:40.182Z - Time taken for 'total for creating and serializing project graph' 358.5250000357628ms
+[NX Daemon Server] - 2023-11-09T20:19:40.182Z - Done responding to the client project-graph
+[NX Daemon Server] - 2023-11-09T20:19:40.182Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 359. Response time: 3.
+[NX Daemon Server] - 2023-11-09T20:19:40.431Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2023-11-09T20:19:40.432Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2023-11-09T20:19:40.432Z - Handled HASH_TASKS. Handling time: 67. Response time: 1.

@@ -51,7 +51,7 @@ export class PaymentService {
               //Deduct the money
               User.update(
                 { l$Balance: user.l$Balance - subscriptionCost },
-                { where: { id: data.userId } }
+                { where: { id: data.userId } },
               );
 
               //removes free trial if exists for this bot
@@ -68,16 +68,31 @@ export class PaymentService {
                         let endDate = sub.subscriptionEnd;
                         switch (data.dateUnit) {
                           case 'Week':
-                            endDate = addDaysToDate(
-                              endDate,
-                              data.amountOfDateUnits * 7
-                            );
+                            if (endDate > currentDate) {
+                              endDate = addDaysToDate(
+                                endDate,
+                                data.amountOfDateUnits * 7,
+                              );
+                            } else {
+                              endDate = addDaysToDate(
+                                currentDate,
+                                data.amountOfDateUnits * 7,
+                              );
+                            }
                             break;
                           case 'Month':
-                            endDate = addMonthsToDate(
-                              endDate,
-                              data.amountOfDateUnits
-                            );
+                            if (endDate > currentDate) {
+                              endDate = addMonthsToDate(
+                                endDate,
+                                data.amountOfDateUnits,
+                              );
+                            } else {
+                              endDate = addMonthsToDate(
+                                currentDate,
+                                data.amountOfDateUnits,
+                              );
+                            }
+
                             break;
                         }
                         //updates subscription length
@@ -91,7 +106,7 @@ export class PaymentService {
                               botId: data.botId,
                               packageId: data.packageId,
                             },
-                          }
+                          },
                         )
                           .then((res) => {
                             console.log(endDate);
@@ -113,13 +128,13 @@ export class PaymentService {
                           case 'Week':
                             endDate = addDaysToDate(
                               endDate,
-                              data.amountOfDateUnits * 7
+                              data.amountOfDateUnits * 7,
                             );
                             break;
                           case 'Month':
                             endDate = addMonthsToDate(
                               endDate,
-                              data.amountOfDateUnits
+                              data.amountOfDateUnits,
                             );
                             break;
                         }
@@ -134,7 +149,7 @@ export class PaymentService {
                             resolve({
                               success: true,
                               message: 'Payment Successful',
-                            })
+                            }),
                           )
                           .catch((err) => {
                             console.error(err);
@@ -144,14 +159,14 @@ export class PaymentService {
                             });
                           });
                       }
-                    }
+                    },
                   );
                 })
                 .catch((err) => console.error(err));
-            }
+            },
           );
         });
-      }
+      },
     );
   }
 }

@@ -19,7 +19,6 @@
         "assets": [
           "apps/backend/src/assets"
         ],
-        "isolatedConfig": true,
         "webpackConfig": "apps/backend/webpack.config.js"
       },
       "configurations": {

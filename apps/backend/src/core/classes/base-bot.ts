@@ -28,7 +28,7 @@ export class BaseBot extends Bot {
     this.ownerName = this.convertOwnerName(user.avatarName);
     this.acceptOwnerTeleport();
     //on every disconnect write a log in the database and set bot_running to false
-    //this.onDiscconectLogToDb(login);
+    this.onDiscconectLogToDb(login);
     this.acceptGroupInvites();
     this.subscribeToImCommands();
     //ping bot every 15mins
@@ -106,7 +106,7 @@ export class BaseBot extends Bot {
           { running: false, shouldRun: true },
           { where: { id: this.botData.id } },
         );
-        //after 5min log bot back in, make log and set running true and should_run false
+        //after 2.5min log bot back in, make log and set running true and should_run false
         setTimeout(() => {
           this.login()
             .then(() => this.connectToSim())
@@ -122,7 +122,7 @@ export class BaseBot extends Bot {
                 event: 'auto-reconnect',
               });
             });
-        }, 300000);
+        }, 150000);
       }
     });
   }

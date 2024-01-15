@@ -18,16 +18,19 @@ export class BotDb extends Model<BotDb> {
     primaryKey: true,
   })
   id: number;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   loginFirstName: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   loginLastName: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -35,50 +38,59 @@ export class BotDb extends Model<BotDb> {
       const rawValue = this.getDataValue('loginPassword');
       if (rawValue) return decrypt(rawValue);
     },
-    set(value) {
+    set(value: string) {
       this.setDataValue('loginPassword', encrypt(value));
     },
   })
   loginPassword: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   loginSpawnLocation: string;
+
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   userId: number;
+
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
   })
   running: boolean;
+
   @Column({
     type: DataType.BOOLEAN,
     allowNull: true,
   })
   shouldRun: boolean;
+
   @Column({
     type: DataType.STRING,
   })
   loginRegion: string;
+
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
   packageId: number;
+
   @Column({
     type: DataType.STRING(36),
     allowNull: false,
   })
   uuid: string;
+
   @Column({
     type: DataType.STRING(36),
     allowNull: false,
   })
   imageId: string;
+
   @Column({
     type: DataType.INTEGER,
   })
@@ -91,17 +103,18 @@ export class BotDb extends Model<BotDb> {
   subscriptions: Subscription[];
 }
 
-function encrypt(text) {
+function encrypt(text: string) {
   const iv = process.env.LOGIN_PASS_IV;
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return encrypted.toString('hex');
 }
+
 function decrypt(encryptedData: string) {
   const iv = process.env.LOGIN_PASS_IV;
   const encryptedText = Buffer.from(encryptedData, 'hex');
@@ -109,7 +122,7 @@ function decrypt(encryptedData: string) {
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
     Buffer.from(process.env.LOGIN_PASS_KEY),
-    iv
+    iv,
   );
 
   let decrypted = decipher.update(encryptedText);

@@ -78,6 +78,14 @@ export class BotService {
                       packageId: 1,
                       botId: bot.id,
                     }).catch((err) => console.error(err));
+                  } //just create an empty subscription
+                  else {
+                    Subscription.create({
+                      subscriptionStart: currentDate,
+                      subscriptionEnd: currentDate,
+                      packageId: 1,
+                      botId: bot.id,
+                    }).catch((err) => console.error(err));
                   }
                   return resolve(metadata.imageid);
                 });

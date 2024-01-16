@@ -1,5 +1,9 @@
-import { Options, UnderscoreNamingStrategy } from '@mikro-orm/core';
+import { UnderscoreNamingStrategy } from '@mikro-orm/core';
+import { EntityGenerator } from '@mikro-orm/entity-generator';
+import { Migrator } from '@mikro-orm/migrations';
+import { defineConfig } from '@mikro-orm/mysql';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+import { SeedManager } from '@mikro-orm/seeder';
 import * as dotenv from 'dotenv';
 import { BotLog } from './modules/bot-log/entities/bot-log.entity';
 import { BotDb } from './modules/bot/entities/bot.entity';
@@ -13,8 +17,7 @@ import { Terminal } from './modules/terminal/entities/terminal.entity';
 import { User } from './modules/user/entities/user.entity';
 
 dotenv.config();
-const mikroOrmConfig: Options = {
-  type: 'mysql',
+export default defineConfig({
   host: 'localhost',
   port: 3306,
   user: 'root',
@@ -38,6 +41,5 @@ const mikroOrmConfig: Options = {
     Terminal,
     BotLog,
   ],
-};
-
-export default mikroOrmConfig;
+  extensions: [Migrator, EntityGenerator, SeedManager],
+});

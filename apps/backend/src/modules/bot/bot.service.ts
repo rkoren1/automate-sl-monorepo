@@ -108,7 +108,7 @@ export class BotService {
             userId: userId,
             subscriptions: { subscriptionEnd: { $gt: currentDate } },
           },
-          { fields: ['*', { subscriptions: ['*'] }] },
+          { fields: ['*', 'subscriptions'] },
         ),
         this.em.find(
           SharedBot,
@@ -175,13 +175,10 @@ export class BotService {
           'loginLastName',
           'loginSpawnLocation',
           'loginRegion',
-          {
-            subscriptions: [
-              'subscriptionStart',
-              'subscriptionEnd',
-              { package: ['id', 'packageName'] },
-            ],
-          },
+          'subscriptions.subscriptionStart',
+          'subscriptions.subscriptionEnd',
+          'subscriptions.package.id',
+          'subscriptions.package.packageName',
         ],
       },
     );
@@ -206,11 +203,7 @@ export class BotService {
       BotOptionFlags.LiteObjectStore | BotOptionFlags.StoreMyAttachmentsOnly;
 
     //get User uuid
-    const user = await this.em.findOneOrFail(
-      User,
-      { id: userId },
-      { fields: ['uuid', 'avatarName'] },
-    );
+    const user = await this.em.findOneOrFail(User, { id: userId });
     const discordSettings = await this.em.find(DiscordSettings, {
       botId: botId,
     });

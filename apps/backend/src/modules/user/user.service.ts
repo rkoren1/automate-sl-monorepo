@@ -44,7 +44,7 @@ export class UserService {
         .findOne(
           User,
           { email: authenticateUserDto.email },
-          { fields: ['id', 'email', 'password'] },
+          { fields: ['id', 'email', 'password', 'refreshToken'] },
         )
         .then((user) => {
           if (!user) return reject({ message: 'invalid credentials' });

@@ -178,43 +178,80 @@ export class BaseBot extends Bot {
               );
               break;
             }
-            /* this.clientCommands.comms.sendInstantMessage(
-                  messageEvent.from,
-                  'Command Accepted'
-                ); */
             await this.clientCommands.comms.sendInstantMessage(
               commandParams[0],
               commandParams[1],
             );
             break;
           }
+
           case 'say': {
-            await this.clientCommands.comms.say(commandParams[0]);
+            try {
+              await this.clientCommands.comms.say(commandParams[0]);
+            } catch (error) {
+              console.error(
+                'say command failed for bot' + messageEvent.fromName,
+              );
+            }
             break;
           }
+
           case 'teleport': {
-            await this.clientCommands.teleport.teleportTo(
-              commandParams[0],
-              new Vector3([
-                +commandParams[1],
-                +commandParams[2],
-                +commandParams[3],
-              ]),
-              Vector3.getZero(),
-            );
+            if (commandParams.length !== 4) {
+              await this.clientCommands.comms.sendInstantMessage(
+                messageEvent.from,
+                'Invalid Command!',
+              );
+            }
+            try {
+              await this.clientCommands.teleport.teleportTo(
+                commandParams[0],
+                new Vector3([
+                  +commandParams[1],
+                  +commandParams[2],
+                  +commandParams[3],
+                ]),
+                Vector3.getZero(),
+              );
+            } catch (error) {
+              await this.clientCommands.comms.sendInstantMessage(
+                messageEvent.from,
+                'Command Failed',
+              );
+              console.error(
+                'teleport command failed for bot' + messageEvent.fromName,
+              );
+            }
             break;
           }
+
           case 'shout': {
-            await this.clientCommands.comms.shout(commandParams[0]);
+            try {
+              await this.clientCommands.comms.shout(commandParams[0]);
+            } catch (error) {
+              console.error(
+                'shout command failed for bot' + messageEvent.fromName,
+              );
+            }
+
             break;
           }
+
           case 'group_im': {
-            await this.clientCommands.comms.sendGroupMessage(
-              commandParams[0],
-              commandParams[1],
-            );
+            try {
+              await this.clientCommands.comms.sendGroupMessage(
+                commandParams[0],
+                commandParams[1],
+              );
+            } catch (error) {
+              console.error(
+                'group im command failed for bot' + messageEvent.fromName,
+              );
+            }
+
             break;
           }
+
           case 'group_notice': {
             if (commandParams.length !== 3) {
               await this.clientCommands.comms.sendInstantMessage(
@@ -223,13 +260,22 @@ export class BaseBot extends Bot {
               );
               break;
             }
-            await this.clientCommands.group.sendGroupNotice(
-              commandParams[0],
-              commandParams[1],
-              commandParams[2],
-            );
+            try {
+              await this.clientCommands.group.sendGroupNotice(
+                commandParams[0],
+                commandParams[1],
+                commandParams[2],
+              );
+            } catch (error) {
+              console.error(
+                'send group notice command failed for bot' +
+                  messageEvent.fromName,
+              );
+            }
+
             break;
           }
+
           case 'group_invite': {
             if (commandParams.length !== 3) {
               await this.clientCommands.comms.sendInstantMessage(
@@ -238,13 +284,21 @@ export class BaseBot extends Bot {
               );
               break;
             }
-            await this.clientCommands.group.sendGroupInvite(
-              commandParams[0],
-              commandParams[1],
-              commandParams[2],
-            );
+            try {
+              await this.clientCommands.group.sendGroupInvite(
+                commandParams[0],
+                commandParams[1],
+                commandParams[2],
+              );
+            } catch (error) {
+              console.error(
+                'send group invite command failed for bot' +
+                  messageEvent.fromName,
+              );
+            }
             break;
           }
+
           default: {
             await this.clientCommands.comms.sendInstantMessage(
               messageEvent.from,
@@ -256,6 +310,7 @@ export class BaseBot extends Bot {
       },
     );
   }
+
   private acceptGroupInvites() {
     this.clientEvents.onGroupInvite.subscribe((groupInvite) => {
       if (groupInvite.fromName === this.ownerName)

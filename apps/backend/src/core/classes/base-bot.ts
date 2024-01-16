@@ -202,6 +202,7 @@ export class BaseBot extends Bot {
                 messageEvent.from,
                 'Invalid Command!',
               );
+              break;
             }
             try {
               await this.clientCommands.teleport.teleportTo(

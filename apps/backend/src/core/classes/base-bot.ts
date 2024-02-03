@@ -5,6 +5,7 @@ import {
   LoginParameters,
   Vector3,
 } from '@caspertech/node-metaverse';
+import cron from 'node-cron';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { User } from '../../modules/user/entities/user.entity';
@@ -28,13 +29,13 @@ export class BaseBot extends Bot {
     this.ownerName = this.convertOwnerName(user.avatarName);
     this.acceptOwnerTeleport();
     //on every disconnect write a log in the database and set bot_running to false
-    this.onDiscconectLogToDb(login);
+    //this.onDiscconectLogToDb(login);
     this.acceptGroupInvites();
     this.subscribeToImCommands();
-    //ping bot every 15mins
-    /* cron.schedule('15 * * * *', () => {
-          this.pingBot(login);
-        });  //dont' use doesnt work properly */
+    //ping bot every 10mins
+    cron.schedule('10 * * * *', () => {
+      this.pingBot(login);
+    });
     // Catches ctrl+c event
     process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
 
@@ -73,7 +74,7 @@ export class BaseBot extends Bot {
   private pingBot(login: LoginParameters) {
     BotDb.findOne({ where: { uuid: this.botData.uuid } }).then((resBot) => {
       if (
-        this.currentRegion === undefined &&
+        (this.currentRegion === undefined || this.currentRegion === null) &&
         (resBot.shouldRun || resBot.running)
       ) {
         BotLog.create({
@@ -107,7 +108,7 @@ export class BaseBot extends Bot {
           { where: { id: this.botData.id } },
         );
         //after 2.5min log bot back in, make log and set running true and should_run false
-        setTimeout(() => {
+        /* setTimeout(() => {
           this.login()
             .then(() => this.connectToSim())
             .then(() => {
@@ -122,7 +123,7 @@ export class BaseBot extends Bot {
                 event: 'auto-reconnect',
               });
             });
-        }, 150000);
+        }, 150000); */
       }
     });
   }

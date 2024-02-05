@@ -83,13 +83,22 @@ export class BaseBot extends Bot {
           message: 'Tried to reconnect bot automatically',
           event: 'auto-reconnect',
         });
-        this.login()
-          .then(() => this.connectToSim())
-          .then(() => {
-            BotDb.update(
-              { running: true, shouldRun: false },
-              { where: { id: this.botData.id } },
-            );
+        this.close()
+          .catch((err) =>
+            console.log(
+              'tried to close bot with error ' + login.firstName,
+              err,
+            ),
+          )
+          .finally(() => {
+            this.login()
+              .then(() => this.connectToSim())
+              .then(() => {
+                BotDb.update(
+                  { running: true, shouldRun: false },
+                  { where: { id: this.botData.id } },
+                );
+              });
           });
       }
     });

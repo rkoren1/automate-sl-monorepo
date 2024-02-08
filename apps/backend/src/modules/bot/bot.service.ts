@@ -49,7 +49,7 @@ export class BotService {
         if (!uuid) return reject({ exists: false });
 
         urlMetadata('https://world.secondlife.com/resident/' + uuid).then(
-          (metadata: any) => {
+          (metadata) => {
             const currentDate = new Date();
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);

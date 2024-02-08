@@ -52,7 +52,7 @@
     "sequelize": "^6.36.0",
     "sequelize-typescript": "^2.1.6",
     "tslib": "^2.3.0",
-    "url-metadata": "^3.4.7",
+    "url-metadata": "^3.4.9",
     "zone.js": "0.14.3"
   },
   "devDependencies": {

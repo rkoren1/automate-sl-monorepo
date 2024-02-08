@@ -40,21 +40,39 @@ export class BasicDiscBot extends BaseBot {
       }
       urlMetadata(
         'https://world.secondlife.com/resident/' + groupChat.from?.toString(),
-      ).then((metadata: any) => {
-        const body = {
-          content: groupChat.message,
-          username: groupChat.fromName,
-          avatar_url:
-            'https://picture-service.secondlife.com/' +
-            metadata.imageid +
-            '/256x192.jpg',
-        };
-        fetch(discWebhookUrl, {
-          method: 'post',
-          body: JSON.stringify(body),
-          headers: { 'Content-Type': 'application/json' },
-        }).then((res) => {});
-      });
+      )
+        .then((metadata) => {
+          const body = {
+            content: groupChat.message,
+            username: groupChat.fromName,
+            avatar_url:
+              'https://picture-service.secondlife.com/' +
+              metadata.imageid +
+              '/256x192.jpg',
+          };
+          fetch(discWebhookUrl, {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
+          }).then();
+        })
+        .catch((err) => {
+          console.error(
+            'error while posting to discord ',
+            err,
+            'botName: ',
+            groupChat.fromName,
+          );
+          const body = {
+            content: groupChat.message,
+            username: groupChat.fromName,
+          };
+          fetch(discWebhookUrl, {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
+          }).then();
+        });
     });
   }
 }

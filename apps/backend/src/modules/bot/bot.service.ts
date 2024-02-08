@@ -35,7 +35,7 @@ export class BotService {
       .then((res) => {
         return res.agent.agentID['mUUID'];
       })
-      .catch((err) => {
+      .catch(() => {
         return false;
       });
   }
@@ -48,8 +48,8 @@ export class BotService {
       ).then((uuid) => {
         if (!uuid) return reject({ exists: false });
 
-        urlMetadata('https://world.secondlife.com/resident/' + uuid).then(
-          (metadata) => {
+        urlMetadata('https://world.secondlife.com/resident/' + uuid)
+          .then((metadata) => {
             const currentDate = new Date();
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
@@ -94,8 +94,10 @@ export class BotService {
                 console.error(err);
                 return reject(err);
               });
-          },
-        );
+          })
+          .catch((err) => {
+            return reject(err);
+          });
       });
     });
   }

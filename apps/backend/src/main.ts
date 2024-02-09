@@ -6,7 +6,6 @@ import { discClient } from './core/services/discord-bot.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log();
   app.use(cookieParser());
   app.setGlobalPrefix('/api');
   app.enableCors({
@@ -27,6 +26,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/swagger', app, document);
   await app.listen(3000);
-  discClient.login(process.env.DISC_BOT_TOKEN);
+  await discClient.login(process.env.DISC_BOT_TOKEN);
 }
-bootstrap();
+bootstrap().then();

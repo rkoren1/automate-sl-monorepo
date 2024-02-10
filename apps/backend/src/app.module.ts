@@ -3,7 +3,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './core/database/database.module';
 import { JwtMiddleware } from './core/guards/jwt/jwt.middleware';
 import { InitService } from './init.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -23,8 +22,6 @@ import { UserModule } from './modules/user/user.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, './automatesl.client'),
     }),
-    DatabaseModule,
-    DatabaseModule,
     BotModule,
     UserModule,
     TerminalModule,

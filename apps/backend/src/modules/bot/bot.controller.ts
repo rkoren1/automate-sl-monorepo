@@ -9,7 +9,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
+import { SharedBot, SubPackage } from '@prisma/client';
 import { BotService } from './bot.service';
 import { CreateBotBodyDto } from './dto/create-bot-body.dto';
 import { CreateBotResponseDto } from './dto/create-bot-response.dto';
@@ -25,7 +25,6 @@ import { RefreshBotStatusQueryDto } from './dto/refresh-bot-status-query.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { StartBotQueryDto } from './dto/start-bot-query.dto';
-import { SubPackage } from '@prisma/client';
 
 @ApiTags('Bot')
 @Controller('bot')

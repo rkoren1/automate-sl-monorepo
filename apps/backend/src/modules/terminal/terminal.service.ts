@@ -151,7 +151,7 @@ export class TerminalService {
       bcrypt.hash(password, 10).then((hashedPass) => {
         this.prisma.user
           .update({ data: { password: hashedPass }, where: { uuid: userUUID } })
-          .then((res) => {
+          .then(() => {
             this.prisma.user
               .findUnique({ where: { uuid: userUUID } })
               .then((user) => {
@@ -178,7 +178,7 @@ export class TerminalService {
               data: { ldollarBalance: newBalance },
               where: { uuid: data.UUID },
             })
-            .then((res) => resolve(newBalance))
+            .then(() => resolve(newBalance))
             .catch((err) => reject(err));
         });
     });

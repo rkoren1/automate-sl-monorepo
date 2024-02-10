@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "all": "npx nx run-many --target=serve --all --maxParallel=100",
-    "prisma-generate": "npx prisma generate --schema=./apps/backend/prisma/schema.prisma"
+    "prisma-generate": "npx prisma generate --schema=./apps/backend/prisma/schema.prisma",
+    "prisma-deploy": "npx prisma migrate deploy --schema=./apps/backend/prisma/schema.prisma"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} apps/backend/prisma/seed.ts"

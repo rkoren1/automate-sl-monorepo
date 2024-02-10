@@ -107,39 +107,6 @@ export class BaseBot extends Bot {
         }
       });
   }
-  private onDiscconectLogToDb(login: LoginParameters) {
-    this.clientEvents.onDisconnected.subscribe((res) => {
-      BotLog.create({
-        name: login.firstName + ' ' + login.lastName,
-        botUuid: this.botData.uuid,
-        message: JSON.stringify(res),
-        event: 'disconnect',
-      });
-      if (res.requested === false) {
-        this.prisma.botDb.update({
-          data: { running: false, shouldRun: true },
-          where: { id: this.botData.id },
-        });
-        //after 2.5min log bot back in, make log and set running true and should_run false
-        /* setTimeout(() => {
-          this.login()
-            .then(() => this.connectToSim())
-            .then(() => {
-              BotDb.update(
-                { running: true, shouldRun: false },
-                { where: { id: this.botData.id } },
-              );
-              BotLog.create({
-                name: login.firstName + ' ' + login.lastName,
-                botUuid: this.botData.uuid,
-                message: 'Tried to reconnect bot automatically',
-                event: 'auto-reconnect',
-              });
-            });
-        }, 150000); */
-      }
-    });
-  }
 
   private acceptOwnerTeleport() {
     this.clientEvents.onLure.subscribe((teleport) => {

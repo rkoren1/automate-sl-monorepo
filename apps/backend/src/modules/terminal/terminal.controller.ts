@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Result } from '../../core/constants/constants';
+import { TerminalOwner } from '@prisma/client';
+import { Result } from '../../core/enums/enums';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { AddTerminalBodyDto } from './dto/add-terminal-body.dto';
 import { GetBalanceQueryDto } from './dto/get-balance-query.dto';
@@ -13,7 +14,6 @@ import { SharedActionsResponseDto } from './dto/shared-actions-response.dto';
 import { UpdateTerminalActivityQueryDto } from './dto/update-terminal-activity-query.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
 import { TerminalService } from './terminal.service';
-import { TerminalOwner } from '@prisma/client';
 
 @ApiTags('Terminal')
 @ApiSecurity('apiKey')

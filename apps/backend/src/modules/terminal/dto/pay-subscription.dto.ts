@@ -1,4 +1,4 @@
-import { ExtensionPeriodUnit } from 'apps/backend/src/core/constants/constants';
+import { ExtensionPeriodUnit } from 'apps/backend/src/core/enums/enums';
 
 export class PaySubscriptionDto {
   extensionTime: number;

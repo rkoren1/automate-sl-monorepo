@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
+import { ExtensionPeriodUnit, Result } from '../../core/enums/enums';
 import { addDaysToDate } from '../../core/services/helper.service';
 import { PrismaService } from '../../providers/prisma.service';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';

@@ -1,4 +1,4 @@
-import { Result } from 'apps/backend/src/core/constants/constants';
+import { Result } from 'apps/backend/src/core/enums/enums';
 
 export class SharedActionsResponseDto {
   result: Result;

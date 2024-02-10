@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model bot {
+model BotDb {
   id                   Int            @id @default(autoincrement())
   loginFirstName     String         @db.VarChar(255)
   loginLastName      String         @db.VarChar(255)
@@ -24,13 +24,14 @@ model bot {
   actionId            Int?
   createdAt           DateTime?      @db.DateTime(0)
   updatedAt           DateTime?      @db.DateTime(0)
-  user                 user           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "bot_ibfk_1")
-  subscription         subscription[]
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "bot_ibfk_1")
+  subscription         Subscription[]
 
   @@index([userId], map: "userId")
+	@@map("Bot")
 }
 
-model botLog {
+model BotLog {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
   botUuid   String    @db.VarChar(255)
@@ -40,7 +41,7 @@ model botLog {
   updatedAt DateTime? @db.DateTime(0)
 }
 
-model coupon {
+model Coupon {
   id             Int              @id @default(autoincrement())
   name           String           @db.VarChar(255)
   type           String           @db.VarChar(255)
@@ -48,10 +49,10 @@ model coupon {
   uses           Int
   createdAt     DateTime?        @db.DateTime(0)
   updatedAt     DateTime?        @db.DateTime(0)
-  subPackage subPackage[]
+  subPackage SubPackage[]
 }
 
-model discordSettings {
+model DiscordSettings {
   id              Int       @id @default(autoincrement())
   botId          Int
   webHookUrl    String?   @db.VarChar(255)
@@ -61,31 +62,31 @@ model discordSettings {
   updatedAt      DateTime? @db.DateTime(0)
 }
 
-model groupImAvatar {
+model GroupImAvatar {
   id               Int           @id @default(autoincrement())
   uuid             String        @db.VarChar(255)
   groupImListId Int
   createdAt       DateTime?     @db.DateTime(0)
   updatedAt       DateTime?     @db.DateTime(0)
-  groupImList    groupImList @relation(fields: [groupImListId], references: [id], onDelete: Cascade, map: "groupImAvatar_ibfk_1")
+  groupImList    GroupImList @relation(fields: [groupImListId], references: [id], onDelete: Cascade, map: "groupImAvatar_ibfk_1")
 
   @@index([groupImListId], map: "groupImListId")
 }
 
-model groupImList {
+model GroupImList {
   id              Int               @id @default(autoincrement())
   listName       String            @db.VarChar(255)
   userId         Int
   createdAt      DateTime?         @db.DateTime(0)
   updatedAt      DateTime?         @db.DateTime(0)
-  groupImAvatar groupImAvatar[]
-  user            user              @relation(fields: [userId], references: [id], onDelete: Cascade, map: "groupImList_ibfk_1")
+  groupImAvatar GroupImAvatar[]
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade, map: "groupImList_ibfk_1")
 
   @@index([userId], map: "userId")
 }
 
 /// This model has been renamed to 'subPackage' during introspection, because the original name 'package' is reserved.
-model subPackage {
+model SubPackage {
   id                           Int                            @id @default(autoincrement())
   packageName                 String                         @db.VarChar(255)
   packageDescription          String?                        @db.VarChar(255)
@@ -95,26 +96,26 @@ model subPackage {
   couponId                    Int?
   createdAt                   DateTime?                      @db.DateTime(0)
   updatedAt                   DateTime?                      @db.DateTime(0)
-  coupon                       coupon?                        @relation(fields: [couponId], references: [id], onDelete: Cascade, map: "package_ibfk_1")
-  sharedBotUserSubscription sharedBotUserSubscription[]
-  subscription                 subscription[]
+  coupon                       Coupon?                        @relation(fields: [couponId], references: [id], onDelete: Cascade, map: "package_ibfk_1")
+  sharedBotUserSubscription SharedBotUserSubscription[]
+  subscription                 Subscription[]
 
   @@index([couponId], map: "couponId")
-  @@map("package")
+  @@map("Package")
 }
 
-model paymentLog {
+model PaymentLog {
   id         Int       @id @default(autoincrement())
   userUuid  String    @db.VarChar(255)
   amount     Int
   createdAt DateTime? @db.DateTime(0)
   updatedAt DateTime? @db.DateTime(0)
-  user       user      @relation(fields: [userUuid], references: [uuid], onDelete: Cascade, map: "paymentLog_ibfk_1")
+  user       User      @relation(fields: [userUuid], references: [uuid], onDelete: Cascade, map: "paymentLog_ibfk_1")
 
   @@index([userUuid], map: "userUuid")
 }
 
-model sharedBot {
+model SharedBot {
   id                           Int                            @id @default(autoincrement())
   loginFirstName             String                         @db.VarChar(255)
   loginLastName              String                         @db.VarChar(255)
@@ -127,10 +128,10 @@ model sharedBot {
   imageId                     String                         @db.VarChar(36)
   createdAt                   DateTime?                      @db.DateTime(0)
   updatedAt                   DateTime?                      @db.DateTime(0)
-  sharedBotUserSubscription sharedBotUserSubscription[]
+  sharedBotUserSubscription SharedBotUserSubscription[]
 }
 
-model sharedBotUserSubscription {
+model SharedBotUserSubscription {
   id                 Int            @id @default(autoincrement())
   sharedBotId      Int
   userId            Int
@@ -139,16 +140,16 @@ model sharedBotUserSubscription {
   packageId         Int
   createdAt         DateTime?      @db.DateTime(0)
   updatedAt         DateTime?      @db.DateTime(0)
-  sharedBot         sharedBot     @relation(fields: [sharedBotId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_1")
-  user               user           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_2")
-  subPackage     subPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_3")
+  sharedBot         SharedBot     @relation(fields: [sharedBotId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_1")
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_2")
+  subPackage     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_3")
 
   @@index([packageId], map: "packageId")
   @@index([sharedBotId], map: "sharedBotId")
   @@index([userId], map: "userId")
 }
 
-model subscription {
+model Subscription {
   id                 Int            @id @default(autoincrement())
   packageId         Int
   subscriptionStart DateTime       @db.DateTime(0)
@@ -156,14 +157,14 @@ model subscription {
   botId             Int
   createdAt         DateTime?      @db.DateTime(0)
   updatedAt         DateTime?      @db.DateTime(0)
-  subPackage     subPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
-  bot                bot            @relation(fields: [botId], references: [id], onDelete: Cascade, map: "subscription_ibfk_2")
+  subPackage     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
+  bot                BotDb            @relation(fields: [botId], references: [id], onDelete: Cascade, map: "subscription_ibfk_2")
 
   @@unique([packageId, botId], map: "subscriptionPackageIdBotId_unique")
   @@index([botId], map: "botId")
 }
 
-model terminal {
+model Terminal {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
   apiKey    String    @db.VarChar(255)
@@ -171,7 +172,7 @@ model terminal {
   updatedAt DateTime? @db.DateTime(0)
 }
 
-model terminalOwner {
+model TerminalOwner {
   id          Int       @id @default(autoincrement())
   avatarUuid String    @db.VarChar(255)
   avatarName String    @db.VarChar(255)
@@ -182,7 +183,7 @@ model terminalOwner {
   updatedAt  DateTime? @db.DateTime(0)
 }
 
-model user {
+model User {
   id                           Int                            @id @default(autoincrement())
   email                        String                         @unique(map: "email") @db.VarChar(255)
   password                     String                         @db.VarChar(255)
@@ -192,9 +193,9 @@ model user {
   avatarName                  String?                        @db.VarChar(255)
   createdAt                   DateTime?                      @db.DateTime(0)
   updatedAt                   DateTime?                      @db.DateTime(0)
-  bot                          bot[]
-  groupImList                groupImList[]
-  paymentLog                  paymentLog[]
-  sharedBotUserSubscription sharedBotUserSubscription[]
+  bot                          BotDb[]
+  groupImList                GroupImList[]
+  paymentLog                  PaymentLog[]
+  sharedBotUserSubscription SharedBotUserSubscription[]
 }
 

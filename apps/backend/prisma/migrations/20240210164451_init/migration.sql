@@ -1,19 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Bot` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE `Bot` DROP FOREIGN KEY `Bot_userId_fkey`;
-
--- DropTable
-DROP TABLE `Bot`;
-
--- DropTable
-DROP TABLE `User`;
-
 -- CreateTable
 CREATE TABLE `bot` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -21,7 +5,7 @@ CREATE TABLE `bot` (
     `login_last_name` VARCHAR(255) NOT NULL,
     `login_password` VARCHAR(255) NOT NULL,
     `login_spawn_location` VARCHAR(255) NOT NULL,
-    `user_id` INTEGER NOT NULL,
+    `user_id` INTEGER NULL,
     `running` BOOLEAN NOT NULL,
     `should_run` BOOLEAN NULL,
     `login_region` VARCHAR(255) NULL,
@@ -29,8 +13,8 @@ CREATE TABLE `bot` (
     `uuid` VARCHAR(36) NOT NULL,
     `image_id` VARCHAR(36) NOT NULL,
     `action_id` INTEGER NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `user_id`(`user_id`),
     PRIMARY KEY (`id`)
@@ -43,8 +27,8 @@ CREATE TABLE `bot_log` (
     `bot_uuid` VARCHAR(255) NOT NULL,
     `message` VARCHAR(255) NOT NULL,
     `event` VARCHAR(255) NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -56,8 +40,8 @@ CREATE TABLE `coupon` (
     `type` VARCHAR(255) NOT NULL,
     `duration` INTEGER NOT NULL,
     `uses` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -69,8 +53,8 @@ CREATE TABLE `discord_settings` (
     `web_hook_url` VARCHAR(255) NULL,
     `sl_group_uuid` VARCHAR(255) NULL,
     `disc_channel_id` VARCHAR(255) NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,9 +63,9 @@ CREATE TABLE `discord_settings` (
 CREATE TABLE `group_im_avatar` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `uuid` VARCHAR(255) NOT NULL,
-    `group_im_list_id` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `group_im_list_id` INTEGER NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `group_im_list_id`(`group_im_list_id`),
     PRIMARY KEY (`id`)
@@ -91,20 +75,11 @@ CREATE TABLE `group_im_avatar` (
 CREATE TABLE `group_im_list` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `list_name` VARCHAR(255) NOT NULL,
-    `user_id` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `user_id` INTEGER NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `user_id`(`user_id`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `mikro_orm_migrations` (
-    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NULL,
-    `executed_at` DATETIME(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
-
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -117,8 +92,8 @@ CREATE TABLE `package` (
     `discount` INTEGER NOT NULL,
     `price_per_month` INTEGER NOT NULL,
     `coupon_id` INTEGER NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `coupon_id`(`coupon_id`),
     PRIMARY KEY (`id`)
@@ -127,10 +102,10 @@ CREATE TABLE `package` (
 -- CreateTable
 CREATE TABLE `payment_log` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_uuid` VARCHAR(255) NOT NULL,
+    `user_uuid` VARCHAR(36) NULL,
     `amount` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `user_uuid`(`user_uuid`),
     PRIMARY KEY (`id`)
@@ -148,8 +123,8 @@ CREATE TABLE `shared_bot` (
     `package_id` INTEGER NULL,
     `uuid` VARCHAR(36) NOT NULL,
     `image_id` VARCHAR(36) NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -157,13 +132,13 @@ CREATE TABLE `shared_bot` (
 -- CreateTable
 CREATE TABLE `shared_bot_user_subscription` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `shared_bot_id` INTEGER NOT NULL,
-    `user_id` INTEGER NOT NULL,
+    `shared_bot_id` INTEGER NULL,
+    `user_id` INTEGER NULL,
     `subscription_start` DATETIME(0) NULL,
     `subscription_end` DATETIME(0) NULL,
-    `package_id` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `package_id` INTEGER NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     INDEX `package_id`(`package_id`),
     INDEX `shared_bot_id`(`shared_bot_id`),
@@ -174,15 +149,15 @@ CREATE TABLE `shared_bot_user_subscription` (
 -- CreateTable
 CREATE TABLE `subscription` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `package_id` INTEGER NOT NULL,
     `subscription_start` DATETIME(0) NOT NULL,
     `subscription_end` DATETIME(0) NOT NULL,
-    `bot_id` INTEGER NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `bot_id` INTEGER NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
+    `package_id` INTEGER NOT NULL,
 
-    INDEX `bot_id`(`bot_id`),
-    UNIQUE INDEX `subscription_packageId_botId_unique`(`package_id`, `bot_id`),
+    INDEX `package_id`(`package_id`),
+    UNIQUE INDEX `subscription_package_id_bot_id_unique`(`bot_id`, `package_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -191,8 +166,8 @@ CREATE TABLE `terminal` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `api_key` VARCHAR(255) NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -205,8 +180,8 @@ CREATE TABLE `terminal_owner` (
     `parcel_name` VARCHAR(255) NOT NULL,
     `sl_url` VARCHAR(255) NOT NULL,
     `last_active` DATETIME(0) NOT NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -220,8 +195,8 @@ CREATE TABLE `user` (
     `l$_balance` INTEGER NULL,
     `uuid` VARCHAR(36) NULL,
     `avatar_name` VARCHAR(255) NULL,
-    `created_at` DATETIME(0) NULL,
-    `updated_at` DATETIME(0) NULL,
+    `created_at` DATETIME(0) NOT NULL,
+    `updated_at` DATETIME(0) NOT NULL,
 
     UNIQUE INDEX `email`(`email`),
     UNIQUE INDEX `uuid`(`uuid`),
@@ -244,16 +219,16 @@ ALTER TABLE `package` ADD CONSTRAINT `package_ibfk_1` FOREIGN KEY (`coupon_id`) 
 ALTER TABLE `payment_log` ADD CONSTRAINT `payment_log_ibfk_1` FOREIGN KEY (`user_uuid`) REFERENCES `user`(`uuid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_1` FOREIGN KEY (`shared_bot_id`) REFERENCES `shared_bot`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_16` FOREIGN KEY (`shared_bot_id`) REFERENCES `shared_bot`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_17` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_3` FOREIGN KEY (`package_id`) REFERENCES `package`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `shared_bot_user_subscription` ADD CONSTRAINT `shared_bot_user_subscription_ibfk_18` FOREIGN KEY (`package_id`) REFERENCES `package`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `subscription` ADD CONSTRAINT `subscription_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `package`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `subscription` ADD CONSTRAINT `subscription_ibfk_1` FOREIGN KEY (`bot_id`) REFERENCES `bot`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `subscription` ADD CONSTRAINT `subscription_ibfk_2` FOREIGN KEY (`bot_id`) REFERENCES `bot`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `subscription` ADD CONSTRAINT `subscription_ibfk_2` FOREIGN KEY (`package_id`) REFERENCES `package`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

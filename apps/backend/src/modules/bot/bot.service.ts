@@ -4,19 +4,21 @@ import {
   LoginParameters,
 } from '@caspertech/node-metaverse';
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { forkJoin } from 'rxjs';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
+import { PrismaService } from '../../providers/prisma.service';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 @Injectable()
 export class BotService {
-  prisma = new PrismaClient();
   botInstances = new Array<SmartBot | BasicDiscBot>();
+
+  constructor(private prisma: PrismaService) {}
+
   async slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
     loginParams.firstName = firstName;
@@ -24,6 +26,7 @@ export class BotService {
     loginParams.password = password;
     loginParams.start = 'last';
     const bot: Bot = new Bot(loginParams, BotOptionFlags.None);
+
     try {
       const res = await bot.login();
       return res.agent.agentID['mUUID'];

@@ -5,17 +5,20 @@ import {
   LoginParameters,
   Vector3,
 } from '@caspertech/node-metaverse';
+import { BotDb, PrismaClient, User } from '@prisma/client';
 import cron from 'node-cron';
+import { SubSink } from 'subsink';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
-import { BotDb, PrismaClient, User } from '@prisma/client';
 
 export class BaseBot extends Bot {
   public isConnected = false;
   protected ownerUUID: string;
   protected ownerName: string;
   protected botData: BotDb;
-  private prisma = new PrismaClient();
+  protected prisma = new PrismaClient();
+  protected subs = new SubSink();
+
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
@@ -52,10 +55,11 @@ export class BaseBot extends Bot {
     options: { exit?: boolean },
     err: Error | number | Signals,
   ) {
+    this.subs.unsubscribe();
     if (err && err instanceof Error) {
       console.log(err.stack);
     }
-    if (this.isConnected) {
+    if (!this.isConnected) {
       console.log('Disconnecting');
       try {
         await this.close();
@@ -70,6 +74,7 @@ export class BaseBot extends Bot {
       process.exit();
     }
   }
+
   private pingBot(login: LoginParameters) {
     this.prisma.botDb
       .findFirst({
@@ -110,7 +115,7 @@ export class BaseBot extends Bot {
   }
 
   private acceptOwnerTeleport() {
-    this.clientEvents.onLure.subscribe((teleport) => {
+    this.subs.sink = this.clientEvents.onLure.subscribe((teleport) => {
       if (teleport.from?.toString() === this.ownerUUID) {
         this.clientCommands.teleport.acceptTeleport(teleport);
       }
@@ -122,7 +127,7 @@ export class BaseBot extends Bot {
   }
 
   private subscribeToImCommands() {
-    this.clientEvents.onInstantMessage.subscribe(
+    this.subs.sink = this.clientEvents.onInstantMessage.subscribe(
       async (messageEvent: InstantMessageEvent) => {
         if (messageEvent.message === '') return;
         if (
@@ -295,9 +300,11 @@ export class BaseBot extends Bot {
   }
 
   private acceptGroupInvites() {
-    this.clientEvents.onGroupInvite.subscribe((groupInvite) => {
-      if (groupInvite.fromName === this.ownerName)
-        this.clientCommands.group.acceptGroupInvite(groupInvite);
-    });
+    this.subs.sink = this.clientEvents.onGroupInvite.subscribe(
+      (groupInvite) => {
+        if (groupInvite.fromName === this.ownerName)
+          this.clientCommands.group.acceptGroupInvite(groupInvite);
+      },
+    );
   }
 }

@@ -1,9 +1,9 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
+import { BotDb, DiscordSettings, User } from '@prisma/client';
 import fetch from 'node-fetch';
 import urlMetadata from 'url-metadata';
 import { discClient } from '../services/discord-bot.service';
 import { BaseBot } from './base-bot';
-import { BotDb, DiscordSettings, User } from '@prisma/client';
 
 export class BasicDiscBot extends BaseBot {
   constructor(
@@ -29,7 +29,7 @@ export class BasicDiscBot extends BaseBot {
     });
   }
   private relayGroupChatToDisc(discWebhookUrl: string, groupUuid: string) {
-    this.clientEvents.onGroupChat.subscribe((groupChat) => {
+    this.subs.sink = this.clientEvents.onGroupChat.subscribe((groupChat) => {
       if (
         groupChat.message.startsWith('[Discord]') ||
         groupChat.groupID?.toString() !== groupUuid

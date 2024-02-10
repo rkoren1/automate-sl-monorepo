@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import {
   addDaysToDate,
   addMonthsToDate,
 } from '../../core/services/helper.service';
+import { PrismaService } from '../../providers/prisma.service';
 
 @Injectable()
 export class PaymentService {
-  prisma = new PrismaClient();
+  constructor(private prisma: PrismaService) {}
 
   getLDollarBalance(userId: number) {
     return this.prisma.user

@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { PrismaService } from '../../providers/prisma.service';
 import { AuthenticateUserRes } from './dto/authenticate-user-response.dto';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
-  prisma = new PrismaClient();
+  constructor(private prisma: PrismaService) {}
   create(createUserDto: CreateUserDto) {
     this.prisma.user
       .create({
         data: { email: createUserDto.email, password: createUserDto.password },
       })
-      .then((res) => ({
+      .then(() => ({
         success: true,
         message: 'Succesfuly created new user',
       }))

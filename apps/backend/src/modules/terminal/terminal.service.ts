@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
 import { addDaysToDate } from '../../core/services/helper.service';
+import { PrismaService } from '../../providers/prisma.service';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { PaySubscriptionDto } from './dto/pay-subscription.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
 
 @Injectable()
 export class TerminalService {
-  prisma = new PrismaClient();
+  constructor(private prisma: PrismaService) {}
 
   getAllBotsFromUserUuid(uuid: string) {
     return new Promise((resolve, reject) => {

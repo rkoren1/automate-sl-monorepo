@@ -1,15 +1,16 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { BasicDiscBot } from './core/classes/basic-disc-bot';
-import { SmartBot } from './core/classes/smart-bot';
-import { BotService } from './modules/bot/bot.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { BasicDiscBot } from '../core/classes/basic-disc-bot';
+import { SmartBot } from '../core/classes/smart-bot';
+import { BotService } from '../modules/bot/bot.service';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class InitService implements OnModuleInit {
-  @Inject(BotService)
-  private readonly botService: BotService;
-  private prisma = new PrismaClient();
+  constructor(
+    private readonly botService: BotService,
+    private prisma: PrismaService,
+  ) {}
 
   reviveBots() {
     const currentDate = new Date();
@@ -64,6 +65,7 @@ export class InitService implements OnModuleInit {
         });
       });
   }
+
   onModuleInit() {
     console.log('reviving bots');
     this.reviveBots();

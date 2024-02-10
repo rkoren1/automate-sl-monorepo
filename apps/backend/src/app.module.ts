@@ -2,9 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { JwtMiddleware } from './core/guards/jwt/jwt.middleware';
-import { InitService } from './init.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { BotLogModule } from './modules/bot-log/bot-log.module';
 import { BotModule } from './modules/bot/bot.module';
@@ -16,6 +14,8 @@ import { SharedBotModule } from './modules/shared-bot/shared-bot.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { UserModule } from './modules/user/user.module';
+import { InitService } from './providers/init.service';
+import { PrismaService } from './providers/prisma.service';
 
 @Module({
   imports: [
@@ -35,7 +35,7 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, InitService],
+  providers: [InitService, PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

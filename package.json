@@ -37,8 +37,8 @@
     "@ngx-formly/material": "^6.3.0",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
-    "axios": "1.6.7",
     "@prisma/client": "^5.9.1",
+    "axios": "1.6.7",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.14.1",
@@ -55,6 +55,7 @@
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1",
     "screenfull": "^6.0.2",
+    "subsink": "^1.0.2",
     "tslib": "^2.3.0",
     "url-metadata": "^3.5.1",
     "zone.js": "0.14.3"

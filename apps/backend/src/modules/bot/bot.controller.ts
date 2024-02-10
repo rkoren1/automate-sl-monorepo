@@ -58,7 +58,7 @@ export class BotController {
     };
     return this.botService
       .create(data)
-      .then((result) => {
+      .then(() => {
         return res.json({ success: true });
       })
       .catch((error) => {
@@ -82,6 +82,7 @@ export class BotController {
     const userId = req.id;
     return this.botService.getAllBots(userId).then((res) => res);
   }
+
   @Get('getbotconfiguration')
   @ApiOkResponse({
     type: GetBotConfigurationResponseDto,
@@ -122,8 +123,9 @@ export class BotController {
         }
         return res.json(response);
       })
-      .catch((err) => res.sendStatus(500));
+      .catch(() => res.sendStatus(500));
   }
+
   @Put('startbot')
   @ApiOkResponse({
     type: CreateBotResponseDto,
@@ -139,10 +141,11 @@ export class BotController {
           });
         return res.json({ success: true });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.json({ success: false });
       });
   }
+
   @Put('stopbot')
   @ApiOkResponse({
     type: CreateBotResponseDto,
@@ -155,8 +158,9 @@ export class BotController {
     return this.botService
       .stopBot(data.botId, data.userId)
       .then((result) => res.json({ success: result }))
-      .catch((err) => res.json({ success: false }));
+      .catch(() => res.json({ success: false }));
   }
+
   @Get('getsharedbots')
   @ApiOkResponse({
     type: GetSharedBotsResponseDto,
@@ -181,8 +185,9 @@ export class BotController {
         });
         return res.json(response);
       })
-      .catch((err) => res.sendStatus(500));
+      .catch(() => res.sendStatus(500));
   }
+
   @Get('getpackages')
   @ApiOkResponse({
     type: GetPackagesResponseDto,
@@ -205,8 +210,9 @@ export class BotController {
         });
         return res.json(response);
       })
-      .catch((err) => res.sendStatus(500));
+      .catch(() => res.sendStatus(500));
   }
+
   @Get('getdiscordsettings')
   @ApiOkResponse({
     type: GetDiscordSettingsResponseDto,
@@ -217,10 +223,11 @@ export class BotController {
       .then((result: GetDiscordSettingsResponseDto) => {
         return res.json(result);
       })
-      .catch((err) => {
+      .catch(() => {
         return res.status(500);
       });
   }
+
   @Post('setdiscordsettings')
   @ApiOkResponse({
     type: CreateBotResponseDto,
@@ -228,19 +235,20 @@ export class BotController {
   setDiscordSettings(@Body() body: SetDiscordSettingsBodyDto, @Res() res) {
     return this.botService
       .setDiscordSettings(body)
-      .then((result) => {
+      .then(() => {
         return res.json({
           success: true,
           message: 'Discord settings added successfuly',
         });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.json({
           success: false,
           message: 'Failed to add discord settings',
         });
       });
   }
+
   @Post('setbotconfiguration')
   @ApiOkResponse({
     type: CreateBotResponseDto,
@@ -248,25 +256,26 @@ export class BotController {
   setBotConfiguration(@Body() body: SetBotConfigurationBodyDto, @Res() res) {
     return this.botService
       .setBotConfiguration(body)
-      .then((result) => {
+      .then(() => {
         return res.json({
           success: true,
           message: 'Bot configuration updated successfuly',
         });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.json({
           success: false,
           message: 'Failed to update bot configuration',
         });
       });
   }
+
   @Get('refreshbotstatus')
   @ApiOkResponse({
     type: CreateBotResponseDto,
   })
   refreshBotStatus(@Res() res, @Query() query: RefreshBotStatusQueryDto) {
-    this.botService.refreshBotStatus(query.botId).then((isSuccessful) => {
+    this.botService.refreshBotStatus(query.botId).then(() => {
       return res.json({ success: true, message: 'Refresh Successful' });
     });
   }

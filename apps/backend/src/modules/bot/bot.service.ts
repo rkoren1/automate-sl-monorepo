@@ -4,7 +4,7 @@ import {
   LoginParameters,
 } from '@caspertech/node-metaverse';
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { forkJoin } from 'rxjs';
 import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';

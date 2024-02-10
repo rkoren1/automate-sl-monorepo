@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
 import { addDaysToDate } from '../../core/services/helper.service';
-import { BotDb } from '../bot/entities/bot.entity';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { PaySubscriptionDto } from './dto/pay-subscription.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
@@ -14,12 +13,8 @@ export class TerminalService {
 
   getAllBotsFromUserUuid(uuid: string) {
     return new Promise((resolve, reject) => {
-      return BotDb.findAll({
-        attributes: ['id', 'loginFirstName', 'running', 'imageId', 'packageId'],
-        where: {
-          uuid: uuid,
-        },
-      })
+      this.prisma.botDb
+        .findMany({ where: { uuid: uuid } })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });

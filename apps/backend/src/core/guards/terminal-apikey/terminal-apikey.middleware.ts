@@ -1,14 +1,13 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Terminal } from './../../../modules/terminal/entities/terminal.entity';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class TerminalApikeyMiddleware implements NestMiddleware {
+  prisma = new PrismaClient();
   use(req: any, res: any, next: () => void) {
     const apiKey = req.query.apiKey;
-    Terminal.findOne({
-      attributes: ['name', 'apiKey'],
-      where: { apiKey: apiKey },
-    })
+    this.prisma.terminal
+      .findFirst({ where: { apiKey: apiKey } })
       .then((terminal) => {
         if (terminal === undefined || apiKey !== terminal.apiKey) {
           return res.status(401).json({ message: 'Unauthorized' });

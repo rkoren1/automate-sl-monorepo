@@ -12,8 +12,8 @@ import { SetUserPasswordQueryDto } from './dto/set-user-password-query.dto';
 import { SharedActionsResponseDto } from './dto/shared-actions-response.dto';
 import { UpdateTerminalActivityQueryDto } from './dto/update-terminal-activity-query.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
-import { TerminalOwner } from './entities/terminal-owner.entity';
 import { TerminalService } from './terminal.service';
+import { TerminalOwner } from '@prisma/client';
 
 @ApiTags('Terminal')
 @ApiSecurity('apiKey')

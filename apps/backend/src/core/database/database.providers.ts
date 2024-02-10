@@ -7,8 +7,6 @@ import { PaymentLog } from '../../modules/payment/entities/payment-log.entity';
 import { SharedBotUserSubscription } from '../../modules/shared-bot-user-subscription/entities/shared-bot-user-subscription.entity';
 import { SharedBot } from '../../modules/shared-bot/entities/shared-bot.entity';
 import { Subscription } from '../../modules/subscription/entities/subscription.entity';
-import { TerminalOwner } from '../../modules/terminal/entities/terminal-owner.entity';
-import { Terminal } from '../../modules/terminal/entities/terminal.entity';
 import { databaseConfig } from './database.config';
 
 export const databaseProviders = [
@@ -32,14 +30,12 @@ export const databaseProviders = [
       const sequelize = new Sequelize(config);
       console.log(sequelize.models);
       sequelize.addModels([
-        Terminal,
         SharedBot,
         Subscription,
         SharedBotUserSubscription,
         PaymentLog,
         Package,
         DiscordSettings,
-        TerminalOwner,
         BotDb,
       ]);
       await sequelize.sync();

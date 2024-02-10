@@ -9,7 +9,7 @@ import { Subscription } from '../subscription/entities/subscription.entity';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { PaySubscriptionDto } from './dto/pay-subscription.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
-import { TerminalOwner } from './entities/terminal-owner.entity';
+import { where } from 'sequelize';
 
 @Injectable()
 export class TerminalService {
@@ -86,13 +86,16 @@ export class TerminalService {
 
   addTerminal(data) {
     return new Promise((resolve, reject) => {
-      return TerminalOwner.create({
-        avatarName: data.avatarName,
-        avatarUuid: data.avatarUUID,
-        parcelName: data.parcelName,
-        slUrl: data.slUrl,
-        lastActive: data.lastActive,
-      })
+      return this.prisma.terminalOwner
+        .create({
+          data: {
+            avatarName: data.avatarName,
+            avatarUuid: data.avatarUUID,
+            parcelName: data.parcelName,
+            slUrl: data.slUrl,
+            lastActive: data.lastActive,
+          },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
@@ -112,10 +115,11 @@ export class TerminalService {
 
   updateTerminalActivity = (data) => {
     return new Promise((resolve, reject) => {
-      return TerminalOwner.update(
-        { lastActive: data.lastActive },
-        { where: { id: data.terminalId } },
-      )
+      return this.prisma.terminalOwner
+        .update({
+          data: { lastActive: data.lastActive },
+          where: { id: data.terminalId },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
@@ -124,16 +128,19 @@ export class TerminalService {
   updateTerminalOwner(data: UpdateTerminalOwnerBodyDto) {
     return new Promise((resolve, reject) => {
       const today = new Date();
-      return TerminalOwner.update(
-        {
-          avatarName: data.avatarName,
-          avatarUuid: data.avatarUUID,
-          parcelName: data.parcelName,
-          slUrl: data.slUrl,
-          lastActive: today,
-        },
-        { where: { id: data.terminalId } },
-      )
+      return this.prisma.terminalOwner
+        .update({
+          data: {
+            avatarName: data.avatarName,
+            avatarUuid: data.avatarUUID,
+            parcelName: data.parcelName,
+            slUrl: data.slUrl,
+            lastActive: today,
+          },
+          where: {
+            id: data.terminalId,
+          },
+        })
         .then((result) => resolve(result))
         .catch((err) => reject(err));
     });

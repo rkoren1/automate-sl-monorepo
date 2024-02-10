@@ -6,7 +6,6 @@ import {
   Vector3,
 } from '@caspertech/node-metaverse';
 import cron from 'node-cron';
-import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
 import { BotDb, PrismaClient, User } from '@prisma/client';
@@ -81,11 +80,13 @@ export class BaseBot extends Bot {
           (this.currentRegion === undefined || this.currentRegion === null) &&
           (resBot.shouldRun || resBot.running)
         ) {
-          BotLog.create({
-            name: login.firstName + ' ' + login.lastName,
-            botUuid: this.botData.uuid,
-            message: 'Tried to reconnect bot automatically',
-            event: 'auto-reconnect',
+          this.prisma.botLog.create({
+            data: {
+              name: login.firstName + ' ' + login.lastName,
+              botUuid: this.botData.uuid,
+              message: 'Tried to reconnect bot automatically',
+              event: 'auto-reconnect',
+            },
           });
           this.close()
             .catch((err) =>

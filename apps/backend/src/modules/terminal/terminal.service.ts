@@ -14,6 +14,7 @@ import { TerminalOwner } from './entities/terminal-owner.entity';
 @Injectable()
 export class TerminalService {
   prisma = new PrismaClient();
+
   getAllBotsFromUserUuid(uuid: string) {
     return new Promise((resolve, reject) => {
       return BotDb.findAll({
@@ -26,6 +27,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
+
   paySubscription(data: PaySubscriptionDto) {
     return new Promise((resolve, reject) => {
       const today = new Date();
@@ -47,6 +49,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
+
   generatePassword(length) {
     let password = '';
     const characters =
@@ -58,6 +61,7 @@ export class TerminalService {
     }
     return password;
   }
+
   terminalRegister(data) {
     return new Promise((resolve, reject) => {
       bcrypt.hash(data.password, 10).then((hashedPass) => {
@@ -79,6 +83,7 @@ export class TerminalService {
       });
     });
   }
+
   addTerminal(data) {
     return new Promise((resolve, reject) => {
       return TerminalOwner.create({
@@ -92,6 +97,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
+
   isRegistered(uuid: string) {
     return new Promise((resolve, reject) => {
       return this.prisma.user
@@ -103,6 +109,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
+
   updateTerminalActivity = (data) => {
     return new Promise((resolve, reject) => {
       return TerminalOwner.update(
@@ -113,6 +120,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   };
+
   updateTerminalOwner(data: UpdateTerminalOwnerBodyDto) {
     return new Promise((resolve, reject) => {
       const today = new Date();
@@ -130,6 +138,7 @@ export class TerminalService {
         .catch((err) => reject(err));
     });
   }
+
   setUserPassword(userUUID: string, password: string) {
     return new Promise((resolve, reject) => {
       bcrypt.hash(password, 10).then((hashedPass) => {
@@ -147,6 +156,7 @@ export class TerminalService {
       });
     });
   }
+
   addBalance = (data: AddBalanceBodyDto) => {
     return new Promise((resolve, reject) => {
       PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
@@ -164,6 +174,7 @@ export class TerminalService {
         });
     });
   };
+
   getBalance(uuid: string) {
     return this.prisma.user
       .findUnique({ select: { ldollarBalance: true }, where: { uuid: uuid } })

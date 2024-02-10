@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 import { DEVELOPMENT, PRODUCTION, SEQUELIZE, TEST } from '../../constants';
-import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
 import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { DiscordSettings } from '../../modules/discord-settings/entities/discord-setting.entity';
 import { Package } from '../../modules/package/entities/package.entity';
@@ -40,7 +39,6 @@ export const databaseProviders = [
         PaymentLog,
         Package,
         DiscordSettings,
-        BotLog,
         TerminalOwner,
         BotDb,
       ]);

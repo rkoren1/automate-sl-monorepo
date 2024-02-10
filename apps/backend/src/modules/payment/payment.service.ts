@@ -4,9 +4,6 @@ import {
   addDaysToDate,
   addMonthsToDate,
 } from '../../core/services/helper.service';
-import { Package } from '../package/entities/package.entity';
-import { Subscription } from '../subscription/entities/subscription.entity';
-import { PaymentLog } from './entities/payment-log.entity';
 
 @Injectable()
 export class PaymentService {
@@ -22,7 +19,14 @@ export class PaymentService {
         return { lDollarBalance: '??' };
       });
   }
-  payForPackage(data: any) {
+
+  payForPackage(data: {
+    userId: number;
+    packageId: number;
+    dateUnit: string;
+    amountOfDateUnits: number;
+    botId: number;
+  }) {
     return new Promise<{ success: boolean; message: string }>(
       (resolve, reject) => {
         let subscriptionCost: number;
@@ -31,8 +35,9 @@ export class PaymentService {
         this.prisma.user
           .findUnique({ where: { id: data.userId } })
           .then((user) => {
-            Package.findOne({ where: { id: data.packageId } }).then(
-              (selectedPackage) => {
+            this.prisma.subPackage
+              .findFirst({ where: { id: data.packageId } })
+              .then((selectedPackage) => {
                 switch (data.dateUnit) {
                   case 'Week':
                     subscriptionCost =
@@ -51,9 +56,11 @@ export class PaymentService {
                 }
 
                 //Create log
-                PaymentLog.create({
-                  userUuid: user.uuid,
-                  amount: subscriptionCost,
+                this.prisma.paymentLog.create({
+                  data: {
+                    userUuid: user.uuid,
+                    amount: subscriptionCost,
+                  },
                 });
                 //Deduct the money
                 this.prisma.user.update({
@@ -64,12 +71,12 @@ export class PaymentService {
                 });
 
                 //removes free trial if exists for this bot
-                Subscription.destroy({
-                  where: { packageId: 1, botId: data.botId },
-                })
+                this.prisma.subscription
+                  .deleteMany({ where: { packageId: 1, botId: data.botId } })
                   .then(() => {
-                    Subscription.findOne({ where: { botId: data.botId } }).then(
-                      (sub) => {
+                    this.prisma.subscription
+                      .findFirst({ where: { botId: data.botId } })
+                      .then((sub) => {
                         const currentDate = new Date();
 
                         //updates subscription if it already exists, otherwise it should create it
@@ -105,19 +112,18 @@ export class PaymentService {
                               break;
                           }
                           //updates subscription length
-                          return Subscription.update(
-                            {
-                              subscriptionStart: currentDate,
-                              subscriptionEnd: endDate,
-                            },
-                            {
+                          return this.prisma.subscription
+                            .updateMany({
+                              data: {
+                                subscriptionStart: currentDate,
+                                subscriptionEnd: endDate,
+                              },
                               where: {
                                 botId: data.botId,
                                 packageId: data.packageId,
                               },
-                            },
-                          )
-                            .then((res) => {
+                            })
+                            .then(() => {
                               console.log(endDate);
                               return resolve({
                                 success: true,
@@ -148,13 +154,16 @@ export class PaymentService {
                               break;
                           }
                           //create subscription
-                          return Subscription.create({
-                            packageId: data.packageId,
-                            subscriptionStart: currentDate,
-                            subscriptionEnd: endDate,
-                            botId: data.botId,
-                          })
-                            .then((res) =>
+                          return this.prisma.subscription
+                            .create({
+                              data: {
+                                packageId: data.packageId,
+                                subscriptionStart: currentDate,
+                                subscriptionEnd: endDate,
+                                botId: data.botId,
+                              },
+                            })
+                            .then(() =>
                               resolve({
                                 success: true,
                                 message: 'Payment Successful',
@@ -168,12 +177,10 @@ export class PaymentService {
                               });
                             });
                         }
-                      },
-                    );
+                      });
                   })
                   .catch((err) => console.error(err));
-              },
-            );
+              });
           });
       },
     );

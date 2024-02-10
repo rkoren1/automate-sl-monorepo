@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { Subscription } from '../../subscription/entities/subscription.entity';
 
 @Table({ underscored: true, tableName: 'bot' })
 export class BotDb extends Model<BotDb> {
@@ -87,12 +86,6 @@ export class BotDb extends Model<BotDb> {
     type: DataType.INTEGER,
   })
   actionId: number;
-
-  /*   @BelongsTo(() => User, 'userId')
-  user: User; */
-
-  @HasMany(() => Subscription, 'botId')
-  subscriptions: Subscription[];
 }
 
 function encrypt(text: string) {

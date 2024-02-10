@@ -9,7 +9,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Package } from '../package/entities/package.entity';
 import { SharedBot } from '../shared-bot/entities/shared-bot.entity';
 import { BotService } from './bot.service';
 import { CreateBotBodyDto } from './dto/create-bot-body.dto';
@@ -26,6 +25,7 @@ import { RefreshBotStatusQueryDto } from './dto/refresh-bot-status-query.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
 import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 import { StartBotQueryDto } from './dto/start-bot-query.dto';
+import { SubPackage } from '@prisma/client';
 
 @ApiTags('Bot')
 @Controller('bot')
@@ -191,7 +191,7 @@ export class BotController {
   getPackages(@Res() res) {
     return this.botService
       .getPackages()
-      .then((result: Package[]) => {
+      .then((result: SubPackage[]) => {
         const response = new Array<GetPackagesResponseDto>();
         result.forEach((ele) => {
           response.push({

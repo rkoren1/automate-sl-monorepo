@@ -4,12 +4,9 @@ import * as bcrypt from 'bcrypt';
 import { ExtensionPeriodUnit, Result } from '../../core/constants/constants';
 import { addDaysToDate } from '../../core/services/helper.service';
 import { BotDb } from '../bot/entities/bot.entity';
-import { PaymentLog } from '../payment/entities/payment-log.entity';
-import { Subscription } from '../subscription/entities/subscription.entity';
 import { AddBalanceBodyDto } from './dto/add-balance-body.dto';
 import { PaySubscriptionDto } from './dto/pay-subscription.dto';
 import { UpdateTerminalOwnerBodyDto } from './dto/update-terminal-owner-body.dto';
-import { where } from 'sequelize';
 
 @Injectable()
 export class TerminalService {
@@ -39,13 +36,16 @@ export class TerminalService {
       } else {
         return reject('Invalid time unit');
       }
-      Subscription.create({
-        subscriptionStart: today,
-        subscriptionEnd: endDate,
-        botId: data.botId,
-        packageId: data.packageId,
-      })
-        .then((result) => resolve(endDate))
+      this.prisma.subscription
+        .create({
+          data: {
+            subscriptionStart: today,
+            subscriptionEnd: endDate,
+            botId: data.botId,
+            packageId: data.packageId,
+          },
+        })
+        .then(() => resolve(endDate))
         .catch((err) => reject(err));
     });
   }
@@ -166,7 +166,9 @@ export class TerminalService {
 
   addBalance = (data: AddBalanceBodyDto) => {
     return new Promise((resolve, reject) => {
-      PaymentLog.create({ userUuid: data.UUID, amount: data.lDollarAmount });
+      this.prisma.paymentLog.create({
+        data: { userUuid: data.UUID, amount: data.lDollarAmount },
+      });
       this.prisma.user
         .findUnique({ where: { uuid: data.UUID } })
         .then((user) => {

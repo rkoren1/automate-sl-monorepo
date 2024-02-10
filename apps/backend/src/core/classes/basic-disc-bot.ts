@@ -1,17 +1,17 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
-import { bot, discordSettings, user } from '@prisma/client';
 import fetch from 'node-fetch';
 import urlMetadata from 'url-metadata';
 import { discClient } from '../services/discord-bot.service';
 import { BaseBot } from './base-bot';
+import { BotDb, DiscordSettings, User } from '@prisma/client';
 
 export class BasicDiscBot extends BaseBot {
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
-    user: user,
-    bot: bot,
-    discParams: discordSettings,
+    user: User,
+    bot: BotDb,
+    discParams: DiscordSettings,
   ) {
     super(login, options, user, bot);
     this.relayGroupChatToDisc(discParams.webHookUrl, discParams.slGroupUuid);

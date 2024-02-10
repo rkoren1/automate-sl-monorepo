@@ -6,22 +6,22 @@ import {
   Vector3,
 } from '@caspertech/node-metaverse';
 import cron from 'node-cron';
-import { bot, user } from '@prisma/client';
 import { BotLog } from '../../modules/bot-log/entities/bot-log.entity';
-import { BotDb } from '../../modules/bot/entities/bot.entity';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
+import { BotDb, PrismaClient, User } from '@prisma/client';
 
 export class BaseBot extends Bot {
   public isConnected = false;
   protected ownerUUID: string;
   protected ownerName: string;
-  protected botData: bot;
+  protected botData: BotDb;
+  private prisma = new PrismaClient();
   constructor(
     login: LoginParameters,
     options: BotOptionFlags,
-    user: user,
-    bot: bot,
+    user: User,
+    bot: BotDb,
   ) {
     super(login, options);
     this.botData = bot;
@@ -72,36 +72,40 @@ export class BaseBot extends Bot {
     }
   }
   private pingBot(login: LoginParameters) {
-    BotDb.findOne({ where: { uuid: this.botData.uuid } }).then((resBot) => {
-      if (
-        (this.currentRegion === undefined || this.currentRegion === null) &&
-        (resBot.shouldRun || resBot.running)
-      ) {
-        BotLog.create({
-          name: login.firstName + ' ' + login.lastName,
-          botUuid: this.botData.uuid,
-          message: 'Tried to reconnect bot automatically',
-          event: 'auto-reconnect',
-        });
-        this.close()
-          .catch((err) =>
-            console.log(
-              'tried to close bot with error ' + login.firstName,
-              err,
-            ),
-          )
-          .finally(() => {
-            this.login()
-              .then(() => this.connectToSim())
-              .then(() => {
-                BotDb.update(
-                  { running: true, shouldRun: false },
-                  { where: { id: this.botData.id } },
-                );
-              });
+    this.prisma.botDb
+      .findFirst({
+        where: { uuid: this.botData.uuid },
+      })
+      .then((resBot) => {
+        if (
+          (this.currentRegion === undefined || this.currentRegion === null) &&
+          (resBot.shouldRun || resBot.running)
+        ) {
+          BotLog.create({
+            name: login.firstName + ' ' + login.lastName,
+            botUuid: this.botData.uuid,
+            message: 'Tried to reconnect bot automatically',
+            event: 'auto-reconnect',
           });
-      }
-    });
+          this.close()
+            .catch((err) =>
+              console.log(
+                'tried to close bot with error ' + login.firstName,
+                err,
+              ),
+            )
+            .finally(() => {
+              this.login()
+                .then(() => this.connectToSim())
+                .then(() => {
+                  this.prisma.botDb.update({
+                    data: { running: true, shouldRun: false },
+                    where: { id: this.botData.id },
+                  });
+                });
+            });
+        }
+      });
   }
   private onDiscconectLogToDb(login: LoginParameters) {
     this.clientEvents.onDisconnected.subscribe((res) => {
@@ -112,10 +116,10 @@ export class BaseBot extends Bot {
         event: 'disconnect',
       });
       if (res.requested === false) {
-        BotDb.update(
-          { running: false, shouldRun: true },
-          { where: { id: this.botData.id } },
-        );
+        this.prisma.botDb.update({
+          data: { running: false, shouldRun: true },
+          where: { id: this.botData.id },
+        });
         //after 2.5min log bot back in, make log and set running true and should_run false
         /* setTimeout(() => {
           this.login()

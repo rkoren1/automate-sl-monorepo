@@ -20,6 +20,7 @@ export class InitService implements OnModuleInit {
           running: true,
           subscriptions: { some: { subscriptionEnd: { gt: currentDate } } },
         },
+        include: { user: true },
       })
       .then((runningBots) => {
         runningBots.forEach((bot) => {
@@ -38,19 +39,21 @@ export class InitService implements OnModuleInit {
             .findMany({ where: { botId: bot.id } })
             .then((discordSettings) => {
               if (discordSettings.length > 0) {
+                const { user: userValue, ...botValues } = bot;
                 workerBot = new BasicDiscBot(
                   loginParameters,
                   options,
-                  bot['user'].dataValues,
-                  bot,
+                  userValue,
+                  botValues,
                   discordSettings[0],
                 );
               } else {
+                const { user: userValue, ...botValues } = bot;
                 workerBot = new SmartBot(
                   loginParameters,
                   options,
-                  bot['user'].dataValues,
-                  bot,
+                  userValue,
+                  botValues,
                 );
               }
               workerBot

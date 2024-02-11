@@ -132,7 +132,7 @@ export class BotController {
   })
   startBot(@Query() query: StartBotQueryDto, @Req() req, @Res() res) {
     return this.botService
-      .startBot(query.botId, req.id)
+      .startBot(+query.botId, +req.id)
       .then((result: { changedRows: number } | any) => {
         if (result.changedRows === 0)
           return res.status(400).json({
@@ -152,12 +152,12 @@ export class BotController {
   })
   stopBot(@Query() query: StartBotQueryDto, @Req() req, @Res() res) {
     const data = {
-      botId: query.botId,
-      userId: req['id'],
+      botId: +query.botId,
+      userId: +req.id,
     };
     return this.botService
       .stopBot(data.botId, data.userId)
-      .then((result) => res.json({ success: result }))
+      .then(() => res.json({ success: true }))
       .catch(() => res.json({ success: false }));
   }
 

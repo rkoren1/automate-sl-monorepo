@@ -6,7 +6,7 @@ import {
   Vector3,
 } from '@caspertech/node-metaverse';
 import { BotDb, PrismaClient, User } from '@prisma/client';
-import cron from 'node-cron';
+import { CronJob } from 'cron';
 import { SubSink } from 'subsink';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
@@ -18,6 +18,7 @@ export class BaseBot extends Bot {
   protected botData: BotDb;
   protected prisma = new PrismaClient();
   protected subs = new SubSink();
+  private cronJob: CronJob;
 
   constructor(
     login: LoginParameters,
@@ -35,9 +36,12 @@ export class BaseBot extends Bot {
     this.acceptGroupInvites();
     this.subscribeToImCommands();
     //ping bot every 10mins
-    cron.schedule('10 * * * *', () => {
-      this.pingBot(login);
-    });
+    this.cronJob = new CronJob(
+      '10 * * * *',
+      () => this.pingBot(login),
+      null,
+      true,
+    );
     // Catches ctrl+c event
     process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
 
@@ -51,10 +55,12 @@ export class BaseBot extends Bot {
       this.exitHandler.bind(this, { exit: true }),
     );
   }
+
   async exitHandler(
     options: { exit?: boolean },
     err: Error | number | Signals,
   ) {
+    this.cronJob.stop();
     this.subs.unsubscribe();
     if (err && err instanceof Error) {
       console.log(err.stack);

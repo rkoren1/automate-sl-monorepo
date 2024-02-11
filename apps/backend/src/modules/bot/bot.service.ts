@@ -35,71 +35,74 @@ export class BotService {
     }
   }
 
-  async create(createBotDto: CreateBotDto) {
-    const uuid = await this.slAccountExists(
-      createBotDto.loginFirstName,
-      createBotDto.loginLastName,
-      createBotDto.loginPassword,
-    );
-    if (!uuid) return { exists: false };
+  create(createBotDto: CreateBotDto) {
+    return new Promise((resolve, reject) => {
+      this.slAccountExists(
+        createBotDto.loginFirstName,
+        createBotDto.loginLastName,
+        createBotDto.loginPassword,
+      ).then((uuid) => {
+        if (!uuid) return reject({ exists: false });
 
-    urlMetadata('https://world.secondlife.com/resident/' + uuid)
-      .then((metadata) => {
-        const currentDate = new Date();
-        const after3Days = new Date();
-        after3Days.setDate(after3Days.getDate() + 3);
+        urlMetadata('https://world.secondlife.com/resident/' + uuid)
+          .then((metadata) => {
+            const currentDate = new Date();
+            const after3Days = new Date();
+            after3Days.setDate(after3Days.getDate() + 3);
 
-        this.prisma.botDb
-          .create({
-            data: {
-              userId: createBotDto.userId,
-              loginFirstName: createBotDto.loginFirstName,
-              loginLastName: createBotDto.loginLastName,
-              loginPassword: createBotDto.loginPassword,
-              running: false,
-              shouldRun: false,
-              loginSpawnLocation: createBotDto.loginSpawnLocation,
-              loginRegion: createBotDto.loginRegion,
-              uuid: uuid,
-              imageId: metadata.imageid,
-            },
-          })
-          .then(async (bot) => {
-            const userBots = await this.prisma.botDb.findMany({
-              where: { userId: createBotDto.userId },
-            });
-            //if this is the only bot give 3 days of free subscription
-            if (userBots.length < 2) {
-              this.prisma.subscription.create({
+            this.prisma.botDb
+              .create({
                 data: {
-                  subscriptionStart: currentDate,
-                  subscriptionEnd: after3Days,
-                  packageId: 1,
-                  botId: bot.id,
+                  userId: createBotDto.userId,
+                  loginFirstName: createBotDto.loginFirstName,
+                  loginLastName: createBotDto.loginLastName,
+                  loginPassword: createBotDto.loginPassword,
+                  running: false,
+                  shouldRun: false,
+                  loginSpawnLocation: createBotDto.loginSpawnLocation,
+                  loginRegion: createBotDto.loginRegion,
+                  uuid: uuid,
+                  imageId: metadata.imageid,
                 },
+              })
+              .then(async (bot) => {
+                const userBots = await this.prisma.botDb.findMany({
+                  where: { userId: createBotDto.userId },
+                });
+                //if this is the only bot give 3 days of free subscription
+                if (userBots.length < 2) {
+                  await this.prisma.subscription.create({
+                    data: {
+                      subscriptionStart: currentDate,
+                      subscriptionEnd: after3Days,
+                      packageId: 1,
+                      botId: bot.id,
+                    },
+                  });
+                }
+                //just create an empty subscription
+                else {
+                  await this.prisma.subscription.create({
+                    data: {
+                      subscriptionStart: currentDate,
+                      subscriptionEnd: currentDate,
+                      packageId: 1,
+                      botId: bot.id,
+                    },
+                  });
+                }
+                return resolve(metadata.imageid);
+              })
+              .catch((err) => {
+                console.error(err);
+                return reject(err);
               });
-            }
-            //just create an empty subscription
-            else {
-              this.prisma.subscription.create({
-                data: {
-                  subscriptionStart: currentDate,
-                  subscriptionEnd: currentDate,
-                  packageId: 1,
-                  botId: bot.id,
-                },
-              });
-            }
-            return metadata.imageid;
           })
           .catch((err) => {
-            console.error(err);
-            return err;
+            return reject(err);
           });
-      })
-      .catch((err) => {
-        return err;
       });
+    });
   }
 
   getAllBots(userId: number) {
@@ -114,7 +117,7 @@ export class BotService {
             running: true,
             uuid: true,
             imageId: true,
-            subscription: { where: { subscriptionEnd: { gt: currentDate } } },
+            subscriptions: { where: { subscriptionEnd: { gt: currentDate } } },
           },
           where: { userId: userId },
         }),
@@ -126,7 +129,7 @@ export class BotService {
             running: true,
             uuid: true,
             imageId: true,
-            sharedBotUserSubscription: { where: { userId: userId } },
+            sharedBotUserSubscriptions: { where: { userId: userId } },
           },
         }),
       ]).subscribe({
@@ -140,7 +143,7 @@ export class BotService {
               running: ele.running,
               uuid: ele.uuid,
               imageId: ele.imageId,
-              validSubscription: ele.subscription.length > 0 ? true : false,
+              validSubscription: ele.subscriptions.length > 0 ? true : false,
             });
           });
           result[1].forEach((ele) => {
@@ -172,11 +175,11 @@ export class BotService {
           loginLastName: true,
           loginSpawnLocation: true,
           loginRegion: true,
-          subscription: {
+          subscriptions: {
             select: {
               subscriptionStart: true,
               subscriptionEnd: true,
-              subPackage: {
+              package: {
                 select: { id: true, packageName: true },
               },
             },
@@ -188,7 +191,7 @@ export class BotService {
           userId: data.userId,
         },
       });
-      return result;
+      return result[0];
     } catch (err) {
       console.error(err);
       return err;
@@ -324,7 +327,7 @@ export class BotService {
           running: true,
           uuid: true,
           imageId: true,
-          sharedBotUserSubscription: { where: { userId: userId } },
+          sharedBotUserSubscriptions: { where: { userId: userId } },
         },
       });
       return result;

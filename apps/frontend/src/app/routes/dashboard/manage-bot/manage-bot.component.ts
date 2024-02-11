@@ -37,7 +37,7 @@ export class ManageBotComponent implements OnInit {
     private route: ActivatedRoute,
     private manageBotService: ManageBotService,
     private dialog: MatDialog,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   ngOnInit() {

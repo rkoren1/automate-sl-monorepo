@@ -24,7 +24,7 @@ model BotDb {
   createdAt           DateTime?      @db.DateTime(0)
   updatedAt           DateTime?      @db.DateTime(0)
   user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "bot_ibfk_1")
-  subscription         Subscription[]
+  subscriptions         Subscription[]
 
   @@index([userId], map: "userId")
 	@@map("Bot")
@@ -48,7 +48,7 @@ model Coupon {
   uses           Int
   createdAt     DateTime?        @db.DateTime(0)
   updatedAt     DateTime?        @db.DateTime(0)
-  subPackage SubPackage[]
+  packages SubPackage[]
 }
 
 model DiscordSettings {
@@ -78,7 +78,7 @@ model GroupImList {
   userId         Int
   createdAt      DateTime?         @db.DateTime(0)
   updatedAt      DateTime?         @db.DateTime(0)
-  groupImAvatar GroupImAvatar[]
+  groupImAvatars GroupImAvatar[]
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade, map: "groupImList_ibfk_1")
 
   @@index([userId], map: "userId")
@@ -96,8 +96,8 @@ model SubPackage {
   createdAt                   DateTime?                      @db.DateTime(0)
   updatedAt                   DateTime?                      @db.DateTime(0)
   coupon                       Coupon?                        @relation(fields: [couponId], references: [id], onDelete: Cascade, map: "package_ibfk_1")
-  sharedBotUserSubscription SharedBotUserSubscription[]
-  subscription                 Subscription[]
+  sharedBotUserSubscriptions SharedBotUserSubscription[]
+  subscriptions                 Subscription[]
 
   @@index([couponId], map: "couponId")
   @@map("Package")
@@ -127,7 +127,7 @@ model SharedBot {
   imageId                     String                         @db.VarChar(36)
   createdAt                   DateTime?                      @db.DateTime(0)
   updatedAt                   DateTime?                      @db.DateTime(0)
-  sharedBotUserSubscription SharedBotUserSubscription[]
+  sharedBotUserSubscriptions SharedBotUserSubscription[]
 }
 
 model SharedBotUserSubscription {
@@ -141,7 +141,7 @@ model SharedBotUserSubscription {
   updatedAt         DateTime?      @db.DateTime(0)
   sharedBot         SharedBot     @relation(fields: [sharedBotId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_1")
   user               User           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_2")
-  subPackage     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_3")
+  package     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "sharedBotUserSubscription_ibfk_3")
 
   @@index([packageId], map: "packageId")
   @@index([sharedBotId], map: "sharedBotId")
@@ -156,7 +156,7 @@ model Subscription {
   botId             Int
   createdAt         DateTime?      @db.DateTime(0)
   updatedAt         DateTime?      @db.DateTime(0)
-  subPackage     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
+  package     SubPackage @relation(fields: [packageId], references: [id], onDelete: Cascade, map: "subscription_ibfk_1")
   bot                BotDb            @relation(fields: [botId], references: [id], onDelete: Cascade, map: "subscription_ibfk_2")
 
   @@unique([packageId, botId], map: "subscriptionPackageIdBotId_unique")
@@ -195,6 +195,6 @@ model User {
   bot                          BotDb[]
   groupImList                GroupImList[]
   paymentLog                  PaymentLog[]
-  sharedBotUserSubscription SharedBotUserSubscription[]
+  sharedBotUserSubscriptions SharedBotUserSubscription[]
 }
 

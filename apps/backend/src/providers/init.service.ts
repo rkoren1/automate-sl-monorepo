@@ -18,7 +18,7 @@ export class InitService implements OnModuleInit {
       .findMany({
         where: {
           running: true,
-          subscription: { some: { subscriptionEnd: { gt: currentDate } } },
+          subscriptions: { some: { subscriptionEnd: { gt: currentDate } } },
         },
       })
       .then((runningBots) => {

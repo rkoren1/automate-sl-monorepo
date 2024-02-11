@@ -303,7 +303,7 @@ export class BotService {
   stopBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
       return this.botInstances[botId]
-        .close()
+        .exitHandler({ exit: false }, undefined)
         .then(() => {
           this.botInstances[botId].isConnected = false;
           return this.prisma.botDb

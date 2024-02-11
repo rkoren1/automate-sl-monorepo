@@ -17,7 +17,7 @@ async function main() {
     data: {
       email: 'test@gmail.com',
       password: '$2b$10$G0oloQNbWP63gHB2xD.Rz.foSzpXK3SDTCv.bcRdqUPY/hcha7Kny',
-      ldollarBalance: 0,
+      lDollarBalance: 0,
       uuid: '34612378-854a-488f-8309-f82e2e59041a',
       avatarName: 'powergiga Resident',
     },

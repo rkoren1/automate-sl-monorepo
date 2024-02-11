@@ -67,7 +67,7 @@ export class TerminalService {
               uuid: data.uuid,
               avatarName: data.avatarName,
               password: hashedPass,
-              ldollarBalance: 0,
+              lDollarBalance: 0,
             },
           })
           .then(() => resolve(data.password))
@@ -167,10 +167,10 @@ export class TerminalService {
       this.prisma.user
         .findUnique({ where: { uuid: data.UUID } })
         .then((user) => {
-          const newBalance = user.ldollarBalance + data.lDollarAmount;
+          const newBalance = user.lDollarBalance + data.lDollarAmount;
           this.prisma.user
             .update({
-              data: { ldollarBalance: newBalance },
+              data: { lDollarBalance: newBalance },
               where: { uuid: data.UUID },
             })
             .then(() => resolve(newBalance))
@@ -181,13 +181,13 @@ export class TerminalService {
 
   getBalance(uuid: string) {
     return this.prisma.user
-      .findUnique({ select: { ldollarBalance: true }, where: { uuid: uuid } })
+      .findUnique({ select: { lDollarBalance: true }, where: { uuid: uuid } })
       .then((user) => {
         if (user)
           return {
             result: Result.OK,
             resulttext: 'get_balance_success',
-            custom: { balance: user.ldollarBalance },
+            custom: { balance: user.lDollarBalance },
           };
         else
           return {

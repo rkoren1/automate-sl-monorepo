@@ -187,7 +187,7 @@ model User {
   email                        String                         @unique(map: "email") @db.VarChar(255)
   password                     String                         @db.VarChar(255)
   refreshToken                String?                        @db.VarChar(255)
-  ldollarBalance                   Int?                       @db.Int
+  lDollarBalance                   Int?                       @db.Int
   uuid                         String?                        @unique(map: "uuid") @db.VarChar(36)
   avatarName                  String?                        @db.VarChar(255)
   createdAt                   DateTime?                      @db.DateTime(0)

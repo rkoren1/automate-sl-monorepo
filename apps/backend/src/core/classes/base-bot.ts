@@ -31,8 +31,6 @@ export class BaseBot extends Bot {
     this.ownerUUID = user.uuid;
     this.ownerName = this.convertOwnerName(user.avatarName);
     this.acceptOwnerTeleport();
-    //on every disconnect write a log in the database and set bot_running to false
-    //this.onDiscconectLogToDb(login);
     this.acceptGroupInvites();
     this.subscribeToImCommands();
     //ping bot every 10mins

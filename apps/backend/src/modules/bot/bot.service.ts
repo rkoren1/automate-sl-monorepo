@@ -34,74 +34,72 @@ export class BotService {
       return false;
     }
   }
-  create(createBotDto: CreateBotDto) {
-    return new Promise((resolve, reject) => {
-      this.slAccountExists(
-        createBotDto.loginFirstName,
-        createBotDto.loginLastName,
-        createBotDto.loginPassword,
-      ).then((uuid) => {
-        if (!uuid) return reject({ exists: false });
 
-        urlMetadata('https://world.secondlife.com/resident/' + uuid)
-          .then((metadata) => {
-            const currentDate = new Date();
-            const after3Days = new Date();
-            after3Days.setDate(after3Days.getDate() + 3);
+  async create(createBotDto: CreateBotDto) {
+    const uuid = await this.slAccountExists(
+      createBotDto.loginFirstName,
+      createBotDto.loginLastName,
+      createBotDto.loginPassword,
+    );
+    if (!uuid) return { exists: false };
 
-            this.prisma.botDb
-              .create({
+    urlMetadata('https://world.secondlife.com/resident/' + uuid)
+      .then((metadata) => {
+        const currentDate = new Date();
+        const after3Days = new Date();
+        after3Days.setDate(after3Days.getDate() + 3);
+
+        this.prisma.botDb
+          .create({
+            data: {
+              userId: createBotDto.userId,
+              loginFirstName: createBotDto.loginFirstName,
+              loginLastName: createBotDto.loginLastName,
+              loginPassword: createBotDto.loginPassword,
+              running: false,
+              shouldRun: false,
+              loginSpawnLocation: createBotDto.loginSpawnLocation,
+              loginRegion: createBotDto.loginRegion,
+              uuid: uuid,
+              imageId: metadata.imageid,
+            },
+          })
+          .then(async (bot) => {
+            const userBots = await this.prisma.botDb.findMany({
+              where: { userId: createBotDto.userId },
+            });
+            //if this is the only bot give 3 days of free subscription
+            if (userBots.length < 2) {
+              this.prisma.subscription.create({
                 data: {
-                  userId: createBotDto.userId,
-                  loginFirstName: createBotDto.loginFirstName,
-                  loginLastName: createBotDto.loginLastName,
-                  loginPassword: createBotDto.loginPassword,
-                  running: false,
-                  shouldRun: false,
-                  loginSpawnLocation: createBotDto.loginSpawnLocation,
-                  loginRegion: createBotDto.loginRegion,
-                  uuid: uuid,
-                  imageId: metadata.imageid,
+                  subscriptionStart: currentDate,
+                  subscriptionEnd: after3Days,
+                  packageId: 1,
+                  botId: bot.id,
                 },
-              })
-              .then(async (bot) => {
-                const userBots = await this.prisma.botDb.findMany({
-                  where: { userId: createBotDto.userId },
-                });
-                //if this is the only bot give 3 days of free subscription
-                if (userBots.length < 2) {
-                  this.prisma.subscription.create({
-                    data: {
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: after3Days,
-                      packageId: 1,
-                      botId: bot.id,
-                    },
-                  });
-                }
-                //just create an empty subscription
-                else {
-                  this.prisma.subscription.create({
-                    data: {
-                      subscriptionStart: currentDate,
-                      subscriptionEnd: currentDate,
-                      packageId: 1,
-                      botId: bot.id,
-                    },
-                  });
-                }
-                return resolve(metadata.imageid);
-              })
-              .catch((err) => {
-                console.error(err);
-                return reject(err);
               });
+            }
+            //just create an empty subscription
+            else {
+              this.prisma.subscription.create({
+                data: {
+                  subscriptionStart: currentDate,
+                  subscriptionEnd: currentDate,
+                  packageId: 1,
+                  botId: bot.id,
+                },
+              });
+            }
+            return metadata.imageid;
           })
           .catch((err) => {
-            return reject(err);
+            console.error(err);
+            return err;
           });
+      })
+      .catch((err) => {
+        return err;
       });
-    });
   }
 
   getAllBots(userId: number) {

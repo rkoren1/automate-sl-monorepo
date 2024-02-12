@@ -6,21 +6,25 @@ import { Package } from '../../package/entities/package.entity';
 export class Subscription {
   @PrimaryKey()
   id: number;
+
   @Property({
     type: 'date',
     nullable: false,
   })
   subscriptionStart: Date;
+
   @Property({
     type: 'date',
     nullable: false,
   })
   subscriptionEnd: Date;
+
   @Property({
     type: 'int',
     nullable: false,
   })
   packageId: number;
+
   @Property({
     type: 'int',
     nullable: false,

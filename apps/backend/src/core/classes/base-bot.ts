@@ -97,10 +97,13 @@ export class BaseBot extends Bot {
             this.login()
               .then(() => this.connectToSim())
               .then(() => {
-                BotDb.update(
-                  { running: true, shouldRun: false },
-                  { where: { id: this.botData.id } },
-                );
+                this.em
+                  .nativeUpdate(
+                    BotDb,
+                    { id: this.botData.id },
+                    { running: true, shouldRun: false },
+                  )
+                  .then();
               });
           });
       }
@@ -121,7 +124,7 @@ export class BaseBot extends Bot {
         bot.shouldRun = true;
         this.em.persistAndFlush(bot);
         //after 5min log bot back in, make log and set running true and should_run false
-        setTimeout(() => {
+        /*setTimeout(() => {
           this.login()
             .then(() => this.connectToSim())
             .then(() => {

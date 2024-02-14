@@ -20,6 +20,7 @@ export class BotRepository {
   }
 
   private decrypt(encryptedData: string) {
+    if (encryptedData === undefined) return null;
     const iv = process.env.LOGIN_PASS_IV;
     const encryptedText = Buffer.from(encryptedData, 'hex');
 

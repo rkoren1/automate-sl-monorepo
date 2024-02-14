@@ -9,6 +9,7 @@ import urlMetadata from 'url-metadata';
 import { BasicDiscBot } from '../../core/classes/basic-disc-bot';
 import { SmartBot } from '../../core/classes/smart-bot';
 import { PrismaService } from '../../providers/prisma.service';
+import { BotRepository } from './bot.repository';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { GetBotDto } from './dto/get-bot.dto';
 import { SetBotConfigurationBodyDto } from './dto/set-bot-configuration-body.dto';
@@ -17,7 +18,10 @@ import { SetDiscordSettingsBodyDto } from './dto/set-discord-settings-body.dto';
 export class BotService {
   botInstances = new Array<SmartBot | BasicDiscBot>();
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private botRepo: BotRepository,
+    private prisma: PrismaService,
+  ) {}
 
   async slAccountExists(firstName: string, lastName: string, password: string) {
     const loginParams: LoginParameters = new LoginParameters();
@@ -50,7 +54,7 @@ export class BotService {
             const after3Days = new Date();
             after3Days.setDate(after3Days.getDate() + 3);
 
-            this.prisma.botDb
+            this.botRepo
               .create({
                 data: {
                   userId: createBotDto.userId,
@@ -66,7 +70,7 @@ export class BotService {
                 },
               })
               .then(async (bot) => {
-                const userBots = await this.prisma.botDb.findMany({
+                const userBots = await this.botRepo.findMany({
                   where: { userId: createBotDto.userId },
                 });
                 //if this is the only bot give 3 days of free subscription
@@ -109,7 +113,7 @@ export class BotService {
     return new Promise((resolve, reject) => {
       const currentDate = new Date();
       forkJoin([
-        this.prisma.botDb.findMany({
+        this.botRepo.findMany({
           select: {
             id: true,
             loginFirstName: true,
@@ -167,7 +171,7 @@ export class BotService {
   }
   async getBotConfiguration(data) {
     try {
-      const result = await this.prisma.botDb.findMany({
+      const result = await this.botRepo.findMany({
         select: {
           id: true,
           loginFirstName: true,
@@ -199,7 +203,7 @@ export class BotService {
   }
   startBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
-      return this.prisma.botDb
+      return this.botRepo
         .findFirst({
           where: { id: botId, userId: userId },
         })
@@ -246,7 +250,7 @@ export class BotService {
                         workerBot.isConnected = true;
                         this.botInstances[botId] = workerBot;
 
-                        return this.prisma.botDb
+                        return this.botRepo
                           .update({
                             data: { running: true },
                             where: { id: botId, userId: userId },
@@ -271,7 +275,7 @@ export class BotService {
                       .then(() => workerBot.connectToSim())
                       .then(() => {
                         this.botInstances[botId] = workerBot;
-                        return this.prisma.botDb
+                        return this.botRepo
                           .update({
                             data: { running: true },
                             where: { id: botId, userId: userId },
@@ -306,7 +310,7 @@ export class BotService {
         .exitHandler({ exit: false }, undefined)
         .then(() => {
           this.botInstances[botId].isConnected = false;
-          return this.prisma.botDb
+          return this.botRepo
             .update({
               data: { running: false },
               where: { id: botId, userId: userId },
@@ -394,7 +398,7 @@ export class BotService {
   }
   async setBotConfiguration(data: SetBotConfigurationBodyDto) {
     try {
-      const result = await this.prisma.botDb.update({
+      const result = await this.botRepo.update({
         data: {
           loginRegion: data.loginRegion,
           loginSpawnLocation: data.loginSpawnLocation,
@@ -409,16 +413,16 @@ export class BotService {
     }
   }
   async refreshBotStatus(botId: number) {
-    const bot = await this.prisma.botDb.findUnique({ where: { id: botId } });
+    const bot = await this.botRepo.findFirst({ where: { id: botId } });
     //if bot doesnt exist and is running set running to false
     if (!this.botInstances[botId] && bot.running) {
-      return this.prisma.botDb
+      return this.botRepo
         .update({ data: { running: false }, where: { id: botId } })
         .then(() => true);
     }
     //else check if bot is offline and set running to false
     if (!this.botInstances[botId]?.isConnected) {
-      return this.prisma.botDb
+      return this.botRepo
         .update({ data: { running: false }, where: { id: botId } })
         .then(() => true);
     }

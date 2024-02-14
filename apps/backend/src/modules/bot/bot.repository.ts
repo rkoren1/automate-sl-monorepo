@@ -35,48 +35,58 @@ export class BotRepository {
     return decrypted.toString();
   }
 
-  async createBot(params: { data: Prisma.BotDbCreateInput }): Promise<BotDb> {
+  async create(params: Prisma.BotDbCreateArgs): Promise<BotDb> {
     const { data } = params;
     data.loginPassword = this.encrypt(data.loginPassword);
     return this.prisma.botDb.create({ data });
   }
 
-  async getBots(params: {
+  async findMany(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.BotDbWhereUniqueInput;
     where?: Prisma.BotDbWhereInput;
     orderBy?: Prisma.BotDbOrderByWithRelationInput;
-  }): Promise<BotDb[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    select?: Prisma.BotDbSelect;
+  }) {
+    const { skip, take, cursor, where, orderBy, select } = params;
     return (
-      await this.prisma.botDb.findMany({ skip, take, cursor, where, orderBy })
+      await this.prisma.botDb.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+        select,
+      })
     ).map((bot) => ({
       ...bot,
       loginPassword: this.decrypt(bot.loginPassword),
     }));
   }
 
-  async getBot(params: {
+  async findFirst(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.BotDbWhereUniqueInput;
     where?: Prisma.BotDbWhereInput;
     orderBy?: Prisma.BotDbOrderByWithRelationInput;
-  }): Promise<BotDb> {
-    const { skip, take, cursor, where, orderBy } = params;
+    select?: Prisma.BotDbSelect;
+  }) {
+    const { skip, take, cursor, where, orderBy, select } = params;
     const result = await this.prisma.botDb.findFirst({
       skip,
       take,
       cursor,
       where,
       orderBy,
+      select,
     });
     result.loginPassword = this.decrypt(result.loginPassword);
     return result;
   }
 
-  async updateBot(params: {
+  async update(params: {
     where: Prisma.BotDbWhereUniqueInput;
     data: Prisma.BotDbUpdateInput;
   }): Promise<BotDb> {
@@ -88,7 +98,7 @@ export class BotRepository {
     return result;
   }
 
-  async deleteBot(params: {
+  async delete(params: {
     where: Prisma.BotDbWhereUniqueInput;
   }): Promise<BotDb> {
     const { where } = params;

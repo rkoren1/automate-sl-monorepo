@@ -6,6 +6,7 @@ import { JwtMiddleware } from './core/guards/jwt/jwt.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { BotLogModule } from './modules/bot-log/bot-log.module';
 import { BotModule } from './modules/bot/bot.module';
+import { BotRepository } from './modules/bot/bot.repository';
 import { DiscordSettingsModule } from './modules/discord-settings/discord-settings.module';
 import { PackageModule } from './modules/package/package.module';
 import { PaymentModule } from './modules/payment/payment.module';
@@ -35,7 +36,7 @@ import { PrismaService } from './providers/prisma.service';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [InitService, PrismaService],
+  providers: [InitService, PrismaService, BotRepository],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -2,6 +2,7 @@ import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { BasicDiscBot } from '../core/classes/basic-disc-bot';
 import { SmartBot } from '../core/classes/smart-bot';
+import { BotRepository } from '../modules/bot/bot.repository';
 import { BotService } from '../modules/bot/bot.service';
 import { PrismaService } from './prisma.service';
 
@@ -9,18 +10,19 @@ import { PrismaService } from './prisma.service';
 export class InitService implements OnModuleInit {
   constructor(
     private readonly botService: BotService,
+    private botRepo: BotRepository,
     private prisma: PrismaService,
   ) {}
 
   reviveBots() {
     const currentDate = new Date();
-    this.prisma.botDb
+    this.botRepo
       .findMany({
         where: {
           running: true,
           subscriptions: { some: { subscriptionEnd: { gt: currentDate } } },
         },
-        include: { user: true },
+        select: { user: true },
       })
       .then((runningBots) => {
         runningBots.forEach((bot) => {

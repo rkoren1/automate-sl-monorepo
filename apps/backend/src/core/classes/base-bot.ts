@@ -54,6 +54,18 @@ export class BaseBot extends Bot {
     );
   }
 
+  async stopBot() {
+    this.cronJob.stop();
+    this.subs.unsubscribe();
+    console.log('Disconnecting');
+    try {
+      await this.close();
+    } catch (error) {
+      console.error('Error when closing client:');
+      console.error(error);
+    }
+  }
+
   async exitHandler(
     options: { exit?: boolean },
     err: Error | number | Signals,
@@ -63,15 +75,6 @@ export class BaseBot extends Bot {
     if (err && err instanceof Error) {
       console.log(err.stack);
     }
-    console.log('Disconnecting');
-    try {
-      await this.close();
-    } catch (error) {
-      console.error('Error when closing client:');
-      console.error(error);
-    }
-    process.exit();
-    return;
 
     if (options.exit) {
       process.exit();

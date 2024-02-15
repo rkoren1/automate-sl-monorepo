@@ -307,7 +307,7 @@ export class BotService {
   stopBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
       return this.botInstances[botId]
-        .exitHandler({ exit: false }, undefined)
+        .stopBot()
         .then(() => {
           this.botInstances[botId].isConnected = false;
           return this.botRepo

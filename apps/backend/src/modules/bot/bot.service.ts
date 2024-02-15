@@ -169,6 +169,7 @@ export class BotService {
       });
     });
   }
+
   async getBotConfiguration(data) {
     try {
       const result = await this.botRepo.findMany({
@@ -201,6 +202,7 @@ export class BotService {
       return err;
     }
   }
+
   startBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
       return this.botRepo
@@ -304,6 +306,7 @@ export class BotService {
         });
     });
   }
+
   stopBot(botId: number, userId: number) {
     return new Promise((resolve, reject) => {
       return this.botInstances[botId]
@@ -329,6 +332,7 @@ export class BotService {
         });
     });
   }
+
   async getSharedBots(userId: number) {
     try {
       const result = await this.prisma.sharedBot.findMany({
@@ -347,6 +351,7 @@ export class BotService {
       return err;
     }
   }
+
   async getPackages() {
     try {
       const result = await this.prisma.subPackage.findMany({
@@ -365,6 +370,7 @@ export class BotService {
       return err;
     }
   }
+
   getDiscordSettings(botId: number) {
     return new Promise((resolve, reject) => {
       return this.prisma.discordSettings
@@ -381,6 +387,7 @@ export class BotService {
         .catch((err) => reject(err));
     });
   }
+
   async setDiscordSettings(data: SetDiscordSettingsBodyDto) {
     try {
       const result = await this.prisma.discordSettings.upsert({
@@ -404,6 +411,7 @@ export class BotService {
       return err;
     }
   }
+
   async setBotConfiguration(data: SetBotConfigurationBodyDto) {
     try {
       const result = await this.botRepo.update({
@@ -420,6 +428,7 @@ export class BotService {
       return err;
     }
   }
+
   async refreshBotStatus(botId: number) {
     const bot = await this.botRepo.findFirst({ where: { id: botId } });
     //if bot doesnt exist and is running set running to false

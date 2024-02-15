@@ -318,7 +318,15 @@ export class BotService {
             .then((result) => resolve(result))
             .catch((err) => reject(err));
         })
-        .catch((err) => reject(err));
+        .catch((err) => {
+          //also set bot to be off
+          this.botRepo
+            .update({
+              data: { running: false },
+              where: { id: botId, userId: userId },
+            })
+            .then(() => reject(err));
+        });
     });
   }
   async getSharedBots(userId: number) {

@@ -66,6 +66,30 @@ export class BotRepository {
     }));
   }
 
+  async findManyInclude(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.BotDbWhereUniqueInput;
+    where?: Prisma.BotDbWhereInput;
+    orderBy?: Prisma.BotDbOrderByWithRelationInput;
+    include?: Prisma.BotDbInclude;
+  }) {
+    const { skip, take, cursor, where, orderBy, include } = params;
+    return (
+      await this.prisma.botDb.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+        include,
+      })
+    ).map((bot) => ({
+      ...bot,
+      loginPassword: this.decrypt(bot.loginPassword),
+    }));
+  }
+
   async findFirst(params: {
     skip?: number;
     take?: number;

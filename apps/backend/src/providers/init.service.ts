@@ -17,12 +17,12 @@ export class InitService implements OnModuleInit {
   reviveBots() {
     const currentDate = new Date();
     this.botRepo
-      .findMany({
+      .findManyInclude({
         where: {
           running: true,
           subscriptions: { some: { subscriptionEnd: { gt: currentDate } } },
         },
-        select: { user: true },
+        include: { user: true },
       })
       .then((runningBots) => {
         runningBots.forEach((bot) => {

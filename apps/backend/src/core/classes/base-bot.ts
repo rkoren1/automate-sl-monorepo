@@ -63,17 +63,16 @@ export class BaseBot extends Bot {
     if (err && err instanceof Error) {
       console.log(err.stack);
     }
-    if (!this.isConnected) {
-      console.log('Disconnecting');
-      try {
-        await this.close();
-      } catch (error) {
-        console.error('Error when closing client:');
-        console.error(error);
-      }
-      process.exit();
-      return;
+    console.log('Disconnecting');
+    try {
+      await this.close();
+    } catch (error) {
+      console.error('Error when closing client:');
+      console.error(error);
     }
+    process.exit();
+    return;
+
     if (options.exit) {
       process.exit();
     }

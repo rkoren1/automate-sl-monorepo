@@ -312,7 +312,7 @@ export class BotService {
       return this.botInstances[botId]
         .stopBot()
         .then(() => {
-          this.botInstances[botId].isConnected = false;
+          delete this.botInstances[botId];
           return this.botRepo
             .update({
               data: { running: false },

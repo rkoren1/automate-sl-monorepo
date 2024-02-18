@@ -1,14 +1,18 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { PrismaClient } from '@prisma/client';
-import * as jwt from 'jsonwebtoken';
+import { VerifyErrors, sign, verify } from 'jsonwebtoken';
+import { JwtPayloadData } from '../../core/guards/jwt/jwt.middleware';
+import { PrismaService } from '../../providers/prisma.service';
 import { AuthService } from './auth.service';
 import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
 
 @Controller()
 export class AuthController {
-  prisma = new PrismaClient();
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private prisma: PrismaService,
+  ) {}
+
   @Get('refreshtoken')
   @ApiOkResponse({
     type: RefreshTokenResponseDto,
@@ -26,14 +30,14 @@ export class AuthController {
       .then((foundUser) => {
         if (!foundUser) return res.sendStatus(204);
         //evaluate jwt
-        jwt.verify(
+        verify(
           refreshToken,
           process.env.REFRESH_TOKEN_SECRET,
-          (err, decoded) => {
+          (err: VerifyErrors | null, decoded: JwtPayloadData | undefined) => {
             if (err || foundUser.email !== decoded.email) {
               return res.sendStatus(403);
             }
-            const accessToken = jwt.sign(
+            const accessToken = sign(
               { id: decoded.id, email: decoded.email },
               process.env.ACCESS_TOKEN_SECRET,
               { expiresIn: '300s' },
@@ -69,9 +73,9 @@ export class AuthController {
             res.clearCookie('jwt', { httpOnly: true, maxAge: 86400000 }); //secure: true - only serves on https
             return res.sendStatus(204);
           })
-          .catch((err) => res.sendStatus(500));
+          .catch(() => res.sendStatus(500));
       })
-      .catch((err) => {
+      .catch(() => {
         res.clearCookie('jwt', { httpOnly: true, maxAge: 86400000 });
         return res.sendStatus(204);
       });

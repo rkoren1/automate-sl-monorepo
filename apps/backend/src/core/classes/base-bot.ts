@@ -73,7 +73,7 @@ export class BaseBot extends Bot {
     this.cronJob.stop();
     this.subs.unsubscribe();
     if (err && err instanceof Error) {
-      console.log(err.stack);
+      console.error(err.stack);
     }
 
     if (options.exit) {

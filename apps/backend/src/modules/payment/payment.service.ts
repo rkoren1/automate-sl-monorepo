@@ -9,16 +9,14 @@ import { PrismaService } from '../../providers/prisma.service';
 export class PaymentService {
   constructor(private prisma: PrismaService) {}
 
-  getLDollarBalance(userId: number) {
-    return this.prisma.user
-      .findUnique({ where: { id: userId } })
-      .then((user) => {
-        return { lDollarBalance: user.lDollarBalance };
-      })
-      .catch((err) => {
-        console.error(err);
-        return { lDollarBalance: '??' };
-      });
+  async getLDollarBalance(userId: number) {
+    try {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      return { lDollarBalance: user.lDollarBalance };
+    } catch (err) {
+      console.error(err);
+      return { lDollarBalance: -1 };
+    }
   }
 
   payForPackage(data: {

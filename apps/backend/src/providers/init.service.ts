@@ -30,11 +30,9 @@ export class InitService implements OnModuleInit {
           loginParameters.firstName = bot.loginFirstName;
           loginParameters.lastName = bot.loginLastName;
           loginParameters.password = bot.loginPassword;
-          loginParameters.start = bot.loginSpawnLocation; //region/x/y/z or home or last
+          loginParameters.start = bot.loginSpawnLocation; //first, last, or login uri like uri:<existing region name>&<x>&<y>&<z>
 
-          const options =
-            BotOptionFlags.LiteObjectStore |
-            BotOptionFlags.StoreMyAttachmentsOnly;
+          const options = BotOptionFlags.LiteObjectStore;
           //start bot
           let workerBot: BasicDiscBot | SmartBot;
           this.prisma.discordSettings

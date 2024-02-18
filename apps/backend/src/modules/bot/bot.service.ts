@@ -246,8 +246,7 @@ export class BotService {
                       discordSettings[0],
                     );
                     return workerBot
-                      .login()
-                      .then(() => workerBot.connectToSim())
+                      .run()
                       .then(() => {
                         workerBot.isConnected = true;
                         this.botInstances[botId] = workerBot;
@@ -273,8 +272,7 @@ export class BotService {
                       bot,
                     );
                     return workerBot
-                      .login()
-                      .then(() => workerBot.connectToSim())
+                      .run()
                       .then(() => {
                         this.botInstances[botId] = workerBot;
                         return this.botRepo

@@ -5,6 +5,7 @@ import {
   LoginParameters,
   Vector3,
 } from '@caspertech/node-metaverse';
+import { LoginResponse } from '@caspertech/node-metaverse/dist/lib/classes/LoginResponse';
 import { BotDb, PrismaClient, User } from '@prisma/client';
 import { CronJob } from 'cron';
 import { SubSink } from 'subsink';
@@ -13,6 +14,9 @@ import Signals = NodeJS.Signals;
 
 export class BaseBot extends Bot {
   public isConnected = false;
+  protected isConnecting = false;
+  private reconnectTimer?: NodeJS.Timeout;
+  protected loginResponse?: LoginResponse;
   protected ownerUUID: string;
   protected ownerName: string;
   protected botData: BotDb;
@@ -40,45 +44,113 @@ export class BaseBot extends Bot {
       null,
       true,
     );
+  }
+
+  public async run(): Promise<void> {
+    const exitHandler = async (
+      options: { exit?: boolean },
+      err: Error | number | Signals,
+    ) => {
+      if (err && err instanceof Error) {
+        console.log(err.stack);
+      }
+      if (this.isConnected) {
+        console.log('Disconnecting');
+        try {
+          await this.stopBot();
+        } catch (error) {
+          console.error('Error when closing client:');
+          console.error(error);
+        }
+        process.exit();
+        return;
+      }
+      if (options.exit) {
+        process.exit();
+      }
+    };
+
+    // Do something when app is closing
+    process.on('exit', exitHandler.bind(this, {}));
+
     // Catches ctrl+c event
-    process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
+    process.on('SIGINT', exitHandler.bind(this, { exit: true }));
 
     // Catches "kill pid"
-    process.on('SIGUSR1', this.exitHandler.bind(this, { exit: true }));
-    process.on('SIGUSR2', this.exitHandler.bind(this, { exit: true }));
-    process.on('exit', this.exitHandler.bind(this, {}));
+    process.on('SIGUSR1', exitHandler.bind(this, { exit: true }));
+    process.on('SIGUSR2', exitHandler.bind(this, { exit: true }));
+
     // Catches uncaught exceptions
-    process.on(
-      'uncaughtException',
-      this.exitHandler.bind(this, { exit: true }),
-    );
+    process.on('uncaughtException', exitHandler.bind(this, { exit: true }));
+
+    // This will tell the bot to keep trying to teleport back to the 'stay' location.
+    // You can specify a region and position, such as:
+    // bot.stayPut(true, 'Izanagi', new nmv.Vector3([128, 128, 21]));
+    // Note that the 'stay' location will be updated if you request or accept a lure (a teleport).
+    // If no region is specified, it will be set to the region you log in to.
+    //this.stayPut(true, this.stayRegion, this.stayPosition);
+
+    await this.properLogin();
   }
 
-  async stopBot() {
-    this.cronJob.stop();
-    this.subs.unsubscribe();
-    console.log('Disconnecting');
+  private async properLogin(): Promise<void> {
+    if (this.isConnecting) {
+      return;
+    }
+    this.isConnecting = true;
     try {
-      await this.close();
-    } catch (error) {
-      console.error('Error when closing client:');
-      console.error(error);
+      if (this.reconnectTimer !== undefined) {
+        clearInterval(this.reconnectTimer);
+      }
+      this.reconnectTimer = setInterval(this.reconnectCheck.bind(this), 60000);
+
+      console.log('Logging in..');
+      this.loginResponse = await this.login();
+
+      console.log('Login complete');
+
+      // Establish circuit with region
+      await this.connectToSim();
+
+      console.log('Waiting for event queue');
+      await this.waitForEventQueue();
+
+      this.isConnected = true;
+    } finally {
+      this.isConnecting = false;
+    }
+    return this.connected();
+  }
+
+  private async reconnectCheck(): Promise<void> {
+    if (!this.isConnected) {
+      await this.login();
     }
   }
 
-  async exitHandler(
-    options: { exit?: boolean },
-    err: Error | number | Signals,
-  ) {
+  private async connected(): Promise<void> {
+    this.clientEvents.onDisconnected.subscribe((event) => {
+      if (event.requested) {
+        if (this.reconnectTimer !== undefined) {
+          clearInterval(this.reconnectTimer);
+        }
+      }
+      this.isConnected = false;
+      console.log('Disconnected from simulator: ' + event.message);
+    });
+    await this.onConnected();
+  }
+
+  protected async onConnected(): Promise<void> {}
+
+  public async stopBot(): Promise<void> {
     this.cronJob.stop();
     this.subs.unsubscribe();
-    if (err && err instanceof Error) {
-      console.error(err.stack);
+    if (this.reconnectTimer !== undefined) {
+      clearInterval(this.reconnectTimer);
+      this.reconnectTimer = undefined;
     }
-
-    if (options.exit) {
-      process.exit();
-    }
+    return this.close();
   }
 
   private pingBot(login: LoginParameters) {

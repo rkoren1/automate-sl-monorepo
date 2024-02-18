@@ -57,8 +57,7 @@ export class InitService implements OnModuleInit {
                 );
               }
               workerBot
-                .login()
-                .then(() => workerBot.connectToSim())
+                .run()
                 .then(() => {
                   workerBot.isConnected = true;
                   this.botService.botInstances[bot.id] = workerBot;

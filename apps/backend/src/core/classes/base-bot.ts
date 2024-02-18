@@ -311,7 +311,11 @@ export class BaseBot extends Bot {
               );
             } catch (error) {
               console.error(
-                'group im command failed for bot' + messageEvent.fromName,
+                'group im command failed ',
+                ' error: ',
+                error,
+                ' event: ',
+                messageEvent,
               );
             }
 

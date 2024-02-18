@@ -275,7 +275,7 @@ export class BotController {
     type: CreateBotResponseDto,
   })
   refreshBotStatus(@Res() res, @Query() query: RefreshBotStatusQueryDto) {
-    this.botService.refreshBotStatus(query.botId).then(() => {
+    this.botService.refreshBotStatus(+query.botId).then(() => {
       return res.json({ success: true, message: 'Refresh Successful' });
     });
   }

@@ -15,7 +15,7 @@ export class PaymentController {
     type: GetLDollarBalanceReponseDto,
   })
   getLDollarBalance(@Req() req) {
-    return this.paymentService.getLDollarBalance(req.id);
+    return this.paymentService.getLDollarBalance(+req.id);
   }
 
   @Post('payforpackage')
@@ -28,7 +28,7 @@ export class PaymentController {
     @Res() res,
   ) {
     const data = {
-      userId: req.id,
+      userId: +req.id,
       packageId: payForPackageDto.packageId,
       dateUnit: payForPackageDto.dateUnit,
       amountOfDateUnits: payForPackageDto.amountOfDateUnits,

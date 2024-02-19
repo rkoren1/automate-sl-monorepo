@@ -184,14 +184,12 @@ export class BaseBot extends Bot {
               ),
             )
             .finally(() => {
-              this.login()
-                .then(() => this.connectToSim())
-                .then(() => {
-                  this.prisma.botDb.update({
-                    data: { running: true, shouldRun: false },
-                    where: { id: this.botData.id },
-                  });
+              this.run().then(() => {
+                this.prisma.botDb.update({
+                  data: { running: true, shouldRun: false },
+                  where: { id: this.botData.id },
                 });
+              });
             });
         }
       });

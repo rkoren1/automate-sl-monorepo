@@ -304,7 +304,6 @@ export class BaseBot extends Bot {
                 'shout command failed for bot' + messageEvent.fromName,
               );
             }
-
             break;
           }
 
@@ -323,7 +322,6 @@ export class BaseBot extends Bot {
                 messageEvent,
               );
             }
-
             break;
           }
 

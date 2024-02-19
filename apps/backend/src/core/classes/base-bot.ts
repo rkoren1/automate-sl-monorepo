@@ -34,9 +34,6 @@ export class BaseBot extends Bot {
     this.botData = bot;
     this.ownerUUID = user.uuid;
     this.ownerName = this.convertOwnerName(user.avatarName);
-    this.acceptOwnerTeleport();
-    this.acceptGroupInvites();
-    this.subscribeToImCommands();
     //ping bot every 10mins
     this.cronJob = new CronJob(
       '10 * * * *',
@@ -141,7 +138,11 @@ export class BaseBot extends Bot {
     await this.onConnected();
   }
 
-  protected async onConnected(): Promise<void> {}
+  protected async onConnected(): Promise<void> {
+    this.acceptOwnerTeleport();
+    this.acceptGroupInvites();
+    this.subscribeToImCommands();
+  }
 
   public async stopBot(): Promise<void> {
     this.cronJob.stop();

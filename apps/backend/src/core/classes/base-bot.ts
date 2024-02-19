@@ -133,7 +133,11 @@ export class BaseBot extends Bot {
         }
       }
       this.isConnected = false;
-      console.log('Disconnected from simulator: ' + event.message);
+      console.warn(
+        'Disconnected from simulator: ' + event.message,
+        ' ',
+        this.ownerName,
+      );
     });
     await this.onConnected();
   }

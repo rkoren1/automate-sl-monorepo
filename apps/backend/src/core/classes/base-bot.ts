@@ -7,7 +7,6 @@ import {
 } from '@caspertech/node-metaverse';
 import { LoginResponse } from '@caspertech/node-metaverse/dist/lib/classes/LoginResponse';
 import { BotDb, PrismaClient, User } from '@prisma/client';
-import { CronJob } from 'cron';
 import { SubSink } from 'subsink';
 import { isUuidValid } from '../services/helper.service';
 import Signals = NodeJS.Signals;
@@ -22,7 +21,7 @@ export class BaseBot extends Bot {
   protected botData: BotDb;
   protected prisma = new PrismaClient();
   protected subs = new SubSink();
-  private cronJob: CronJob;
+  //private cronJob: CronJob;
 
   constructor(
     login: LoginParameters,
@@ -35,12 +34,12 @@ export class BaseBot extends Bot {
     this.ownerUUID = user.uuid;
     this.ownerName = this.convertOwnerName(user.avatarName);
     //ping bot every 10mins
-    this.cronJob = new CronJob(
+    /* this.cronJob = new CronJob(
       '10 * * * *',
       () => this.pingBot(login),
       null,
       true,
-    );
+    ); */
   }
 
   public async run(): Promise<void> {
@@ -149,7 +148,7 @@ export class BaseBot extends Bot {
   }
 
   public async stopBot(): Promise<void> {
-    this.cronJob.stop();
+    //this.cronJob.stop();
     this.subs.unsubscribe();
     if (this.reconnectTimer !== undefined) {
       clearInterval(this.reconnectTimer);

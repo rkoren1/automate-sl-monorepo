@@ -125,7 +125,7 @@ export class BaseBot extends Bot {
   }
 
   private async connected(): Promise<void> {
-    this.clientEvents.onDisconnected.subscribe((event) => {
+    this.subs.sink = this.clientEvents.onDisconnected.subscribe((event) => {
       if (event.requested) {
         if (this.reconnectTimer !== undefined) {
           clearInterval(this.reconnectTimer);

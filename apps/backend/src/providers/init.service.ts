@@ -32,7 +32,7 @@ export class InitService implements OnModuleInit {
           loginParameters.password = bot.loginPassword;
           loginParameters.start = bot.loginSpawnLocation; //first, last, or login uri like uri:<existing region name>&<x>&<y>&<z>
 
-          const options = BotOptionFlags.LiteObjectStore;
+          const options = BotOptionFlags.None;
           //start bot
           let workerBot: BasicDiscBot | SmartBot;
           this.prisma.discordSettings
@@ -59,7 +59,6 @@ export class InitService implements OnModuleInit {
               workerBot
                 .run()
                 .then(() => {
-                  workerBot.isConnected = true;
                   this.botService.botInstances[bot.id] = workerBot;
                 })
                 .catch((err) => console.error(err));

@@ -275,16 +275,7 @@ export class BotService {
                       .run()
                       .then(() => {
                         this.botInstances[botId] = workerBot;
-                        return this.botRepo
-                          .update({
-                            data: { running: true },
-                            where: { id: botId, userId: userId },
-                          })
-                          .then((result) => resolve(result))
-                          .catch((err) => {
-                            console.error(err);
-                            return reject(err);
-                          });
+                        return resolve(true);
                       })
                       .catch((err: Error) => {
                         console.error(err);
@@ -311,13 +302,7 @@ export class BotService {
         .stopBot()
         .then(() => {
           delete this.botInstances[botId];
-          return this.botRepo
-            .update({
-              data: { running: false },
-              where: { id: botId, userId: userId },
-            })
-            .then((result) => resolve(result))
-            .catch((err) => reject(err));
+          return resolve(true);
         })
         .catch((err) => {
           //also set bot to be off

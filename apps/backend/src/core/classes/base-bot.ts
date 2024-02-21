@@ -100,10 +100,10 @@ export class BaseBot extends Bot {
       }
       this.reconnectTimer = setInterval(this.reconnectCheck.bind(this), 60000);
 
-      console.log('Logging in..');
+      //Logging in..
       this.loginResponse = await this.login();
 
-      console.log('Login complete');
+      //Login complete
 
       // Establish circuit with region
       await this.connectToSim();
@@ -119,6 +119,7 @@ export class BaseBot extends Bot {
   }
 
   private async reconnectCheck(): Promise<void> {
+    console.warn('reconnect check', this.isConnected);
     if (!this.isConnected) {
       await this.properLogin();
     }
@@ -142,6 +143,10 @@ export class BaseBot extends Bot {
   }
 
   protected async onConnected(): Promise<void> {
+    await this.prisma.botDb.update({
+      data: { running: true },
+      where: { id: this.botData.id },
+    });
     this.acceptOwnerTeleport();
     this.acceptGroupInvites();
     this.subscribeToImCommands();
@@ -154,7 +159,13 @@ export class BaseBot extends Bot {
       clearInterval(this.reconnectTimer);
       this.reconnectTimer = undefined;
     }
-    return this.close();
+    return this.close().then(async () => {
+      await this.prisma.botDb.update({
+        data: { running: false },
+        where: { id: this.botData.id },
+      });
+      console.log('shut bot down');
+    });
   }
 
   private pingBot(login: LoginParameters) {

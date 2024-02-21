@@ -164,7 +164,6 @@ export class BaseBot extends Bot {
         data: { running: false },
         where: { id: this.botData.id },
       });
-      console.log('shut bot down');
     });
   }
 

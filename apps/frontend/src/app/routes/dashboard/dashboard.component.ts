@@ -9,12 +9,24 @@ import { Router } from '@angular/router';
 import { Bot, IAddBot } from 'main/@shared/Models/bot.model';
 import { AddBotPopupComponent } from './add-bot-popup/add-bot-popup.component';
 import { DashboardService } from './dashboard.service';
+import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
+import { NgFor, NgIf } from '@angular/common';
+import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        BreadcrumbComponent,
+        NgFor,
+        MatCard,
+        MatCardHeader,
+        MatCardContent,
+        NgIf,
+    ],
 })
 export class DashboardComponent implements OnInit {
   constructor(

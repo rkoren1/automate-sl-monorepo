@@ -43,8 +43,7 @@ const DIRECTIVES: any[] = [DisableControlDirective];
 const PIPES: any[] = [SafeUrlPipe, ToObservablePipe];
 
 @NgModule({
-  imports: [...MODULES],
-  exports: [...MODULES, ...COMPONENTS, ...DIRECTIVES, ...PIPES],
-  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES],
+    imports: [...MODULES, ...COMPONENTS, ...COMPONENTS_DYNAMIC, ...DIRECTIVES, ...PIPES],
+    exports: [...MODULES, ...COMPONENTS, ...DIRECTIVES, ...PIPES],
 })
 export class SharedModule {}

@@ -46,21 +46,19 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    SharedModule,
-    ThemeModule,
-  ],
-  declarations: [
-    HowToComponent,
-    HowToLayoutComponent,
-    DiscordBotSetupComponent,
-    SidebarItemsComponent,
-    HowToRegisterComponent,
-    HowToPackagesComponent,
-    MyBotsComponent,
-    SharedBotsComponent,
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        SharedModule,
+        ThemeModule,
+        HowToComponent,
+        HowToLayoutComponent,
+        DiscordBotSetupComponent,
+        SidebarItemsComponent,
+        HowToRegisterComponent,
+        HowToPackagesComponent,
+        MyBotsComponent,
+        SharedBotsComponent,
+    ],
 })
 export class HowToModule {}

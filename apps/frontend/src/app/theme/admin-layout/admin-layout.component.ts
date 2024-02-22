@@ -6,11 +6,18 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
-import { NavigationEnd, Router } from '@angular/router';
+import { MatSidenav, MatSidenavContent, MatSidenavContainer } from '@angular/material/sidenav';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AppSettings, SettingsService } from 'main/@core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { FooterComponent } from '../footer/footer.component';
+import { HeaderComponent } from '../header/header.component';
+import { SidebarNoticeComponent } from '../sidebar-notice/sidebar-notice.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { NgProgressComponent } from 'ngx-progressbar';
+import { NgClass } from '@angular/common';
+import { Dir } from '@angular/cdk/bidi';
 
 const MOBILE_MEDIAQUERY = 'screen and (max-width: 599px)';
 const TABLET_MEDIAQUERY =
@@ -18,10 +25,24 @@ const TABLET_MEDIAQUERY =
 const MONITOR_MEDIAQUERY = 'screen and (min-width: 960px)';
 
 @Component({
-  selector: 'app-admin-layout',
-  templateUrl: './admin-layout.component.html',
-  styleUrls: ['./admin-layout.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'app-admin-layout',
+    templateUrl: './admin-layout.component.html',
+    styleUrls: ['./admin-layout.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [
+        Dir,
+        NgClass,
+        NgProgressComponent,
+        MatSidenavContainer,
+        MatSidenav,
+        SidebarComponent,
+        SidebarNoticeComponent,
+        MatSidenavContent,
+        HeaderComponent,
+        RouterOutlet,
+        FooterComponent,
+    ],
 })
 export class AdminLayoutComponent implements OnDestroy {
   @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;

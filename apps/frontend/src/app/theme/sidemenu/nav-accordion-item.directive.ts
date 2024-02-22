@@ -2,7 +2,8 @@ import { Directive, HostBinding, Inject, Input, OnInit, OnDestroy } from '@angul
 import { NavAccordionDirective } from './nav-accordion.directive';
 
 @Directive({
-  selector: '[navAccordionItem]',
+    selector: '[navAccordionItem]',
+    standalone: true,
 })
 export class NavAccordionItemDirective implements OnInit, OnDestroy {
   protected nav: NavAccordionDirective;

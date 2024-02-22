@@ -38,7 +38,6 @@ const COMPONENTS: any[] = [
 const COMPONENTS_DYNAMIC: any[] = [];
 
 @NgModule({
-  imports: [SharedModule, RoutesRoutingModule, ClipboardModule, MatChipsModule],
-  declarations: [...COMPONENTS, ...COMPONENTS_DYNAMIC],
+    imports: [SharedModule, RoutesRoutingModule, ClipboardModule, MatChipsModule, ...COMPONENTS, ...COMPONENTS_DYNAMIC],
 })
 export class RoutesModule {}

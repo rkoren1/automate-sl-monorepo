@@ -10,11 +10,22 @@ import { DiscordSettingsPopupComponent } from './discord-settings-popup/discord-
 import { ManageBotService } from './manage-bot.service';
 import { StartupPopupComponent } from './startup-popup/startup-popup.component';
 import { SubscriptionPopupComponent } from './subscription-popup/subscription-popup.component';
+import { DatePipe } from '@angular/common';
+import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
-  selector: 'app-manage-bot',
-  templateUrl: './manage-bot.component.html',
-  styleUrls: ['./manage-bot.component.scss'],
+    selector: 'app-manage-bot',
+    templateUrl: './manage-bot.component.html',
+    styleUrls: ['./manage-bot.component.scss'],
+    standalone: true,
+    imports: [
+        BreadcrumbComponent,
+        MatCard,
+        MatCardContent,
+        MatCardTitle,
+        DatePipe,
+    ],
 })
 export class ManageBotComponent implements OnInit {
   botData: ILinkAccData = {

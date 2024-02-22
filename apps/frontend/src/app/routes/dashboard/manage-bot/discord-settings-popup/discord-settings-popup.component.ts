@@ -1,14 +1,29 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { DiscordSettingsInput } from 'main/@shared/Models/discordSettings.model';
 import { DiscSettingsForm } from 'main/@shared/Models/forms.model';
 import { DiscordSettingsService } from './discord-settings.service';
+import { MatButton } from '@angular/material/button';
+import { MatInput } from '@angular/material/input';
+import { MatLabel, MatFormField } from '@angular/material/form-field';
 
 @Component({
-  selector: 'app-discord-settings-popup',
-  templateUrl: './discord-settings-popup.component.html',
-  styleUrls: ['./discord-settings-popup.component.scss'],
+    selector: 'app-discord-settings-popup',
+    templateUrl: './discord-settings-popup.component.html',
+    styleUrls: ['./discord-settings-popup.component.scss'],
+    standalone: true,
+    imports: [
+        MatDialogContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatLabel,
+        MatFormField,
+        MatInput,
+        MatDialogActions,
+        MatButton,
+        MatDialogClose,
+    ],
 })
 export class DiscordSettingsPopupComponent implements OnInit {
   discordSettingsForm: FormGroup<DiscSettingsForm>;

@@ -5,7 +5,8 @@ import { filter } from 'rxjs/operators';
 import { NavAccordionItemDirective } from './nav-accordion-item.directive';
 
 @Directive({
-  selector: '[navAccordion]',
+    selector: '[navAccordion]',
+    standalone: true,
 })
 export class NavAccordionDirective {
   protected navLinks: NavAccordionItemDirective[] = [];

@@ -1,14 +1,37 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { AddSubscriptionForm } from 'main/@shared/Models/forms.model';
 import { Package } from 'main/@shared/Models/package.model';
 import { SubscriptionPopupService } from './subscription-popup.service';
+import { MatButton } from '@angular/material/button';
+import { MatInput } from '@angular/material/input';
+import { MatOption } from '@angular/material/core';
+import { NgFor, NgIf } from '@angular/common';
+import { MatSelect } from '@angular/material/select';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 
 @Component({
-  selector: 'app-subscription-popup',
-  templateUrl: './subscription-popup.component.html',
-  styleUrls: ['./subscription-popup.component.scss'],
+    selector: 'app-subscription-popup',
+    templateUrl: './subscription-popup.component.html',
+    styleUrls: ['./subscription-popup.component.scss'],
+    standalone: true,
+    imports: [
+        MatDialogTitle,
+        MatDialogContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        NgFor,
+        MatOption,
+        MatInput,
+        NgIf,
+        MatDialogActions,
+        MatButton,
+        MatDialogClose,
+    ],
 })
 export class SubscriptionPopupComponent implements OnInit {
   subscriptionForm: FormGroup<AddSubscriptionForm>;

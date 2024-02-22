@@ -27,9 +27,8 @@ const formlyModuleProviders = FormlyModule.forRoot({
 }).providers as Provider[];
 
 @NgModule({
-  imports: [SharedModule],
-  declarations: [FormlyFieldComboboxComponent, FormlyWrapperCardComponent],
-  providers: [FormlyValidations],
+    imports: [SharedModule, FormlyFieldComboboxComponent, FormlyWrapperCardComponent],
+    providers: [FormlyValidations],
 })
 export class FormlyConfigModule {
   constructor(formlyValidations: FormlyValidations) {

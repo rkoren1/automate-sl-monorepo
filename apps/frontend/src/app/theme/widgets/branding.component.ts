@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-branding',
-  template: `
+    selector: 'app-branding',
+    template: `
     <a class="matero-branding" href="/">
       <img
         src="./assets/images/automateSL_website_logo.png"
@@ -13,5 +13,6 @@ import { Component } from '@angular/core';
       <!-- <span class="matero-branding-name">AutomateSL</span> -->
     </a>
   `,
+    standalone: true,
 })
 export class BrandingComponent {}

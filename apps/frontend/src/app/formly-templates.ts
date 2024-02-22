@@ -2,13 +2,17 @@ import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MtxSelect } from '@ng-matero/extensions/select';
 import { FieldTypeConfig } from '@ngx-formly/core';
 import { FieldType } from '@ngx-formly/material/form-field';
+import { ToObservablePipe } from './shared/pipes/to-observable.pipe';
+import { MtxToObservablePipe } from '@ng-matero/extensions/core';
+import { AsyncPipe } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 /**
  * This is just an example.
  */
 @Component({
-  selector: 'formly-field-combobox',
-  template: `<mtx-select
+    selector: 'formly-field-combobox',
+    template: `<mtx-select
     #select
     [formControl]="formControl"
     [items]="props.options | toObservable | async"
@@ -21,7 +25,16 @@ import { FieldType } from '@ngx-formly/material/form-field';
     [compareWith]="props.compareWith"
   >
   </mtx-select>`,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        MtxSelect,
+        FormsModule,
+        ReactiveFormsModule,
+        AsyncPipe,
+        MtxToObservablePipe,
+        ToObservablePipe,
+    ],
 })
 export class FormlyFieldComboboxComponent extends FieldType<FieldTypeConfig> {
   @ViewChild('select', { static: true }) select!: MtxSelect;

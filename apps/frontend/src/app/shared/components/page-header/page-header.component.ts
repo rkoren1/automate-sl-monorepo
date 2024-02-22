@@ -8,12 +8,21 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuService } from 'main/@core/bootstrap/menu.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'page-header',
-  templateUrl: './page-header.component.html',
-  styleUrls: ['./page-header.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'page-header',
+    templateUrl: './page-header.component.html',
+    styleUrls: ['./page-header.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [
+        NgIf,
+        BreadcrumbComponent,
+        TranslateModule,
+    ],
 })
 export class PageHeaderComponent implements OnInit {
   @HostBinding('class') class = 'matero-page-header';

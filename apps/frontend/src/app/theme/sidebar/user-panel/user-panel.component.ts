@@ -1,11 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService, User } from 'main/@core/authentication';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-user-panel',
-  templateUrl: './user-panel.component.html',
-  styleUrls: ['./user-panel.component.scss'],
+    selector: 'app-user-panel',
+    templateUrl: './user-panel.component.html',
+    styleUrls: ['./user-panel.component.scss'],
+    standalone: true,
+    imports: [
+        MatIconButton,
+        RouterLink,
+        MatIcon,
+    ],
 })
 export class UserPanelComponent implements OnInit {
   user!: User;

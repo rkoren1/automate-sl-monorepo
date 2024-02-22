@@ -1,8 +1,14 @@
 import { Component } from '@angular/core';
+import { MatLine } from '@angular/material/core';
+import { NgFor } from '@angular/common';
+import { MatNavList, MatListItem } from '@angular/material/list';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu } from '@angular/material/menu';
+import { MatIconButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-notification',
-  template: `
+    selector: 'app-notification',
+    template: `
     <button mat-icon-button class="matero-toolbar-button" [matMenuTriggerFor]="menu">
       <mat-icon>notifications</mat-icon>
       <span class="badge bg-red-500">5</span>
@@ -19,6 +25,17 @@ import { Component } from '@angular/core';
       </mat-nav-list>
     </mat-menu>
   `,
+    standalone: true,
+    imports: [
+        MatIconButton,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        MatNavList,
+        NgFor,
+        MatListItem,
+        MatLine,
+    ],
 })
 export class NotificationComponent {
   messages = ['Server Error Reports', 'Server Error Reports', 'Server Error Reports'];

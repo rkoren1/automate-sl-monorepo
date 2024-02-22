@@ -7,16 +7,33 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatMenu } from '@angular/material/menu';
-import { NavigationEnd, Router, RouterLinkActive } from '@angular/router';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { NavigationEnd, Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { MenuChildrenItem, MenuService } from 'main/@core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TopmenuState } from './topmenu.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIcon } from '@angular/material/icon';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-topmenu-panel',
-  templateUrl: './topmenu-panel.component.html',
+    selector: 'app-topmenu-panel',
+    templateUrl: './topmenu-panel.component.html',
+    standalone: true,
+    imports: [
+        MatMenu,
+        NgFor,
+        NgxPermissionsModule,
+        NgIf,
+        MatMenuItem,
+        RouterLinkActive,
+        RouterLink,
+        MatIcon,
+        MatMenuTrigger,
+        TranslateModule,
+    ],
 })
 export class TopmenuPanelComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenu, { static: true }) menuPanel!: MatMenu;

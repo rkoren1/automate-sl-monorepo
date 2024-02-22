@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from 'main/@core';
+import { NgFor, KeyValuePipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIconButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-translate',
-  template: `
+    selector: 'app-translate',
+    template: `
     <button
       mat-icon-button
       class="matero-toolbar-button"
@@ -23,7 +27,17 @@ import { SettingsService } from 'main/@core';
       </button>
     </mat-menu>
   `,
-  styles: [],
+    styles: [],
+    standalone: true,
+    imports: [
+        MatIconButton,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        NgFor,
+        MatMenuItem,
+        KeyValuePipe,
+    ],
 })
 export class TranslateComponent {
   langs = {

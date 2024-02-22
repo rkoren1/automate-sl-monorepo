@@ -1,13 +1,27 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService, User } from 'main/@core/authentication';
 import { debounceTime, tap } from 'rxjs/operators';
 import { UserService } from './user.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-user',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.scss'],
+    selector: 'app-user',
+    templateUrl: './user.component.html',
+    styleUrls: ['./user.component.scss'],
+    standalone: true,
+    imports: [
+        MatButton,
+        MatMenuTrigger,
+        MatMenu,
+        RouterLink,
+        MatMenuItem,
+        MatIcon,
+        TranslateModule,
+    ],
 })
 export class UserComponent implements OnInit {
   user!: User;

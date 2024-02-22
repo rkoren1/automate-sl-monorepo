@@ -4,10 +4,18 @@ import {
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { Menu, MenuService } from 'main/@core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIcon } from '@angular/material/icon';
+import { TopmenuPanelComponent } from './topmenu-panel.component';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MatAnchor, MatButton } from '@angular/material/button';
+import { NgxPermissionsModule } from 'ngx-permissions';
+import { NgFor, NgIf, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { MatTabNav } from '@angular/material/tabs';
 
 export interface TopmenuState {
   active: boolean;
@@ -15,10 +23,27 @@ export interface TopmenuState {
 }
 
 @Component({
-  selector: 'app-topmenu',
-  templateUrl: './topmenu.component.html',
-  styleUrls: ['./topmenu.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+    selector: 'app-topmenu',
+    templateUrl: './topmenu.component.html',
+    styleUrls: ['./topmenu.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [
+        MatTabNav,
+        NgFor,
+        NgxPermissionsModule,
+        NgIf,
+        MatAnchor,
+        RouterLinkActive,
+        RouterLink,
+        NgTemplateOutlet,
+        MatButton,
+        MatMenuTrigger,
+        TopmenuPanelComponent,
+        MatIcon,
+        AsyncPipe,
+        TranslateModule,
+    ],
 })
 export class TopmenuComponent implements OnDestroy {
   @HostBinding('class') class = 'matero-topmenu';

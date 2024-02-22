@@ -1,14 +1,35 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { IBotConfiguration } from 'main/@shared/Models/bot.model';
 import { StartupFormModel } from './startup-form.model';
 import { StartupPopupService } from './startup-popup.service';
+import { MatButton } from '@angular/material/button';
+import { MatInput } from '@angular/material/input';
+import { NgIf } from '@angular/common';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 
 @Component({
-  selector: 'app-startup-popup',
-  templateUrl: './startup-popup.component.html',
-  styleUrls: ['./startup-popup.component.scss'],
+    selector: 'app-startup-popup',
+    templateUrl: './startup-popup.component.html',
+    styleUrls: ['./startup-popup.component.scss'],
+    standalone: true,
+    imports: [
+        MatDialogContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        NgIf,
+        MatInput,
+        MatDialogActions,
+        MatButton,
+        MatDialogClose,
+    ],
 })
 export class StartupPopupComponent implements OnInit {
   startupForm: FormGroup<StartupFormModel>;

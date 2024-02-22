@@ -2,7 +2,8 @@ import { Directive, HostListener, Inject } from '@angular/core';
 import { NavAccordionItemDirective } from './nav-accordion-item.directive';
 
 @Directive({
-  selector: '[navAccordionToggle]',
+    selector: '[navAccordionToggle]',
+    standalone: true,
 })
 export class NavAccordionToggleDirective {
   protected navLink: NavAccordionItemDirective;

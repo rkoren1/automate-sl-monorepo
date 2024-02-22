@@ -119,7 +119,6 @@ export class BaseBot extends Bot {
   }
 
   private async reconnectCheck(): Promise<void> {
-    console.warn('reconnect check', this.isConnected);
     if (!this.isConnected) {
       await this.properLogin();
     }

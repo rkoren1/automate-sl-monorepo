@@ -72,7 +72,7 @@ export interface ILinkSharedBotToUser {
 }
 
 export interface IBotConfiguration {
-  loginSpawnLocation: string;
-  loginRegion: string;
+  loginSpawnLocation: string | undefined;
+  loginRegion: string | undefined;
   botId: number;
 }

@@ -72,7 +72,7 @@ export class ManageBotComponent implements OnInit {
         },
       })
       .afterClosed()
-      .subscribe((res) => {
+      .subscribe(() => {
         this.getBotConfiguration(this.firstName, this.lastName);
       });
   }
@@ -104,7 +104,7 @@ export class ManageBotComponent implements OnInit {
         },
       })
       .afterClosed()
-      .subscribe((res) => {
+      .subscribe(() => {
         this.userService.updateLDollarBalance.next(true);
         this.getBotConfiguration(this.firstName, this.lastName);
       });

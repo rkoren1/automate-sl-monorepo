@@ -10,15 +10,20 @@
       >
         <mat-option value="home">Home</mat-option>
         <mat-option value="last">Last</mat-option>
-        <mat-option value="region">Region</mat-option>
+        <mat-option value="region">Region URL</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field
       appearance="fill"
       *ngIf="selectedSpawnLocation === 'region'"
     >
-      <mat-label>Region Name</mat-label>
-      <input required matInput name="regionName" formControlName="loginRegion"
+      <mat-label>Region URL</mat-label>
+      <input
+        required
+        matInput
+        type="url"
+        name="regionName"
+        formControlName="loginRegion"
     /></mat-form-field>
     <!-- <mat-form-field appearance="fill">
       <mat-label> Object to sit on startup</mat-label>

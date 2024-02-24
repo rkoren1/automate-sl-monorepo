@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'main/@env/environment';
+import { environment } from '../../../../environments/environment';
 import { IRegister } from './register.model';
 
 @Injectable({

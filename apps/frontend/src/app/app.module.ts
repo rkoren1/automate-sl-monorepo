@@ -6,20 +6,17 @@ import { AppComponent } from './app.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { CoreModule } from 'main/@core/core.module';
-import { SharedModule } from 'main/@shared/shared.module';
-import { ThemeModule } from 'main/@theme/theme.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { ToastrModule } from 'ngx-toastr';
+import { CoreModule } from './core/core.module';
 import { FormlyConfigModule } from './formly-config.module';
 import { RoutesModule } from './routes/routes.module';
+import { SharedModule } from './shared/shared.module';
+import { ThemeModule } from './theme/theme.module';
 
-import {
-  appInitializerProviders,
-  BASE_URL,
-  httpInterceptorProviders,
-} from 'main/@core';
-import { environment } from 'main/@env/environment';
+import { environment } from '../environments/environment';
+import { appInitializerProviders } from './core/initializers';
+import { BASE_URL, httpInterceptorProviders } from './core/interceptors/index';
 
 // Required for AOT compilation
 export function TranslateHttpLoaderFactory(http: HttpClient) {

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { ILinkAccData } from 'main/@shared/Models/bot.model';
-import { DiscordSettingsInput } from 'main/@shared/Models/discordSettings.model';
-import { UserService } from 'main/@theme/widgets/user/user.service';
+import { ILinkAccData } from '../../../shared/Models/bot.model';
+import { DiscordSettingsInput } from '../../../shared/Models/discordSettings.model';
+import { UserService } from '../../../theme/widgets/user/user.service';
 import { AccessCodePopupComponent } from './access-code-popup/access-code-popup.component';
 import { BotSettingsPopupComponent } from './bot-settings-popup/bot-settings-popup.component';
 import { DiscordSettingsPopupComponent } from './discord-settings-popup/discord-settings-popup.component';

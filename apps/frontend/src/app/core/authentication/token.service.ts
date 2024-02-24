@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { LocalStorageService } from 'main/@shared';
+import { LocalStorageService } from '../../shared/services/storage.service';
 import {
   BehaviorSubject,
   Observable,

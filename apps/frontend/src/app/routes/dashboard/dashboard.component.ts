@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Bot, IAddBot } from 'main/@shared/Models/bot.model';
+import { Bot, IAddBot } from '../../shared/Models/bot.model';
 import { AddBotPopupComponent } from './add-bot-popup/add-bot-popup.component';
 import { DashboardService } from './dashboard.service';
 import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';

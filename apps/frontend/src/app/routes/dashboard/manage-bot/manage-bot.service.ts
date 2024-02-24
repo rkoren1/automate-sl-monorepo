@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'main/@env/environment';
-import { ILinkAccData } from 'main/@shared/Models/bot.model';
-import { GetDiscordSettings } from 'main/@shared/Models/discordSettings.model';
+import { environment } from '../../../../environments/environment';
+import { ILinkAccData } from '../../../shared/Models/bot.model';
+import { GetDiscordSettings } from '../../../shared/Models/discordSettings.model';
 
 @Injectable({
   providedIn: 'root',

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { SettingsService } from 'main/@core';
+import { SettingsService } from '../../core/bootstrap/settings.service';
 import { NgFor, KeyValuePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';

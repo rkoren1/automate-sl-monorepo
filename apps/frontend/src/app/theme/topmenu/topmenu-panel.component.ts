@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { NavigationEnd, Router, RouterLinkActive, RouterLink } from '@angular/router';
-import { MenuChildrenItem, MenuService } from 'main/@core';
+import { MenuChildrenItem, MenuService } from '../../core/bootstrap/menu.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TopmenuState } from './topmenu.component';

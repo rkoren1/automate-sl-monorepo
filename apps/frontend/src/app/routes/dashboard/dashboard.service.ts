@@ -1,18 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'main/@env/environment';
-import {
-  GetAllBots,
-  IAddBot,
-  IAddBotResponse,
-  IBotTypes,
-  ILinkAccData,
-  ILinkSharedBotToUser,
-  IRemoveBot,
-  IStartBot,
-  IStopBot,
-  SharedBot,
-} from 'main/@shared/Models/bot.model';
+import { environment } from '../../../environments/environment';
+import { GetAllBots, IAddBot, IAddBotResponse, IBotTypes, ILinkAccData, ILinkSharedBotToUser, IRemoveBot, IStartBot, IStopBot, SharedBot } from '../../shared/Models/bot.model';
 
 @Injectable({
   providedIn: 'root',

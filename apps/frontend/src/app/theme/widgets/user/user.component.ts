@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, User } from 'main/@core/authentication';
+import { AuthService } from '../../../core/authentication/auth.service';
+import { User } from '../../../core/authentication/interface';
 import { debounceTime, tap } from 'rxjs/operators';
 import { UserService } from './user.service';
 import { TranslateModule } from '@ngx-translate/core';

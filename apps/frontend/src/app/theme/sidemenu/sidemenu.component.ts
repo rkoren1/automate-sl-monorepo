@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { MenuService } from 'main/@core';
+import { MenuService } from '../../core/bootstrap/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { NavAccordionToggleDirective } from './nav-accordion-toggle.directive';

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from 'main/@shared/shared.module';
+import { SharedModule } from '../shared/shared.module';
 import { RoutesRoutingModule } from './routes-routing.module';
 
 import { ClipboardModule } from '@angular/cdk/clipboard';

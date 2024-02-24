@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Menu } from 'main/@core/bootstrap/menu.service';
-import { environment } from 'main/@env/environment';
-import { GetAllBots } from 'main/@shared/Models/bot.model';
+import { Menu } from '../bootstrap/menu.service';
+import { environment } from '../../../environments/environment';
+import { GetAllBots } from '../../shared/Models/bot.model';
 import { of } from 'rxjs';
 import { Token } from './interface';
 

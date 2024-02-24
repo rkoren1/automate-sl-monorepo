@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SettingsService } from 'main/@core';
+import { SettingsService } from '../../../core/bootstrap/settings.service';
 import { FooterComponent } from '../../../theme/footer/footer.component';
 import { SidebarItemsComponent } from '../sidebar-items/sidebar-items.component';
 import { SidebarComponent } from '../../../theme/sidebar/sidebar.component';

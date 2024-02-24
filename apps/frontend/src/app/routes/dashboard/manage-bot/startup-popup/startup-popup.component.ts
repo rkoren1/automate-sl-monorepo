@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
-import { IBotConfiguration } from 'main/@shared/Models/bot.model';
+import { IBotConfiguration } from '../../../../shared/Models/bot.model';
 import { StartupFormModel } from './startup-form.model';
 import { StartupPopupService } from './startup-popup.service';
 import { MatButton } from '@angular/material/button';

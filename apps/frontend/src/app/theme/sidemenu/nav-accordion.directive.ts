@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { MenuService } from 'main/@core';
+import { MenuService } from '../../core/bootstrap/menu.service';
 import { filter } from 'rxjs/operators';
 import { NavAccordionItemDirective } from './nav-accordion-item.directive';
 

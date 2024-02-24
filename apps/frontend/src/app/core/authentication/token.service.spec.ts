@@ -1,13 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  TokenFactory,
-  TokenService,
-  currentTimestamp,
-} from 'main/@core/authentication';
-import {
-  LocalStorageService,
-  MemoryStorageService,
-} from 'main/@shared/services/storage.service';
+import { TokenFactory } from './token-factory.service';
+import { TokenService } from './token.service';
+import { currentTimestamp } from './helpers';
+import { LocalStorageService, MemoryStorageService } from '../../shared/services/storage.service';
 import { tap } from 'rxjs/operators';
 
 describe('TokenService', () => {

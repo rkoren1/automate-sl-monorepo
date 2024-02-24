@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'main/@env/environment';
-import { ILinkAccData } from 'main/@shared/Models/bot.model';
-import { Package } from 'main/@shared/Models/package.model';
+import { environment } from '../../../../../environments/environment';
+import { ILinkAccData } from '../../../../shared/Models/bot.model';
+import { Package } from '../../../../shared/Models/package.model';
 
 @Injectable({
   providedIn: 'root',

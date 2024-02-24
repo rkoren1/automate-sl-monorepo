@@ -5,16 +5,10 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import {
-  AuthService,
-  LoginService,
-  TokenService,
-  User,
-} from 'main/@core/authentication';
-import {
-  LocalStorageService,
-  MemoryStorageService,
-} from 'main/@shared/services/storage.service';
+import { AuthService } from './auth.service';
+import { TokenService } from './token.service';
+import { User } from './interface';
+import { LocalStorageService, MemoryStorageService } from '../../shared/services/storage.service';
 import { Observable } from 'rxjs';
 import { skip } from 'rxjs/operators';
 

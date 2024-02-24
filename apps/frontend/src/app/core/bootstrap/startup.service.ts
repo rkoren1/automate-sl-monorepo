@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AuthService, User } from 'main/@core/authentication';
+import { AuthService } from '../authentication/auth.service';
+import { User } from '../authentication/interface';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { switchMap, tap } from 'rxjs/operators';
 import { Menu, MenuService } from './menu.service';

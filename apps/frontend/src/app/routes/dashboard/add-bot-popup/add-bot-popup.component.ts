@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
-import { SharedBot } from 'main/@shared/Models/bot.model';
-import { AddBotForm, AddSharedBotForm } from 'main/@shared/Models/forms.model';
+import { SharedBot } from '../../../shared/Models/bot.model';
+import { AddBotForm, AddSharedBotForm } from '../../../shared/Models/forms.model';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { NgIf, NgFor } from '@angular/common';

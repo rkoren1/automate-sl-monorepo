@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
-import { AddSubscriptionForm } from 'main/@shared/Models/forms.model';
-import { Package } from 'main/@shared/Models/package.model';
+import { AddSubscriptionForm } from '../../../../shared/Models/forms.model';
+import { Package } from '../../../../shared/Models/package.model';
 import { SubscriptionPopupService } from './subscription-popup.service';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';

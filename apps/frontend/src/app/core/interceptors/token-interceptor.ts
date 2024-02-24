@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { Router } from '@angular/router';
-import { TokenService } from 'main/@core/authentication';
+import { TokenService } from '../authentication/token.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { BASE_URL } from './base-url-interceptor';

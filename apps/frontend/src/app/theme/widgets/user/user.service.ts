@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'main/@env/environment';
-import { GetLDollarBalance } from 'main/@shared/Models/user.model';
+import { environment } from '../../../../environments/environment';
+import { GetLDollarBalance } from '../../../shared/Models/user.model';
 import { Subject } from 'rxjs';
 
 @Injectable({

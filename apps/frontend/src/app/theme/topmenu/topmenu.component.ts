@@ -5,7 +5,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLinkActive, RouterLink } from '@angular/router';
-import { Menu, MenuService } from 'main/@core';
+import { Menu, MenuService } from '../../core/bootstrap/menu.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';

@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { MatSidenav, MatSidenavContent, MatSidenavContainer } from '@angular/material/sidenav';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { AppSettings, SettingsService } from 'main/@core';
+import { AppSettings } from '../../core/settings';
+import { SettingsService } from '../../core/bootstrap/settings.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { FooterComponent } from '../footer/footer.component';

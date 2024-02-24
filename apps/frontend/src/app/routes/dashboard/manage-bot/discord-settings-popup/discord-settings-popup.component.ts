@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
-import { DiscordSettingsInput } from 'main/@shared/Models/discordSettings.model';
-import { DiscSettingsForm } from 'main/@shared/Models/forms.model';
+import { DiscordSettingsInput } from '../../../../shared/Models/discordSettings.model';
+import { DiscSettingsForm } from '../../../../shared/Models/forms.model';
 import { DiscordSettingsService } from './discord-settings.service';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';

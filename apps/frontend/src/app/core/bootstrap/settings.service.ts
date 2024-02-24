@@ -2,7 +2,8 @@ import { Directionality } from '@angular/cdk/bidi';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppDirectionality, LocalStorageService } from 'main/@shared';
+import { AppDirectionality } from '../../shared/services/directionality.service';
+import { LocalStorageService } from '../../shared/services/storage.service';
 import { BehaviorSubject } from 'rxjs';
 import { AppSettings, defaults } from '../settings';
 

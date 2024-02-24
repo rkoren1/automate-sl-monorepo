@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, User } from 'main/@core/authentication';
+import { AuthService } from '../../../core/authentication/auth.service';
+import { User } from '../../../core/authentication/interface';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 

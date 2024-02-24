@@ -5,7 +5,7 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'main/@shared';
+import { MessageService } from '../../shared/services/message.service';
 import { finalize, tap } from 'rxjs/operators';
 
 @Injectable()

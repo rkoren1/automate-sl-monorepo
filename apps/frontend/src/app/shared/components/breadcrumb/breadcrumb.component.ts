@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuService } from 'main/@core/bootstrap/menu.service';
+import { MenuService } from '../../../core/bootstrap/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { NgFor, NgIf } from '@angular/common';

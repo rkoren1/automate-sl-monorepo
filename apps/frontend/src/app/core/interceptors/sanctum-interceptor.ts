@@ -5,7 +5,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SanctumService } from 'main/@core';
+import { SanctumService } from '../bootstrap/sanctum.service';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

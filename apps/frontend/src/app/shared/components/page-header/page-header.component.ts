@@ -7,7 +7,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuService } from 'main/@core/bootstrap/menu.service';
+import { MenuService } from '../../../core/bootstrap/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { NgIf } from '@angular/common';

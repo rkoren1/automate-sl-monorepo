@@ -5,13 +5,9 @@ import {
   RequestInfo,
   STATUS,
 } from 'angular-in-memory-web-api';
-import {
-  User,
-  base64,
-  currentTimestamp,
-  filterObject,
-} from 'main/@core/authentication';
-import { environment } from 'main/@env/environment';
+import { User } from '../../core/authentication/interface';
+import { base64, currentTimestamp, filterObject } from '../../core/authentication/helpers';
+import { environment } from '../../../environments/environment';
 import { Observable, from } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { find, map, switchMap } from 'rxjs/operators';

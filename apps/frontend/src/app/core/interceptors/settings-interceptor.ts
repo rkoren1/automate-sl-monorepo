@@ -5,7 +5,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SettingsService } from 'main/@core';
+import { SettingsService } from '../bootstrap/settings.service';
 import { Observable } from 'rxjs';
 
 @Injectable()

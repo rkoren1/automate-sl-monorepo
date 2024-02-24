@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from 'main/@core/authentication';
+import { AuthService } from '../../../core/authentication/auth.service';
 import { filter } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonLoading } from '@ng-matero/extensions/button';

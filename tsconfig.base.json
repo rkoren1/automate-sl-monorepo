@@ -13,19 +13,7 @@
     "lib": ["ES2021", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "main/@core": ["apps/frontend/src/app/core"],
-      "main/@core/*": ["apps/frontend/src/app/core/*"],
-      "main/@shared": ["apps/frontend/src/app/shared"],
-      "main/@shared/*": ["apps/frontend/src/app/shared/*"],
-      "main/@theme": ["apps/frontend/src/app/theme"],
-      "main/@theme/*": ["apps/frontend/src/app/theme/*"],
-      "main/@testing": ["apps/frontend/src/testing"],
-      "main/@testing/*": ["apps/frontend/src/testing/*"],
-      "main/@env": ["apps/frontend/src/environments"],
-      "main/@env/*": ["apps/frontend/src/environments/*"]
-    }
+    "baseUrl": "."
   },
   "exclude": ["node_modules", "tmp"]
 }

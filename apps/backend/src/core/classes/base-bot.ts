@@ -158,12 +158,16 @@ export class BaseBot extends Bot {
       clearInterval(this.reconnectTimer);
       this.reconnectTimer = undefined;
     }
-    return this.close().then(async () => {
-      await this.prisma.botDb.update({
-        data: { running: false },
-        where: { id: this.botData.id },
+    return this.close()
+      .then(async () => {
+        await this.prisma.botDb.update({
+          data: { running: false },
+          where: { id: this.botData.id },
+        });
+      })
+      .catch((err) => {
+        console.error('error when stopping bot', err);
       });
-    });
   }
 
   private pingBot(login: LoginParameters) {
@@ -267,6 +271,7 @@ export class BaseBot extends Bot {
             } catch (error) {
               console.error(
                 'say command failed for bot' + messageEvent.fromName,
+                error,
               );
             }
             break;
@@ -314,20 +319,10 @@ export class BaseBot extends Bot {
           }
 
           case 'group_im': {
-            try {
-              await this.clientCommands.comms.sendGroupMessage(
-                commandParams[0],
-                commandParams[1],
-              );
-            } catch (error) {
-              console.error(
-                'group im command failed ',
-                ' error: ',
-                error,
-                ' event: ',
-                messageEvent,
-              );
-            }
+            await this.clientCommands.comms.sendGroupMessage(
+              commandParams[0],
+              commandParams[1],
+            );
             break;
           }
 
@@ -349,6 +344,7 @@ export class BaseBot extends Bot {
               console.error(
                 'send group notice command failed for bot' +
                   messageEvent.fromName,
+                error,
               );
             }
 

@@ -51,8 +51,8 @@ export class BotService {
         urlMetadata('https://world.secondlife.com/resident/' + uuid)
           .then((metadata) => {
             const currentDate = new Date();
-            const after3Days = new Date();
-            after3Days.setDate(after3Days.getDate() + 3);
+            const after2Weeks = new Date();
+            after2Weeks.setDate(after2Weeks.getDate() + 14);
 
             this.botRepo
               .create({
@@ -73,12 +73,12 @@ export class BotService {
                 const userBots = await this.botRepo.findMany({
                   where: { userId: createBotDto.userId },
                 });
-                //if this is the only bot give 3 days of free subscription
+                //if this is the only bot give 14 days of free trial subscription
                 if (userBots.length < 2) {
                   await this.prisma.subscription.create({
                     data: {
                       subscriptionStart: currentDate,
-                      subscriptionEnd: after3Days,
+                      subscriptionEnd: after2Weeks,
                       packageId: 1,
                       botId: bot.id,
                     },

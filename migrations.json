@@ -1,46 +1,30 @@
 {
   "migrations": [
     {
-      "cli": "nx",
-      "version": "16.8.0-beta.3",
-      "description": "Escape $ in env variables",
-      "implementation": "./src/migrations/update-16-8-0/escape-dollar-sign-env-variables",
+      "version": "18.1.0-beta.3",
+      "description": "Moves affected.defaultBase to defaultBase in `nx.json`",
+      "implementation": "./src/migrations/update-17-2-0/move-default-base",
       "package": "nx",
-      "name": "16.8.0-escape-dollar-sign-env"
+      "name": "move-default-base-to-nx-json-root"
     },
     {
       "cli": "nx",
-      "version": "16.8.2-beta.0",
-      "description": "Remove invalid options (strict, noInterop) for ES6 type modules.",
-      "factory": "./src/migrations/update-16-8-2/update-swcrc",
-      "package": "@nx/js",
-      "name": "16-8-2-update-swcrc"
-    },
-    {
-      "cli": "nx",
-      "version": "16.8.0-beta.4",
-      "description": "Update to Cypress v13. Most noteable change is video recording is off by default. This migration will only update if the workspace is already on Cypress v12. https://docs.cypress.io/guides/references/migration-guide#Migrating-to-Cypress-130",
-      "implementation": "./src/migrations/update-16-8-0/cypress-13",
-      "package": "@nx/cypress",
-      "name": "update-16-8-0-cypress-13"
-    },
-    {
-      "version": "16.8.0",
-      "description": "update-16-8-0-add-ignored-files",
-      "implementation": "./src/migrations/update-16-8-0-add-ignored-files/update-16-8-0-add-ignored-files",
-      "package": "@nx/linter",
-      "name": "update-16-8-0-add-ignored-files"
-    },
-    {
-      "cli": "nx",
-      "version": "16.7.0-beta.6",
+      "version": "18.1.0-beta.1",
       "requires": {
-        "@angular/core": ">=16.2.0"
+        "@angular/core": ">=17.2.0"
       },
-      "description": "Update the @angular/cli package version to ~16.2.0.",
-      "factory": "./src/migrations/update-16-7-0/update-angular-cli",
-      "package": "@nrwl/angular",
-      "name": "update-angular-cli-version-16-2-0"
+      "description": "Update the @angular/cli package version to ~17.2.0.",
+      "factory": "./src/migrations/update-18-1-0/update-angular-cli",
+      "package": "@nx/angular",
+      "name": "update-angular-cli-version-17-2-0"
+    },
+    {
+      "cli": "nx",
+      "version": "18.1.1-beta.0",
+      "description": "Ensure targetDefaults inputs for task hashing when '@nx/angular:webpack-browser' is used are correct for Module Federation.",
+      "factory": "./src/migrations/update-18-1-1/fix-target-defaults-inputs",
+      "package": "@nx/angular",
+      "name": "fix-target-defaults-for-webpack-browser"
     }
   ]
 }

@@ -1,6 +1,5 @@
 import { BotOptionFlags, LoginParameters } from '@caspertech/node-metaverse';
 import { BotDb, DiscordSettings, User } from '@prisma/client';
-import fetch from 'node-fetch';
 import urlMetadata from 'url-metadata';
 import { discClient } from '../services/discord-bot.service';
 import { BaseBot } from './base-bot';

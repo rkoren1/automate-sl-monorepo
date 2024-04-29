@@ -108,7 +108,6 @@ export class BaseBot extends Bot {
       // Establish circuit with region
       await this.connectToSim();
 
-      console.log('Waiting for event queue');
       await this.waitForEventQueue();
 
       this.isConnected = true;

@@ -29,7 +29,7 @@
           <div class="bot-name">{{ bot.loginName }}</div>
           <button
             [class]="
-              isStartStopButtonLoading
+              isStartStopButtonLoading[bot.id]
                 ? 'fa-solid fa-spinner start-icon spinner'
                 : bot.running
                   ? 'fa-solid fa-pause start-icon'
@@ -37,8 +37,8 @@
             "
             [disabled]="
               !bot.validSubscription ||
-              isStartStopButtonLoading ||
-              isStartStopButtonDisabled
+              isStartStopButtonLoading[bot.id] ||
+              isStartStopButtonDisabled[bot.id]
             "
             (click)="startStopBot(bot.id, bot.running)"
           ></button>

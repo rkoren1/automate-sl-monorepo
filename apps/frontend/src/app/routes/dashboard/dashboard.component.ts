@@ -38,8 +38,8 @@ export class DashboardComponent implements OnInit {
 
   allMyBots: Bot[];
   allSharedBots: Bot[];
-  isStartStopButtonLoading = false;
-  isStartStopButtonDisabled = false;
+  isStartStopButtonLoading: boolean[] = [];
+  isStartStopButtonDisabled: boolean[] = [];
 
   ngOnInit() {
     this.getAllBots();
@@ -89,22 +89,22 @@ export class DashboardComponent implements OnInit {
     });
   }
   startStopBot(botId: number, running: boolean) {
-    this.isStartStopButtonLoading = true;
-    this.isStartStopButtonDisabled = true;
+    this.isStartStopButtonLoading[botId] = true;
+    this.isStartStopButtonDisabled[botId] = true;
     if (running) {
       this.dashboardService.stopBot(botId).subscribe((res) => {
-        this.isStartStopButtonLoading = false;
+        this.isStartStopButtonLoading[botId] = false;
         setTimeout(() => {
-          this.isStartStopButtonDisabled = false;
+          this.isStartStopButtonDisabled[botId] = false;
           this.cd.detectChanges();
         }, 5000);
         if (res.success === true) this.getAllBots();
       });
     } else {
       this.dashboardService.startBot(botId).subscribe((res) => {
-        this.isStartStopButtonLoading = false;
+        this.isStartStopButtonLoading[botId] = false;
         setTimeout(() => {
-          this.isStartStopButtonDisabled = false;
+          this.isStartStopButtonDisabled[botId] = false;
           this.cd.detectChanges();
         }, 5000);
         if (res.success === true) this.getAllBots();

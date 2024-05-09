@@ -372,26 +372,37 @@ export class BotService {
   }
 
   async setDiscordSettings(data: SetDiscordSettingsBodyDto) {
-    try {
-      const result = await this.prisma.discordSettings.upsert({
-        create: {
-          id: data.id,
-          botId: data.botId,
-          discChannelId: data.discChannelId,
-          webHookUrl: data.webHookUrl,
-          slGroupUuid: data.slGroupUuid,
-        },
-        update: {
-          botId: data.botId,
-          discChannelId: data.discChannelId,
-          webHookUrl: data.webHookUrl,
-          slGroupUuid: data.slGroupUuid,
-        },
-        where: { id: data.id },
-      });
-      return result;
-    } catch (err) {
-      return err;
+    if (data.id) {
+      //create
+      try {
+        const result = await this.prisma.discordSettings.update({
+          data: {
+            botId: data.botId,
+            discChannelId: data.discChannelId,
+            webHookUrl: data.webHookUrl,
+            slGroupUuid: data.slGroupUuid,
+          },
+          where: { id: data.id },
+        });
+        return result;
+      } catch (err) {
+        return err;
+      }
+    } else {
+      //update
+      try {
+        const result = await this.prisma.discordSettings.create({
+          data: {
+            botId: data.botId,
+            discChannelId: data.discChannelId,
+            webHookUrl: data.webHookUrl,
+            slGroupUuid: data.slGroupUuid,
+          },
+        });
+        return result;
+      } catch (err) {
+        return err;
+      }
     }
   }
 

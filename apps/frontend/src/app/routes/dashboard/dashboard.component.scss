@@ -92,3 +92,17 @@
   display: flex;
   flex-direction: column;
 }
+
+.spinner {
+  display: inline-block;
+  animation: spin 2s linear infinite; /* Adjust timing and animation as needed */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

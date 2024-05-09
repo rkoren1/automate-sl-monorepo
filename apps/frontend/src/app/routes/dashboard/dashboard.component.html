@@ -29,11 +29,17 @@
           <div class="bot-name">{{ bot.loginName }}</div>
           <button
             [class]="
-              bot.running
-                ? 'fa-solid fa-pause start-icon'
-                : 'fa-solid fa-play start-icon'
+              isStartStopButtonLoading
+                ? 'fa-solid fa-spinner start-icon spinner'
+                : bot.running
+                  ? 'fa-solid fa-pause start-icon'
+                  : 'fa-solid fa-play start-icon'
             "
-            [disabled]="!bot.validSubscription || isStartStopButtonDisabled"
+            [disabled]="
+              !bot.validSubscription ||
+              isStartStopButtonLoading ||
+              isStartStopButtonDisabled
+            "
             (click)="startStopBot(bot.id, bot.running)"
           ></button>
           <div *ngIf="!bot.validSubscription">No Valid Subscription</div>

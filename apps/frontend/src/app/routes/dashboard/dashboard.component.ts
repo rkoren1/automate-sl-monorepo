@@ -1,43 +1,44 @@
+import { NgFor, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   OnInit,
 } from '@angular/core';
+import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Bot, IAddBot } from '../../shared/Models/bot.model';
+import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { AddBotPopupComponent } from './add-bot-popup/add-bot-popup.component';
 import { DashboardService } from './dashboard.service';
-import { MatCard, MatCardHeader, MatCardContent } from '@angular/material/card';
-import { NgFor, NgIf } from '@angular/common';
-import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [
-        BreadcrumbComponent,
-        NgFor,
-        MatCard,
-        MatCardHeader,
-        MatCardContent,
-        NgIf,
-    ],
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    BreadcrumbComponent,
+    NgFor,
+    MatCard,
+    MatCardHeader,
+    MatCardContent,
+    NgIf,
+  ],
 })
 export class DashboardComponent implements OnInit {
   constructor(
     private cd: ChangeDetectorRef,
     private dialog: MatDialog,
     private dashboardService: DashboardService,
-    private router: Router
+    private router: Router,
   ) {}
 
   allMyBots: Bot[];
   allSharedBots: Bot[];
+  isStartStopButtonDisabled = false;
 
   ngOnInit() {
     this.getAllBots();
@@ -87,12 +88,21 @@ export class DashboardComponent implements OnInit {
     });
   }
   startStopBot(botId: number, running: boolean) {
+    this.isStartStopButtonDisabled = true;
     if (running) {
       this.dashboardService.stopBot(botId).subscribe((res) => {
+        setTimeout(() => {
+          this.isStartStopButtonDisabled = false;
+          this.cd.detectChanges();
+        }, 3000);
         if (res.success === true) this.getAllBots();
       });
     } else {
       this.dashboardService.startBot(botId).subscribe((res) => {
+        setTimeout(() => {
+          this.isStartStopButtonDisabled = false;
+          this.cd.detectChanges();
+        }, 3000);
         if (res.success === true) this.getAllBots();
       });
     }
@@ -101,7 +111,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigateByUrl('/dashboard/' + loginName + '-' + loginLastName);
   }
   refreshBot(botId: number) {
-    this.dashboardService.refreshBotStatus(botId).subscribe((res) => {
+    this.dashboardService.refreshBotStatus(botId).subscribe(() => {
       this.getAllBots();
     });
   }

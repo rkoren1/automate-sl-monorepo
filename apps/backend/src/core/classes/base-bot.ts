@@ -59,7 +59,6 @@ export class BaseBot extends Bot {
           console.error(error);
         }
         process.exit();
-        return;
       }
       if (options.exit) {
         process.exit();

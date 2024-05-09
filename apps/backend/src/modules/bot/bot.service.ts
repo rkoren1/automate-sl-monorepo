@@ -296,24 +296,20 @@ export class BotService {
     });
   }
 
-  stopBot(botId: number, userId: number) {
-    return new Promise((resolve, reject) => {
-      return this.botInstances[botId]
-        .stopBot()
-        .then(() => {
-          delete this.botInstances[botId];
-          return resolve(true);
-        })
-        .catch((err) => {
-          //also set bot to be off
-          this.botRepo
-            .update({
-              data: { running: false },
-              where: { id: botId, userId: userId },
-            })
-            .then(() => reject(err));
-        });
-    });
+  async stopBot(botId: number, userId: number) {
+    try {
+      await this.botInstances[botId].stopBot();
+      delete this.botInstances[botId];
+      return true;
+    } catch (err) {
+      //also set bot to be off
+      await this.botRepo.update({
+        data: { running: false },
+        where: { id: botId, userId: userId },
+      });
+      console.error(err);
+      return err;
+    }
   }
 
   async getSharedBots(userId: number) {

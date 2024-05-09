@@ -156,16 +156,15 @@ export class BaseBot extends Bot {
       clearInterval(this.reconnectTimer);
       this.reconnectTimer = undefined;
     }
-    return this.close()
-      .then(async () => {
-        await this.prisma.botDb.update({
-          data: { running: false },
-          where: { id: this.botData.id },
-        });
-      })
-      .catch((err) => {
-        console.error('error when stopping bot', err);
+    try {
+      await this.close();
+      await this.prisma.botDb.update({
+        data: { running: false },
+        where: { id: this.botData.id },
       });
+    } catch (err) {
+      console.error('error when stopping bot', err);
+    }
   }
 
   private pingBot(login: LoginParameters) {

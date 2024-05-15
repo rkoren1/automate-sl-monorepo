@@ -8,6 +8,7 @@ import {
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { DataLayerService } from '../../data-layer.service';
 import { Bot, IAddBot } from '../../shared/Models/bot.model';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { AddBotPopupComponent } from './add-bot-popup/add-bot-popup.component';
@@ -34,6 +35,7 @@ export class DashboardComponent implements OnInit {
     private dialog: MatDialog,
     private dashboardService: DashboardService,
     private router: Router,
+    private dataLayerService: DataLayerService,
   ) {}
 
   allMyBots: Bot[];
@@ -112,6 +114,12 @@ export class DashboardComponent implements OnInit {
     }
   }
   manageBot(loginName: string, loginLastName: string) {
+    this.dataLayerService.logEvent(
+      'bot-settings-click',
+      'settings',
+      'click',
+      'settings',
+    );
     this.router.navigateByUrl('/dashboard/' + loginName + '-' + loginLastName);
   }
   refreshBot(botId: number) {

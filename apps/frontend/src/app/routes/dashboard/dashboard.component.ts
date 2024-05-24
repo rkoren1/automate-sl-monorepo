@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,12 +22,10 @@ import { DashboardService } from './dashboard.service';
   standalone: true,
   imports: [
     BreadcrumbComponent,
-    NgFor,
     MatCard,
     MatCardHeader,
-    MatCardContent,
-    NgIf,
-  ],
+    MatCardContent
+],
 })
 export class DashboardComponent implements OnInit {
   constructor(

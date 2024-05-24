@@ -2,32 +2,33 @@
 <div class="page">
   <h3 style="text-align: center">My Bots</h3>
   <div class="bots-layout">
-    <div class="bot-wrapper" *ngFor="let bot of allMyBots">
-      <mat-card class="bot">
-        <mat-card-header class="icons">
-          <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
-          <div
-            class="fa-solid fa-arrows-rotate refresh-icon"
-            (click)="refreshBot(bot.id)"
-          ></div>
-          <div
-            class="fa-solid fa-gear gear-icon"
-            (click)="manageBot(bot.loginName, bot.loginLastName)"
-          ></div>
-        </mat-card-header>
-        <mat-card-content class="bot-content">
-          <div class="img-wrapper">
-            <img
-              class="avatar-image"
+    @for (bot of allMyBots; track bot) {
+      <div class="bot-wrapper">
+        <mat-card class="bot">
+          <mat-card-header class="icons">
+            <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
+            <div
+              class="fa-solid fa-arrows-rotate refresh-icon"
+              (click)="refreshBot(bot.id)"
+            ></div>
+            <div
+              class="fa-solid fa-gear gear-icon"
+              (click)="manageBot(bot.loginName, bot.loginLastName)"
+            ></div>
+          </mat-card-header>
+          <mat-card-content class="bot-content">
+            <div class="img-wrapper">
+              <img
+                class="avatar-image"
               [src]="
                 'https://picture-service.secondlife.com/' +
                 bot.imageId +
                 '/256x192.jpg'
               "
-            />
-          </div>
-          <div class="bot-name">{{ bot.loginName }}</div>
-          <button
+                />
+              </div>
+              <div class="bot-name">{{ bot.loginName }}</div>
+              <button
             [class]="
               isStartStopButtonLoading[bot.id]
                 ? 'fa-solid fa-spinner start-icon spinner'
@@ -40,43 +41,48 @@
               isStartStopButtonLoading[bot.id] ||
               isStartStopButtonDisabled[bot.id]
             "
-            (click)="startStopBot(bot.id, bot.running)"
-          ></button>
-          <div *ngIf="!bot.validSubscription">No Valid Subscription</div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
-  <h3 style="text-align: center">Shared Bots</h3>
-  <div class="bots-layout">
-    <div class="bot-wrapper" *ngFor="let bot of allSharedBots">
-      <mat-card class="bot">
-        <div class="icons">
-          <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
-          <div
-            class="fa-solid fa-arrows-rotate refresh-icon"
-            (click)="refreshBot(bot.id)"
-          ></div>
-          <div
-            class="fa-solid fa-gear gear-icon"
-            (click)="manageBot(bot.loginName, bot.loginLastName)"
-          ></div>
+                (click)="startStopBot(bot.id, bot.running)"
+              ></button>
+              @if (!bot.validSubscription) {
+                <div>No Valid Subscription</div>
+              }
+            </mat-card-content>
+          </mat-card>
         </div>
-        <div class="img-wrapper">
-          <img
-            class="avatar-image"
+      }
+    </div>
+    <h3 style="text-align: center">Shared Bots</h3>
+    <div class="bots-layout">
+      @for (bot of allSharedBots; track bot) {
+        <div class="bot-wrapper">
+          <mat-card class="bot">
+            <div class="icons">
+              <!-- <div class="fa-solid fa-xmark delete-icon" (click)="removeBot(bot.id)"></div> -->
+              <div
+                class="fa-solid fa-arrows-rotate refresh-icon"
+                (click)="refreshBot(bot.id)"
+              ></div>
+              <div
+                class="fa-solid fa-gear gear-icon"
+                (click)="manageBot(bot.loginName, bot.loginLastName)"
+              ></div>
+            </div>
+            <div class="img-wrapper">
+              <img
+                class="avatar-image"
             [src]="
               'https://picture-service.secondlife.com/' +
               bot.imageId +
               '/256x192.jpg'
             "
-          />
-        </div>
-        <div class="bot-name">{{ bot.loginName }}</div>
-      </mat-card>
+                />
+              </div>
+              <div class="bot-name">{{ bot.loginName }}</div>
+            </mat-card>
+          </div>
+        }
+      </div>
+      <mat-card class="plus-card" (click)="addBot()"
+        ><div class="fa-solid fa-plus plus-icon"></div
+      ></mat-card>
     </div>
-  </div>
-  <mat-card class="plus-card" (click)="addBot()"
-    ><div class="fa-solid fa-plus plus-icon"></div
-  ></mat-card>
-</div>

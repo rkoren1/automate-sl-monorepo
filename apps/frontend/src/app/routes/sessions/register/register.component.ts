@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { RegisterService } from './register.service';
 import { MatButton } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
+
 import { MatInput } from '@angular/material/input';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
@@ -16,21 +16,20 @@ import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/m
     templateUrl: './register.component.html',
     standalone: true,
     imports: [
-        MatCard,
-        MatCardHeader,
-        MatCardTitle,
-        MatCardContent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        NgIf,
-        MatError,
-        TranslateModule,
-        MatButton,
-        RouterLink,
-    ],
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    TranslateModule,
+    MatButton,
+    RouterLink
+],
 })
 export class RegisterComponent {
   registerForm = this.fb.nonNullable.group(

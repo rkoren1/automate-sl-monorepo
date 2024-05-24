@@ -6,7 +6,7 @@ import { StartupFormModel } from './startup-form.model';
 import { StartupPopupService } from './startup-popup.service';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { NgIf } from '@angular/common';
+
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -17,19 +17,18 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
     styleUrls: ['./startup-popup.component.scss'],
     standalone: true,
     imports: [
-        MatDialogContent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        MatOption,
-        NgIf,
-        MatInput,
-        MatDialogActions,
-        MatButton,
-        MatDialogClose,
-    ],
+    MatDialogContent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatInput,
+    MatDialogActions,
+    MatButton,
+    MatDialogClose
+],
 })
 export class StartupPopupComponent implements OnInit {
   startupForm: FormGroup<StartupFormModel>;

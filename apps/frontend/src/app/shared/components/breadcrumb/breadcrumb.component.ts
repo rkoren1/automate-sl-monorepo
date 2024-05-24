@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MenuService } from '../../../core/bootstrap/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
-import { NgFor, NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'breadcrumb',
@@ -12,11 +12,9 @@ import { NgFor, NgIf } from '@angular/common';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        NgFor,
-        NgIf,
-        MatIcon,
-        TranslateModule,
-    ],
+    MatIcon,
+    TranslateModule
+],
 })
 export class BreadcrumbComponent implements OnInit {
   @Input() nav: string[] = [];

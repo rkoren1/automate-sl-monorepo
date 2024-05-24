@@ -7,7 +7,7 @@ import { SubscriptionPopupService } from './subscription-popup.service';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
 import { MatOption } from '@angular/material/core';
-import { NgFor, NgIf } from '@angular/common';
+
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 
@@ -17,21 +17,19 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
     styleUrls: ['./subscription-popup.component.scss'],
     standalone: true,
     imports: [
-        MatDialogTitle,
-        MatDialogContent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        NgFor,
-        MatOption,
-        MatInput,
-        NgIf,
-        MatDialogActions,
-        MatButton,
-        MatDialogClose,
-    ],
+    MatDialogTitle,
+    MatDialogContent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatInput,
+    MatDialogActions,
+    MatButton,
+    MatDialogClose
+],
 })
 export class SubscriptionPopupComponent implements OnInit {
   subscriptionForm: FormGroup<AddSubscriptionForm>;

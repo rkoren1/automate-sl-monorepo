@@ -14,7 +14,7 @@ import { TopmenuPanelComponent } from './topmenu-panel.component';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatAnchor, MatButton } from '@angular/material/button';
 import { NgxPermissionsModule } from 'ngx-permissions';
-import { NgFor, NgIf, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
 import { MatTabNav } from '@angular/material/tabs';
 
 export interface TopmenuState {
@@ -29,21 +29,19 @@ export interface TopmenuState {
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        MatTabNav,
-        NgFor,
-        NgxPermissionsModule,
-        NgIf,
-        MatAnchor,
-        RouterLinkActive,
-        RouterLink,
-        NgTemplateOutlet,
-        MatButton,
-        MatMenuTrigger,
-        TopmenuPanelComponent,
-        MatIcon,
-        AsyncPipe,
-        TranslateModule,
-    ],
+    MatTabNav,
+    NgxPermissionsModule,
+    MatAnchor,
+    RouterLinkActive,
+    RouterLink,
+    NgTemplateOutlet,
+    MatButton,
+    MatMenuTrigger,
+    TopmenuPanelComponent,
+    MatIcon,
+    AsyncPipe,
+    TranslateModule
+],
 })
 export class TopmenuComponent implements OnDestroy {
   @HostBinding('class') class = 'matero-topmenu';

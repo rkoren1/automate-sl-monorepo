@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatAnchor } from '@angular/material/button';
-import { NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'error-code',
@@ -10,10 +10,9 @@ import { NgIf } from '@angular/common';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        NgIf,
-        MatAnchor,
-        RouterLink,
-    ],
+    MatAnchor,
+    RouterLink
+],
 })
 export class ErrorCodeComponent {
   @Input() code = '';

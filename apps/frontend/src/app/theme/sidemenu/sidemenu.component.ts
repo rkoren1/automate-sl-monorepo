@@ -8,7 +8,7 @@ import { RouterLinkActive, RouterLink } from '@angular/router';
 import { NavAccordionItemDirective } from './nav-accordion-item.directive';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { NavAccordionDirective } from './nav-accordion.directive';
-import { NgTemplateOutlet, NgFor, NgIf, AsyncPipe } from '@angular/common';
+import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-sidemenu',
@@ -17,20 +17,18 @@ import { NgTemplateOutlet, NgFor, NgIf, AsyncPipe } from '@angular/common';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        NgTemplateOutlet,
-        NavAccordionDirective,
-        NgFor,
-        NgxPermissionsModule,
-        NavAccordionItemDirective,
-        RouterLinkActive,
-        NgIf,
-        MatRipple,
-        RouterLink,
-        NavAccordionToggleDirective,
-        MatIcon,
-        AsyncPipe,
-        TranslateModule,
-    ],
+    NgTemplateOutlet,
+    NavAccordionDirective,
+    NgxPermissionsModule,
+    NavAccordionItemDirective,
+    RouterLinkActive,
+    MatRipple,
+    RouterLink,
+    NavAccordionToggleDirective,
+    MatIcon,
+    AsyncPipe,
+    TranslateModule
+],
 })
 export class SidemenuComponent {
   // Note: Ripple effect make page flashing on mobile

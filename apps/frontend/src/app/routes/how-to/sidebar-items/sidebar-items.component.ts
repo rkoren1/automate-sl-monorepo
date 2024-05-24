@@ -8,7 +8,7 @@ import { RouterLinkActive, RouterLink } from '@angular/router';
 import { NavAccordionItemDirective } from '../../../theme/sidemenu/nav-accordion-item.directive';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { NavAccordionDirective } from '../../../theme/sidemenu/nav-accordion.directive';
-import { NgTemplateOutlet, NgFor, NgIf, AsyncPipe } from '@angular/common';
+import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'app-sidebar-items',
@@ -16,20 +16,18 @@ import { NgTemplateOutlet, NgFor, NgIf, AsyncPipe } from '@angular/common';
     styleUrls: ['./sidebar-items.component.scss'],
     standalone: true,
     imports: [
-        NgTemplateOutlet,
-        NavAccordionDirective,
-        NgFor,
-        NgxPermissionsModule,
-        NavAccordionItemDirective,
-        RouterLinkActive,
-        NgIf,
-        MatRipple,
-        RouterLink,
-        NavAccordionToggleDirective,
-        MatIcon,
-        AsyncPipe,
-        TranslateModule,
-    ],
+    NgTemplateOutlet,
+    NavAccordionDirective,
+    NgxPermissionsModule,
+    NavAccordionItemDirective,
+    RouterLinkActive,
+    MatRipple,
+    RouterLink,
+    NavAccordionToggleDirective,
+    MatIcon,
+    AsyncPipe,
+    TranslateModule
+],
 })
 export class SidebarItemsComponent {
   @Input() ripple = true;

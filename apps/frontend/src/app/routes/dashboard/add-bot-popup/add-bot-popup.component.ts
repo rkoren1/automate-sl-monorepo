@@ -5,7 +5,7 @@ import { SharedBot } from '../../../shared/Models/bot.model';
 import { AddBotForm, AddSharedBotForm } from '../../../shared/Models/forms.model';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { NgIf, NgFor } from '@angular/common';
+
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -16,20 +16,18 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
     styleUrls: ['./add-bot-popup.component.scss'],
     standalone: true,
     imports: [
-        MatDialogContent,
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        MatOption,
-        NgIf,
-        FormsModule,
-        ReactiveFormsModule,
-        NgFor,
-        MatInput,
-        MatDialogActions,
-        MatButton,
-        MatDialogClose,
-    ],
+    MatDialogContent,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInput,
+    MatDialogActions,
+    MatButton,
+    MatDialogClose
+],
 })
 export class AddBotPopupComponent implements OnInit {
   addBotForm: FormGroup<AddBotForm>;

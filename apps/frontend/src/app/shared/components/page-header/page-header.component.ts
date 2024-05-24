@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { MenuService } from '../../../core/bootstrap/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
-import { NgIf } from '@angular/common';
+
 
 @Component({
     selector: 'page-header',
@@ -19,10 +19,9 @@ import { NgIf } from '@angular/common';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-        NgIf,
-        BreadcrumbComponent,
-        TranslateModule,
-    ],
+    BreadcrumbComponent,
+    TranslateModule
+],
 })
 export class PageHeaderComponent implements OnInit {
   @HostBinding('class') class = 'matero-page-header';

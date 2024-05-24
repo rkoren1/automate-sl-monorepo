@@ -7,25 +7,26 @@
         required
         [(value)]="selectedSpawnLocation"
         formControlName="loginSpawnLocation"
-      >
+        >
         <mat-option value="home">Home</mat-option>
         <mat-option value="last">Last</mat-option>
         <mat-option value="region">Region URL</mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field
-      appearance="fill"
-      *ngIf="selectedSpawnLocation === 'region'"
-    >
-      <mat-label>Region URL</mat-label>
-      <input
-        required
-        matInput
-        type="url"
-        name="regionName"
-        formControlName="loginRegion"
-    /></mat-form-field>
-    <!-- <mat-form-field appearance="fill">
+    @if (selectedSpawnLocation === 'region') {
+      <mat-form-field
+        appearance="fill"
+        >
+        <mat-label>Region URL</mat-label>
+        <input
+          required
+          matInput
+          type="url"
+          name="regionName"
+          formControlName="loginRegion"
+        /></mat-form-field>
+      }
+      <!-- <mat-form-field appearance="fill">
       <mat-label> Object to sit on startup</mat-label>
       <input required matInput name="startupObject" formControlName="startupObject" />
     </mat-form-field> -->

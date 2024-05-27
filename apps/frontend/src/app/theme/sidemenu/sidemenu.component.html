@@ -5,7 +5,7 @@
     parentRoute: [],
     level: 0
   }"
-  >
+>
 </ng-container>
 
 <ng-template
@@ -13,35 +13,35 @@
   let-menuList="menuList"
   let-parentRoute="parentRoute"
   let-level="level"
-  >
+>
   <ul
     navAccordion
     class="matero-sidemenu level-{{ level }}"
     [class.submenu]="level > 0"
-    >
+  >
     @for (menuItem of menuList; track menuItem) {
       <ng-template
         [ngxPermissionsOnly]="menuItem.permissions?.only"
         [ngxPermissionsExcept]="menuItem.permissions?.except"
-        >
+      >
         <li
           navAccordionItem
           class="menu-item"
           routerLinkActive="active"
           [route]="menuItem.route"
           [type]="menuItem.type"
-          >
+        >
           @if (menuItem.type === 'link') {
             <a
               class="menu-heading"
               [routerLink]="buildRoute(parentRoute.concat([menuItem.route]))"
               matRipple
               [matRippleDisabled]="!ripple"
-              >
+            >
               <ng-container
                 [ngTemplateOutlet]="linkTypeTpl"
                 [ngTemplateOutletContext]="{ item: menuItem, level: level }"
-                >
+              >
               </ng-container>
             </a>
           }
@@ -51,11 +51,11 @@
               [href]="menuItem.route"
               matRipple
               [matRippleDisabled]="!ripple"
-              >
+            >
               <ng-container
                 [ngTemplateOutlet]="linkTypeTpl"
                 [ngTemplateOutletContext]="{ item: menuItem, level: level }"
-                >
+              >
               </ng-container>
             </a>
           }
@@ -66,11 +66,11 @@
               target="_blank"
               matRipple
               [matRippleDisabled]="!ripple"
-              >
+            >
               <ng-container
                 [ngTemplateOutlet]="linkTypeTpl"
                 [ngTemplateOutletContext]="{ item: menuItem, level: level }"
-                >
+              >
               </ng-container>
             </a>
           }
@@ -80,11 +80,11 @@
               class="menu-heading menu-toggle"
               matRipple
               [matRippleDisabled]="!ripple"
-              >
+            >
               <ng-container
                 [ngTemplateOutlet]="linkTypeTpl"
                 [ngTemplateOutletContext]="{ item: menuItem, level: level }"
-                >
+              >
               </ng-container>
             </button>
           }
@@ -95,7 +95,7 @@
               parentRoute: parentRoute.concat([menuItem.route]),
               level: level + 1
             }"
-            >
+          >
           </ng-container>
         </li>
       </ng-template>
@@ -113,7 +113,7 @@
       {{ item.label.value }}
     </span>
   }
-  <span style="flex:1"></span>
+  <span style="flex: 1"></span>
   @if (item.badge) {
     <span class="menu-badge bg-{{ item.badge.color }}">
       {{ item.badge.value }}

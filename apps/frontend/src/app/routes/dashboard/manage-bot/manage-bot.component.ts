@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { SubSink } from 'subsink';
 import { ILinkAccData } from '../../../shared/Models/bot.model';
 import { DiscordSettingsInput } from '../../../shared/Models/discordSettings.model';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { UserService } from '../../../theme/widgets/user/user.service';
 import { AccessCodePopupComponent } from './access-code-popup/access-code-popup.component';
 import { BotSettingsPopupComponent } from './bot-settings-popup/bot-settings-popup.component';
@@ -10,24 +14,21 @@ import { DiscordSettingsPopupComponent } from './discord-settings-popup/discord-
 import { ManageBotService } from './manage-bot.service';
 import { StartupPopupComponent } from './startup-popup/startup-popup.component';
 import { SubscriptionPopupComponent } from './subscription-popup/subscription-popup.component';
-import { DatePipe } from '@angular/common';
-import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
-import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
-    selector: 'app-manage-bot',
-    templateUrl: './manage-bot.component.html',
-    styleUrls: ['./manage-bot.component.scss'],
-    standalone: true,
-    imports: [
-        BreadcrumbComponent,
-        MatCard,
-        MatCardContent,
-        MatCardTitle,
-        DatePipe,
-    ],
+  selector: 'app-manage-bot',
+  templateUrl: './manage-bot.component.html',
+  styleUrls: ['./manage-bot.component.scss'],
+  standalone: true,
+  imports: [
+    BreadcrumbComponent,
+    MatCard,
+    MatCardContent,
+    MatCardTitle,
+    DatePipe,
+  ],
 })
-export class ManageBotComponent implements OnInit {
+export class ManageBotComponent implements OnInit, OnDestroy {
   botData: ILinkAccData = {
     id: -1,
     loginFirstName: '',
@@ -44,6 +45,8 @@ export class ManageBotComponent implements OnInit {
   };
   firstName: string;
   lastName: string;
+  subs = new SubSink();
+
   constructor(
     private route: ActivatedRoute,
     private manageBotService: ManageBotService,
@@ -52,10 +55,13 @@ export class ManageBotComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.firstName = this.route.snapshot.params.id.split('-')[0];
-    this.lastName = this.route.snapshot.params.id.split('-')[1];
-    this.getBotConfiguration(this.firstName, this.lastName);
+    this.subs.sink = this.route.paramMap.subscribe(() => {
+      this.firstName = this.route.snapshot.params.id.split('-')[0];
+      this.lastName = this.route.snapshot.params.id.split('-')[1];
+      this.getBotConfiguration(this.firstName, this.lastName);
+    });
   }
+
   private getBotConfiguration(firstName: string, lastName: string) {
     this.manageBotService
       .getBotConfiguration(firstName, lastName)
@@ -74,7 +80,7 @@ export class ManageBotComponent implements OnInit {
   }
 
   startupPopup(botId: number) {
-    const dialogRef = this.dialog
+    this.dialog
       .open(StartupPopupComponent, {
         data: {
           loginSpawnLocation: this.botData.loginSpawnLocation,
@@ -87,9 +93,11 @@ export class ManageBotComponent implements OnInit {
         this.getBotConfiguration(this.firstName, this.lastName);
       });
   }
+
   botAccessCodePopup(botId: number) {
-    const dialogRef = this.dialog.open(AccessCodePopupComponent);
+    this.dialog.open(AccessCodePopupComponent);
   }
+
   discordSettingsPopup(botId: number) {
     const data: DiscordSettingsInput = {} as DiscordSettingsInput;
     this.manageBotService.getDiscordSettings(botId).subscribe((res) => {
@@ -100,13 +108,14 @@ export class ManageBotComponent implements OnInit {
         data.slGroupUuid = res[0].slGroupUuid;
         data.webHookUrl = res[0].webHookUrl;
       }
-      const dialogRef = this.dialog.open(DiscordSettingsPopupComponent, {
+      this.dialog.open(DiscordSettingsPopupComponent, {
         data,
       });
     });
   }
+
   botSubscriptionPopup(botId: number) {
-    const dialogRef = this.dialog
+    this.dialog
       .open(SubscriptionPopupComponent, {
         data: {
           packageId: this.botData.subscriptions[0].package.id,
@@ -120,7 +129,12 @@ export class ManageBotComponent implements OnInit {
         this.getBotConfiguration(this.firstName, this.lastName);
       });
   }
+
   botSettingsPopup(botId: number) {
-    const dialogRef = this.dialog.open(BotSettingsPopupComponent);
+    this.dialog.open(BotSettingsPopupComponent);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }

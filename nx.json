@@ -48,7 +48,12 @@
       "linter": "eslint"
     },
     "@nx/angular:component": {
-      "style": "scss"
+      "style": "scss",
+      "skipTests": true
+    },
+    "@schematics/angular:component": {
+      "style": "scss",
+      "skipTests": true
     }
   },
   "nxCloudAccessToken": "M2U0Y2IyZjktZDVlZC00MGEwLWJjYmQtMTI1Njg0MmViNGVkfHJlYWQtd3JpdGU="

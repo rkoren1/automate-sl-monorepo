@@ -9,7 +9,6 @@ import { LoginResponse } from '@caspertech/node-metaverse/dist/lib/classes/Login
 import { BotDb, PrismaClient, User } from '@prisma/client';
 import { SubSink } from 'subsink';
 import { isUuidValid } from '../services/helper.service';
-import Signals = NodeJS.Signals;
 
 export class BaseBot extends Bot {
   public isConnected = false;
@@ -45,7 +44,7 @@ export class BaseBot extends Bot {
   public async run(): Promise<void> {
     const exitHandler = async (
       options: { exit?: boolean },
-      err: Error | number | Signals,
+      err: Error | number | NodeJS.Signals,
     ) => {
       if (err && err instanceof Error) {
         console.log(err.stack);

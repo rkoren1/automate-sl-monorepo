@@ -47,7 +47,7 @@ export class BaseBot extends Bot {
       err: Error | number | NodeJS.Signals,
     ) => {
       if (err && err instanceof Error) {
-        console.log(err.stack);
+        console.error(err.stack);
       }
       if (this.isConnected) {
         console.log('Disconnecting');

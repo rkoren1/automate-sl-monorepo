@@ -1,120 +1,153 @@
-@use '../style/variables';
-@use '../style/transitions';
-@use '../style/badge' as *;
+@use '@angular/material' as mat;
+@use '../style/badge';
 
 .matero-sidemenu {
-  width: variables.$sidenav-width;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 
   .menu-item {
     display: block;
     height: auto;
     padding: 0;
+    overflow: hidden;
+    border-radius: 1.5rem;
+
+    > .menu-heading {
+      &:hover,
+      &:focus {
+        background-color: var(--sidemenu-heading-hover-background-color);
+      }
+    }
+
+    &.active {
+      > .menu-heading {
+        color: var(--sidemenu-active-heading-text-color);
+        background-color: var(--sidemenu-active-heading-background-color);
+
+        &:hover,
+        &:focus {
+          background-color: var(
+            --sidemenu-active-heading-hover-background-color
+          );
+        }
+      }
+    }
 
     &.expanded {
-      > .submenu {
-        max-height: 2000px;
-        visibility: visible;
-      }
+      background-color: var(--sidemenu-expanded-background-color);
 
       > .menu-toggle > .menu-caret {
         transform: rotate(-180deg);
       }
     }
-  }
 
-  &.submenu {
-    max-height: 0;
-    padding-top: 0;
-    overflow: hidden;
-    transform: translateZ(0) !important;
-    visibility: hidden;
-    transition: transitions.fast-out-slow(max-height), transitions.fast-out-slow(visibility);
-  }
-
-  .menu-heading {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 48px;
-    padding: 0 16px;
-    text-decoration: none;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
-  }
-
-  .mat-icon.menu-icon {
-    width: 18px;
-    height: 18px;
-    margin-right: 16px;
-    font-size: 18px;
-    line-height: 18px;
-
-    [dir='rtl'] & {
-      margin-right: auto;
-      margin-left: 16px;
+    &:has(.active) > .menu-heading {
+      color: var(--sidemenu-active-heading-text-color);
     }
   }
 
-  .mat-icon.menu-caret {
-    display: block;
-    text-align: center;
-    transition: transitions.fast-out-slow(transform);
+  .menu-heading {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: calc(var(--sidenav-width) - 1rem);
+    padding: 0.75rem;
+    font-size: inherit;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 1.5rem;
+    outline: none;
   }
 
+  .menu-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    text-align: center;
+
+    [dir='rtl'] & {
+      margin-right: 0;
+      margin-left: 0.75rem;
+    }
+
+    &.submenu-icon {
+      position: absolute;
+      left: 0.75rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      opacity: 0;
+
+      [dir='rtl'] & {
+        right: 0.75rem;
+        left: 0;
+      }
+    }
+  }
+
+  .menu-caret {
+    display: block;
+    text-align: center;
+    transition: transform mat.$private-swift-ease-out-duration
+      mat.$private-swift-ease-out-timing-function;
+  }
+
+  .menu-name {
+    flex: 1;
+    overflow: hidden;
+    text-align: initial;
+    text-overflow: ellipsis;
+  }
+
+  .menu-icon,
   .menu-name,
   .menu-label,
   .menu-badge {
-    transition: transitions.swift-ease-out(opacity);
+    transition: opacity mat.$private-swift-ease-out-duration
+      mat.$private-swift-ease-out-timing-function;
   }
 
   .menu-label,
   .menu-badge {
-    @include badge();
+    @include badge.badge();
   }
 
   .menu-badge {
     border-radius: 50rem;
   }
 
-  &.level-0 > li > .menu-heading > .menu-name {
-    margin-right: 5px;
-
-    [dir='rtl'] & {
-      margin-right: auto;
-      margin-left: 5px;
-    }
-  }
-
   &.level-1 > li > .menu-heading {
-    padding-left: 50px;
+    padding-left: 3rem;
 
     [dir='rtl'] & {
-      padding-right: 50px;
-      padding-left: 16px;
+      padding-right: 3rem;
+      padding-left: 1rem;
     }
   }
 
   &.level-2 > li > .menu-heading {
-    padding-left: 64px;
+    padding-left: 4rem;
 
     [dir='rtl'] & {
-      padding-right: 64px;
-      padding-left: 16px;
+      padding-right: 4rem;
+      padding-left: 1rem;
     }
   }
 
   &.level-2 [class^='level-'] > li > .menu-heading {
-    padding-left: 80px;
+    padding-left: 5rem;
 
     [dir='rtl'] & {
-      padding-right: 80px;
-      padding-left: 16px;
+      padding-right: 5rem;
+      padding-left: 1rem;
     }
   }
 }

@@ -1,32 +1,36 @@
+import { Dir } from '@angular/cdk/bidi';
+import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
+import {
+  MatSidenav,
+  MatSidenavContainer,
+  MatSidenavContent,
+} from '@angular/material/sidenav';
+import { NgProgressComponent } from 'ngx-progressbar';
 import { SettingsService } from '../../../core/bootstrap/settings.service';
 import { FooterComponent } from '../../../theme/footer/footer.component';
-import { SidebarItemsComponent } from '../sidebar-items/sidebar-items.component';
 import { SidebarComponent } from '../../../theme/sidebar/sidebar.component';
-import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
-import { NgProgressComponent } from 'ngx-progressbar';
-import { NgClass } from '@angular/common';
-import { Dir } from '@angular/cdk/bidi';
+import { SidebarItemsComponent } from '../sidebar-items/sidebar-items.component';
 
 @Component({
-    selector: 'app-how-to-layout',
-    templateUrl: './how-to-layout.component.html',
-    styleUrls: ['./how-to-layout.component.scss'],
-    standalone: true,
-    imports: [
-        Dir,
-        NgClass,
-        NgProgressComponent,
-        MatSidenavContainer,
-        MatSidenav,
-        SidebarComponent,
-        SidebarItemsComponent,
-        MatSidenavContent,
-        FooterComponent,
-    ],
+  selector: 'app-how-to-layout',
+  templateUrl: './how-to-layout.component.html',
+  styleUrls: ['./how-to-layout.component.scss'],
+  standalone: true,
+  imports: [
+    Dir,
+    NgClass,
+    NgProgressComponent,
+    MatSidenavContainer,
+    MatSidenav,
+    SidebarComponent,
+    SidebarItemsComponent,
+    MatSidenavContent,
+    FooterComponent,
+  ],
 })
 export class HowToLayoutComponent {
-  options = this.settings.getOptions();
+  options = this.settings.options;
 
   constructor(private settings: SettingsService) {}
 

@@ -1,15 +1,20 @@
+import { Directive, Input, OnChanges, inject } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { Directive, Input, SkipSelf, Optional } from '@angular/core';
 
 @Directive({
-    selector: '[disableControl]',
-    standalone: true,
+  selector: '[disableControl]',
+  standalone: true,
 })
-export class DisableControlDirective {
-  @Input() set disableControl(condition: boolean) {
-    const action = condition ? 'disable' : 'enable';
-    this.ngControl.control?.[action]();
-  }
+export class DisableControlDirective implements OnChanges {
+  private readonly ngControl = inject(NgControl, { optional: true });
 
-  constructor(@Optional() @SkipSelf() private ngControl: NgControl) {}
+  @Input() disableControl = false;
+
+  ngOnChanges(): void {
+    if (this.disableControl) {
+      this.ngControl?.control?.disable();
+    } else {
+      this.ngControl?.control?.enable();
+    }
+  }
 }

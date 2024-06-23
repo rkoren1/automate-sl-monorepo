@@ -97,16 +97,14 @@
     "settings": "settings",
     "logout": "logout"
   },
-  "login": {
-    "title": "Welcome Back",
-    "username": "Username",
-    "password": "Password",
-    "remember_me": "Remember Me",
-    "login": "Login",
-    "have_no_account": "Don't have an account",
-    "create_one": "Click here to create one",
-    "please_enter": "Please enter"
-  },
+  "login_title": "Welcome Back",
+  "username": "Username",
+  "password": "Password",
+  "remember_me": "Remember Me",
+  "login": "Login",
+  "have_no_account": "Don't have an account",
+  "create_one_account": "Click here to create one",
+  "please_enter": "Please enter",
   "register": {
     "welcome": "Welcome",
     "title": "It only takes a few seconds to create your account",

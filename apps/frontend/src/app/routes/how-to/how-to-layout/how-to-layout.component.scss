@@ -1,15 +1,6 @@
 @use '@angular/material' as mat;
 @use '../../../theme/style/variables';
-@use '../../../theme/style/transitions';
 @use '../../../theme/style/breakpoints';
-
-/* .sidebar-container {
-  height: 100%;
-}
-.matero-container {
-  width: 100%;
-  display: flex;
-} */
 
 .matero-container-wrap,
 .matero-container {
@@ -25,7 +16,6 @@
 .matero-sidenav {
   position: absolute;
   overflow-x: hidden;
-  transition: transitions.swift-ease-out(width); // Only set width property
 
   @include mat.elevation(2);
 

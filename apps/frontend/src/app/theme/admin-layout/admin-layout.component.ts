@@ -1,3 +1,4 @@
+import { BidiModule } from '@angular/cdk/bidi';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   Component,
@@ -5,20 +6,22 @@ import {
   OnDestroy,
   ViewChild,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
-import { MatSidenav, MatSidenavContent, MatSidenavContainer } from '@angular/material/sidenav';
+import {
+  MatSidenav,
+  MatSidenavContent,
+  MatSidenavModule,
+} from '@angular/material/sidenav';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { AppSettings } from '../../core/settings';
-import { SettingsService } from '../../core/bootstrap/settings.service';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { FooterComponent } from '../footer/footer.component';
+import { NgProgressComponent } from 'ngx-progressbar';
+import { Subscription, filter } from 'rxjs';
+import { AppSettings, SettingsService } from '../../core';
+import { CustomizerComponent } from '../customizer/customizer.component';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarNoticeComponent } from '../sidebar-notice/sidebar-notice.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { NgProgressComponent } from 'ngx-progressbar';
-import { NgClass } from '@angular/common';
-import { Dir } from '@angular/cdk/bidi';
+import { TopmenuComponent } from '../topmenu/topmenu.component';
 
 const MOBILE_MEDIAQUERY = 'screen and (max-width: 599px)';
 const TABLET_MEDIAQUERY =
@@ -26,40 +29,45 @@ const TABLET_MEDIAQUERY =
 const MONITOR_MEDIAQUERY = 'screen and (min-width: 960px)';
 
 @Component({
-    selector: 'app-admin-layout',
-    templateUrl: './admin-layout.component.html',
-    styleUrls: ['./admin-layout.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [
-        Dir,
-        NgClass,
-        NgProgressComponent,
-        MatSidenavContainer,
-        MatSidenav,
-        SidebarComponent,
-        SidebarNoticeComponent,
-        MatSidenavContent,
-        HeaderComponent,
-        RouterOutlet,
-        FooterComponent,
-    ],
+  selector: 'app-admin-layout',
+  templateUrl: './admin-layout.component.html',
+  styleUrl: './admin-layout.component.scss',
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    BidiModule,
+    MatSidenavModule,
+    NgProgressComponent,
+    HeaderComponent,
+    TopmenuComponent,
+    SidebarComponent,
+    SidebarNoticeComponent,
+    CustomizerComponent,
+  ],
 })
 export class AdminLayoutComponent implements OnDestroy {
   @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;
   @ViewChild('content', { static: true }) content!: MatSidenavContent;
 
-  options = this.settings.getOptions();
+  private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly router = inject(Router);
+  private readonly settings = inject(SettingsService);
 
-  private layoutChangesSubscription = Subscription.EMPTY;
+  options = this.settings.options;
 
-  get isOver(): boolean {
+  get themeColor() {
+    return this.settings.themeColor;
+  }
+
+  get isOver() {
     return this.isMobileScreen;
   }
 
   private isMobileScreen = false;
 
-  @HostBinding('class.matero-content-width-fix') get contentWidthFix() {
+  @HostBinding('class.matero-content-width-fix')
+  get contentWidthFix() {
     return (
       this.isContentWidthFixed &&
       this.options.navPos === 'side' &&
@@ -70,7 +78,8 @@ export class AdminLayoutComponent implements OnDestroy {
 
   private isContentWidthFixed = true;
 
-  @HostBinding('class.matero-sidenav-collapsed-fix') get collapsedWidthFix() {
+  @HostBinding('class.matero-sidenav-collapsed-fix')
+  get collapsedWidthFix() {
     return (
       this.isCollapsedWidthFixed &&
       (this.options.navPos === 'top' ||
@@ -80,11 +89,9 @@ export class AdminLayoutComponent implements OnDestroy {
 
   private isCollapsedWidthFixed = false;
 
-  constructor(
-    private router: Router,
-    private breakpointObserver: BreakpointObserver,
-    private settings: SettingsService
-  ) {
+  private layoutChangesSubscription = Subscription.EMPTY;
+
+  constructor() {
     this.layoutChangesSubscription = this.breakpointObserver
       .observe([MOBILE_MEDIAQUERY, TABLET_MEDIAQUERY, MONITOR_MEDIAQUERY])
       .subscribe((state) => {

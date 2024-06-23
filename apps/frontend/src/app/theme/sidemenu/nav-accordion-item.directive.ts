@@ -1,13 +1,22 @@
-import { Directive, HostBinding, Inject, Input, OnInit, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Directive,
+  HostBinding,
+  Input,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { NavAccordionDirective } from './nav-accordion.directive';
 
 @Directive({
-    selector: '[navAccordionItem]',
-    standalone: true,
+  selector: '[navAccordionItem]',
+  exportAs: 'navAccordionItem',
+  standalone: true,
 })
 export class NavAccordionItemDirective implements OnInit, OnDestroy {
-  protected nav: NavAccordionDirective;
-  protected isExpanded = false;
+  private readonly nav = inject(NavAccordionDirective);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input() route = '';
   @Input() type: 'link' | 'sub' | 'extLink' | 'extTabLink' = 'link';
@@ -18,24 +27,21 @@ export class NavAccordionItemDirective implements OnInit, OnDestroy {
     return this.isExpanded;
   }
   set expanded(value: boolean) {
-    // Only sub menu can be expanded
-    this.isExpanded = this.type === 'sub' && value;
+    this.isExpanded = value;
+    this.cdr.markForCheck();
 
     if (value) {
-      this.nav.closeOtherLinks(this);
+      this.nav.closeOtherItems(this);
     }
   }
-
-  constructor(@Inject(NavAccordionDirective) nav: NavAccordionDirective) {
-    this.nav = nav;
-  }
+  private isExpanded = false;
 
   ngOnInit() {
-    this.nav.addLink(this);
+    this.nav.addItem(this);
   }
 
   ngOnDestroy() {
-    this.nav.removeLink(this);
+    this.nav.removeItem(this);
   }
 
   toggle() {

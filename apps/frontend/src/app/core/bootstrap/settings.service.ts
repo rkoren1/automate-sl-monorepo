@@ -1,19 +1,20 @@
-import { Directionality } from '@angular/cdk/bidi';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
-import { AppDirectionality } from '../../shared/services/directionality.service';
-import { LocalStorageService } from '../../shared/services/storage.service';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AppSettings, defaults } from '../settings';
+import { AppDirectionality, LocalStorageService } from '../../shared';
+import { AppSettings, AppTheme, defaults } from '../settings';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  private key = 'theme-settings';
+  private readonly key = 'ng-matero-settings';
 
-  private options: AppSettings;
+  private readonly store = inject(LocalStorageService);
+  private readonly mediaMatcher = inject(MediaMatcher);
+  private readonly document = inject(DOCUMENT);
+  private readonly dir = inject(AppDirectionality);
 
   private readonly notify$ = new BehaviorSubject<Partial<AppSettings>>({});
 
@@ -23,36 +24,41 @@ export class SettingsService {
 
   private htmlElement!: HTMLHtmlElement;
 
-  constructor(
-    private store: LocalStorageService,
-    private mediaMatcher: MediaMatcher,
-    @Inject(DOCUMENT) private document: Document,
-    @Inject(Directionality) public dir: AppDirectionality
-  ) {
+  options: AppSettings;
+
+  themeColor: Exclude<AppTheme, 'auto'> = 'light';
+
+  constructor() {
     const storedOptions = this.store.get(this.key);
     this.options = Object.assign(defaults, storedOptions);
-
-    this.options.theme = 'dark';
-
+    this.themeColor = this.getThemeColor();
     this.htmlElement = this.document.querySelector('html')!;
-  }
-
-  getOptions(): AppSettings {
-    return this.options;
-  }
-
-  setOptions(options: AppSettings) {
-    this.options = Object.assign(defaults, options);
-    this.store.set(this.key, this.options);
-    this.notify$.next(this.options);
   }
 
   reset() {
     this.store.remove(this.key);
   }
 
-  getLanguage() {
-    return this.options.language;
+  getThemeColor() {
+    // Check whether the browser support `prefers-color-scheme`
+    if (
+      this.options.theme === 'auto' &&
+      this.mediaMatcher.matchMedia('(prefers-color-scheme)').media !== 'not all'
+    ) {
+      const isSystemDark = this.mediaMatcher.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+      // Set theme to dark if `prefers-color-scheme` is dark. Otherwise, set it to light.
+      return isSystemDark ? 'dark' : 'light';
+    } else {
+      return this.options.theme as Exclude<AppTheme, 'auto'>;
+    }
+  }
+
+  setOptions(options: AppSettings) {
+    this.options = Object.assign(defaults, options);
+    this.store.set(this.key, this.options);
+    this.notify$.next(this.options);
   }
 
   setLanguage(lang: string) {
@@ -67,7 +73,9 @@ export class SettingsService {
   }
 
   setTheme() {
-    if (this.options.theme === 'dark') {
+    this.themeColor = this.getThemeColor();
+
+    if (this.themeColor === 'dark') {
       this.htmlElement.classList.add('theme-dark');
     } else {
       this.htmlElement.classList.remove('theme-dark');

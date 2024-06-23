@@ -1,41 +1,45 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/authentication/auth.service';
-import { filter } from 'rxjs';
+import { MtxButtonModule } from '@ng-matero/extensions/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatButtonLoading } from '@ng-matero/extensions/button';
-import { MatButton } from '@angular/material/button';
-import { MatCheckbox } from '@angular/material/checkbox';
-
-import { MatInput } from '@angular/material/input';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { filter } from 'rxjs/operators';
+import { AuthService } from '../../../core';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    standalone: true,
-    imports: [
-    MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardContent,
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  standalone: true,
+  imports: [
     FormsModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatError,
-    MatCheckbox,
-    MatButton,
-    MatButtonLoading,
     RouterLink,
-    TranslateModule
-],
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MtxButtonModule,
+    TranslateModule,
+  ],
 })
 export class LoginComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+
   isSubmitting = false;
 
   loginForm = this.fb.nonNullable.group({
@@ -43,12 +47,6 @@ export class LoginComponent {
     password: ['', [Validators.required]],
     rememberMe: [false],
   });
-
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private auth: AuthService
-  ) {}
 
   get username() {
     return this.loginForm.get('username')!;
@@ -69,7 +67,9 @@ export class LoginComponent {
       .login(this.username.value, this.password.value, this.rememberMe.value)
       .pipe(filter((authenticated) => authenticated))
       .subscribe({
-        next: () => this.router.navigateByUrl('/'),
+        next: () => {
+          this.router.navigateByUrl('/');
+        },
         error: (errorRes: HttpErrorResponse) => {
           if (errorRes.status === 422) {
             const form = this.loginForm;

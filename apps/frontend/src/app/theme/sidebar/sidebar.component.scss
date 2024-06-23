@@ -1,4 +1,3 @@
-@use '../style/variables';
 @use '../style/breakpoints';
 
 .matero-sidebar-header {
@@ -8,29 +7,32 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  height: variables.$toolbar-height-desktop;
-  padding: 0 10px;
+  width: var(--sidenav-width);
+  height: var(--mat-toolbar-standard-height);
+  padding: 0 0.5rem;
   overflow: hidden;
 
   @include breakpoints.bp-lt(small) {
     & {
-      height: variables.$toolbar-height-mobile;
+      height: var(--mat-toolbar-mobile-height);
     }
   }
 
-  // Colorful
-  .matero-header-white & {
-    background-color: white;
+  // Remove redundant padding in the slide toggle
+  mat-slide-toggle .mdc-label {
+    display: none;
   }
 }
 
 .matero-sidebar-main {
-  height: calc(100% - #{variables.$toolbar-height-desktop});
+  height: calc(100% - var(--mat-toolbar-standard-height));
+  padding: 0 0.5rem;
   overflow: auto;
+  scrollbar-width: none;
 
   @include breakpoints.bp-lt(small) {
     & {
-      height: calc(100% - #{variables.$toolbar-height-mobile});
+      height: calc(100% - var(--mat-toolbar-mobile-height));
     }
   }
 }

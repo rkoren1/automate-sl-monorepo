@@ -46,7 +46,7 @@
     "jsonwebtoken": "^9.0.1",
     "moment": "^2.30.1",
     "mysql2": "^3.9.7",
-    "ng-matero": "~17.2.0",
+    "ng-matero": "~18.0.0",
     "ngx-permissions": "^17.1.0",
     "ngx-progressbar": "^11.0.0",
     "ngx-toastr": "^19.0.0",

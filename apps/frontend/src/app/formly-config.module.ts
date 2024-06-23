@@ -1,10 +1,9 @@
-import { NgModule, ModuleWithProviders, Provider } from '@angular/core';
-import { SharedModule } from './shared/shared.module';
+import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
 
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyFieldComboboxComponent } from './formly-templates';
-import { FormlyWrapperCardComponent } from './formly-wrappers';
 import { FormlyValidations } from './formly-validations';
+import { FormlyWrapperCardComponent } from './formly-wrappers';
 
 /**
  * Formly global configuration
@@ -27,8 +26,8 @@ const formlyModuleProviders = FormlyModule.forRoot({
 }).providers as Provider[];
 
 @NgModule({
-    imports: [SharedModule, FormlyFieldComboboxComponent, FormlyWrapperCardComponent],
-    providers: [FormlyValidations],
+  imports: [FormlyFieldComboboxComponent, FormlyWrapperCardComponent],
+  providers: [FormlyValidations],
 })
 export class FormlyConfigModule {
   constructor(formlyValidations: FormlyValidations) {

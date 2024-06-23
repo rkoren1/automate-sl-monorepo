@@ -7,11 +7,17 @@ import {
 } from '@angular/common/http';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+} from '@angular/router';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app/app.component';
+import { routes } from './app/app.routes';
 import { CoreModule } from './app/core/core.module';
 import { appInitializerProviders } from './app/core/initializers';
 import {
@@ -19,8 +25,6 @@ import {
   httpInterceptorProviders,
 } from './app/core/interceptors/index';
 import { FormlyConfigModule } from './app/formly-config.module';
-import { RoutesModule } from './app/routes/routes.module';
-import { SharedModule } from './app/shared/shared.module';
 import { environment } from './environments/environment';
 
 // Required for AOT compilation
@@ -34,11 +38,17 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideRouter(
+      routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled',
+      }),
+      withComponentInputBinding(),
+    ),
     importProvidersFrom(
       BrowserModule,
       CoreModule,
-      RoutesModule,
-      SharedModule,
       FormlyConfigModule.forRoot(),
       NgxPermissionsModule.forRoot(),
       ToastrModule.forRoot(),

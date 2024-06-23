@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SharedModule } from '../../shared/shared.module';
 import { DiscordBotSetupComponent } from './how-to-layout/discord-bot-setup/discord-bot-setup.component';
 import { HowToLayoutComponent } from './how-to-layout/how-to-layout.component';
 import { HowToPackagesComponent } from './how-to-layout/how-to-packages/how-to-packages.component';
@@ -48,7 +47,6 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    SharedModule,
     HowToComponent,
     HowToLayoutComponent,
     DiscordBotSetupComponent,

@@ -30,7 +30,7 @@
       (closedStart)="onSidenavClosedStart()"
     >
       <app-sidebar
-        [showToggle]="!isOver"
+        [showToggle]="false"
         [showUser]="options.showUserPanel"
         [showHeader]="options.headerPos !== 'above'"
         [toggleChecked]="options.sidenavCollapsed"
@@ -62,7 +62,4 @@
       </main>
     </mat-sidenav-content>
   </mat-sidenav-container>
-
-  <!-- Demo purposes only -->
-  <app-customizer (optionsChange)="updateOptions($event)" />
 </div>

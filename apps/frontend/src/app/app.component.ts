@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Observable, filter } from 'rxjs';
 import { PreloaderService } from './core/bootstrap/preloader.service';
 import { SettingsService } from './core/bootstrap/settings.service';
@@ -8,8 +8,10 @@ import { SettingsService } from './core/bootstrap/settings.service';
 declare var gtag: any;
 
 @Component({
-  selector: 'app-root',
-  template: '<router-outlet></router-outlet>',
+    selector: 'app-root',
+    template: '<router-outlet></router-outlet>',
+    standalone: true,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit, AfterViewInit {
   constructor(

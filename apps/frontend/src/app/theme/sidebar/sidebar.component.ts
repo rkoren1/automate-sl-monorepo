@@ -5,24 +5,23 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { SidemenuComponent } from '../sidemenu/sidemenu.component';
-import { UserPanelComponent } from './user-panel/user-panel.component';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { SidemenuComponent } from '../sidemenu/sidemenu.component';
 import { BrandingComponent } from '../widgets/branding.component';
-
+import { UserPanelComponent } from './user-panel/user-panel.component';
 
 @Component({
-    selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
     BrandingComponent,
     MatSlideToggle,
     UserPanelComponent,
-    SidemenuComponent
-],
+    SidemenuComponent,
+  ],
 })
 export class SidebarComponent {
   @Input() showToggle = true;

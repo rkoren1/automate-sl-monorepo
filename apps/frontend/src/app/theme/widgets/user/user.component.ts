@@ -1,28 +1,28 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { debounceTime, tap } from 'rxjs/operators';
 import { AuthService } from '../../../core/authentication/auth.service';
 import { User } from '../../../core/authentication/interface';
-import { debounceTime, tap } from 'rxjs/operators';
 import { UserService } from './user.service';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatIcon } from '@angular/material/icon';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { MatButton } from '@angular/material/button';
 
 @Component({
-    selector: 'app-user',
-    templateUrl: './user.component.html',
-    styleUrls: ['./user.component.scss'],
-    standalone: true,
-    imports: [
-        MatButton,
-        MatMenuTrigger,
-        MatMenu,
-        RouterLink,
-        MatMenuItem,
-        MatIcon,
-        TranslateModule,
-    ],
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styleUrls: ['./user.component.scss'],
+  standalone: true,
+  imports: [
+    MatButton,
+    MatMenuTrigger,
+    MatMenu,
+    RouterLink,
+    MatMenuItem,
+    MatIcon,
+    TranslateModule,
+  ],
 })
 export class UserComponent implements OnInit {
   user!: User;
@@ -34,21 +34,20 @@ export class UserComponent implements OnInit {
     private auth: AuthService,
     private cdr: ChangeDetectorRef,
     private userService: UserService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.callApiUpdateBalance();
-    this.userService.updateLDollarBalance.subscribe((res) => {
+    this.userService.updateLDollarBalance.subscribe(() => {
       this.callApiUpdateBalance();
     });
-    const tmp = localStorage.getItem('token') || '{}';
-    this.username = JSON.parse(tmp);
+    this.username = JSON.parse(localStorage.getItem('token') || '{}');
     this.auth
       .user()
       .pipe(
         tap((user) => (this.user = user)),
-        debounceTime(10)
+        debounceTime(10),
       )
       .subscribe(() => this.cdr.detectChanges());
   }

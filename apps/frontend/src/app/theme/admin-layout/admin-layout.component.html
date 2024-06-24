@@ -31,7 +31,7 @@
     >
       <app-sidebar
         [showToggle]="false"
-        [showUser]="options.showUserPanel"
+        [showUser]="false"
         [showHeader]="options.headerPos !== 'above'"
         [toggleChecked]="options.sidenavCollapsed"
         (toggleCollapsed)="toggleCollapsed()"
@@ -46,7 +46,7 @@
     <mat-sidenav-content #content class="matero-content">
       @if (options.showHeader && options.headerPos !== 'above') {
         <app-header
-          [showToggle]="!options.sidenavCollapsed && options.navPos !== 'top'"
+          [showToggle]="false"
           [showBranding]="options.navPos === 'top'"
           (toggleSidenav)="sidenav.toggle()"
           (toggleSidenavNotice)="sidenavNotice.toggle()"

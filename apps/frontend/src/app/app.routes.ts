@@ -28,7 +28,7 @@ export const routes: Routes = [
   {
     path: 'howto',
     loadChildren: () =>
-      import('./routes/how-to/how-to.module').then((m) => m.HowToModule),
+      import('./routes/how-to/how-to.routes').then((m) => m.howToRoutes),
   },
   {
     path: 'auth',

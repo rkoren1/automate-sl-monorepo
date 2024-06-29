@@ -1,17 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { importProvidersFrom } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { RouterModule, Routes, provideRouter } from '@angular/router';
 import { DiscordBotSetupComponent } from './how-to-layout/discord-bot-setup/discord-bot-setup.component';
-import { HowToLayoutComponent } from './how-to-layout/how-to-layout.component';
 import { HowToPackagesComponent } from './how-to-layout/how-to-packages/how-to-packages.component';
 import { HowToRegisterComponent } from './how-to-layout/how-to-register/how-to-register.component';
 import { MyBotsComponent } from './how-to-layout/my-bots/my-bots.component';
 import { SharedBotsComponent } from './how-to-layout/shared-bots/shared-bots.component';
 import { HowToWelcomeComponent } from './how-to-welcome/how-to-welcome.component';
 import { HowToComponent } from './how-to.component';
-import { SidebarItemsComponent } from './sidebar-items/sidebar-items.component';
 
-const routes: Routes = [
+export const howToRoutes: Routes = [
   {
     path: '',
     component: HowToComponent,
@@ -48,18 +47,9 @@ const routes: Routes = [
   },
 ];
 
-@NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    HowToComponent,
-    HowToLayoutComponent,
-    DiscordBotSetupComponent,
-    SidebarItemsComponent,
-    HowToRegisterComponent,
-    HowToPackagesComponent,
-    MyBotsComponent,
-    SharedBotsComponent,
+bootstrapApplication(HowToComponent, {
+  providers: [
+    provideRouter(howToRoutes),
+    importProvidersFrom(CommonModule, RouterModule),
   ],
-})
-export class HowToModule {}
+});

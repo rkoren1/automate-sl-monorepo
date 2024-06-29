@@ -1,5 +1,4 @@
 import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
-
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyFieldComboboxComponent } from './formly-templates';
 import { FormlyValidations } from './formly-validations';

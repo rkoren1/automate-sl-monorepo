@@ -7,6 +7,7 @@ import { HowToPackagesComponent } from './how-to-layout/how-to-packages/how-to-p
 import { HowToRegisterComponent } from './how-to-layout/how-to-register/how-to-register.component';
 import { MyBotsComponent } from './how-to-layout/my-bots/my-bots.component';
 import { SharedBotsComponent } from './how-to-layout/shared-bots/shared-bots.component';
+import { HowToWelcomeComponent } from './how-to-welcome/how-to-welcome.component';
 import { HowToComponent } from './how-to.component';
 import { SidebarItemsComponent } from './sidebar-items/sidebar-items.component';
 
@@ -15,6 +16,10 @@ const routes: Routes = [
     path: '',
     component: HowToComponent,
     children: [
+      {
+        path: '',
+        component: HowToWelcomeComponent,
+      },
       {
         path: 'discord-chat-relay',
         component: DiscordBotSetupComponent,

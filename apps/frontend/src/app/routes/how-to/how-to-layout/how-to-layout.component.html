@@ -1,9 +1,15 @@
 <div
-  class="matero-container-wrap matero-navbar-side matero-header-fixed"
-  [ngClass]="{ 'matero-sidenav-collapsed': options.sidenavCollapsed }"
-  dir="ltr"
+  class="matero-container-wrap"
+  [class.matero-sidenav-collapsed]="
+    options.sidenavCollapsed && options.navPos !== 'top'
+  "
+  [class.matero-navbar-side]="options.navPos === 'side'"
+  [class.matero-navbar-top]="options.navPos === 'top'"
+  [class.matero-header-above]="options.headerPos === 'above'"
+  [class.matero-header-fixed]="options.headerPos === 'fixed'"
+  [dir]="options.dir"
 >
-  <ng-progress></ng-progress>
+  <ng-progress />
 
   <mat-sidenav-container class="matero-container" autosize autoFocus>
     <mat-sidenav
@@ -15,7 +21,7 @@
       (closedStart)="onSidenavClosedStart()"
     >
       <app-sidebar
-        [showToggle]="!isOver"
+        [showToggle]="false"
         (toggleCollapsed)="toggleCollapsed()"
         [toggleChecked]="!!options.sidenavCollapsed"
         [showSideMenu]="false"
